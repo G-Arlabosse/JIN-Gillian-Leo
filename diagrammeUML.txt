@@ -1,0 +1,80 @@
+@startuml
+
+abstract	Entity{
+{field} 
+{method}
+}
+
+class		Player{
+{field} 
+{method}
+}
+
+abstract	Enemy{
+{field} 
+{method}
+}
+
+class		Corn{
+{field} 
+{method}
+}
+
+class		Milk{
+{field} 
+{method}
+}
+
+class		Carrot{
+{field} 
+{method}
+}
+
+class		Wall{
+{field} 
+{method}
+}
+
+class		World{
+{field} 
+{method}
+}
+
+class		GameManager{
+{field} 
+{method}
+}
+
+class		Hitbox{
+{field} 
+{method}
+}
+
+class		Hurtbox{
+{field} 
+{method}
+}
+
+class		Projectile{
+{field} 
+{method}
+}
+
+Player ..|> Entity
+Enemy ..|> Entity
+Corn ..|> Enemy
+Milk ..|> Enemy
+Carrot ..|> Enemy
+World *-- Entity
+World *-- Wall
+' vvv Modifications éventuelles vvv
+Entity *-- Hitbox
+Entity *-- Hurtbox
+Hurtbox o-- Entity
+' vvv Implémenter Médiator ? vvv
+Hitbox <--> Hurtbox
+Projectile *-- Hitbox
+' vvv Changer pour un Prototype pattern vvv
+Corn *-- Projectile
+
+@enduml
