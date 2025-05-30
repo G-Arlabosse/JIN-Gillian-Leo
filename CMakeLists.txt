@@ -21,12 +21,13 @@ FetchContent_MakeAvailable(sfml)
 set(CMAKE_CXX_STANDARD 23)
 
 cmake_policy(SET CMP0135 NEW) # This cmake_policy avoids warning by cmake when we fetch contents based on URL
-FetchContent_Declare(
-    pugixml
-    URL https://github.com/zeux/pugixml/releases/download/v1.15/pugixml-1.15.tar.gz
-)
 
-FetchContent_MakeAvailable(pugixml)
+FetchContent_Declare(
+	box2d
+	GIT_REPOSITORY https://github.com/erincatto/box2d.git
+	GIT_TAG v3.1.0
+)
+FetchContent_MakeAvailable(box2d)
 
 add_subdirectory(src/core)
 add_subdirectory(src/main)

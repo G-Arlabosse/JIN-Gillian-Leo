@@ -7,7 +7,7 @@
 add_executable(unitTests
   unitTests.cpp
 )
-target_link_libraries(unitTests GTest::gtest_main lib_core pugixml sfml-graphics)
+target_link_libraries(unitTests GTest::gtest_main sfml-graphics box2d)
 
 # The next two lines enable CMake’s test runner to discover the tests included in the binary,
 # using the GoogleTest CMake module.
