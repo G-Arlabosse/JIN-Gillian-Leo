@@ -5,12 +5,14 @@
 
 class Hitbox {
 public:
-	Hitbox(const b2WorldId &worldId, float pos_x, float pos_y, const b2Vec2 &hitboxSize);
-	void draw(sf::RenderWindow *window, sf::Color color) const;
+	Hitbox(const b2WorldId& worldId, float pos_x, float pos_y, const b2Vec2& hitboxSize, float damage);
+	void draw(sf::RenderWindow* window, sf::Color color) const;
 	void move(float x, float y);
-	void setType(b2BodyType bodyType);
-	void setLinearDamping(float value);
+	void move(b2Vec2 mov);
 	b2Vec2 getPosition();
+	bool updateHitbox(long clock);
+	bool isActive();
+	void wake(b2Vec2& position, b2Rot& rotation);
 
 private:
 	b2BodyDef bodyDef;
@@ -18,4 +20,6 @@ private:
 	b2Polygon polygon;
 	b2ShapeDef shapeDef;
 	b2ShapeId shapeId;
+	long clockTimeInit;
+	bool activeHitbox;
 };

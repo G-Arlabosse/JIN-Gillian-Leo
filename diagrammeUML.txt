@@ -76,6 +76,7 @@ Hurtbox o-- Entity
 Hitbox <--> Hurtbox
 Projectile *-- Hitbox
 Wall *-- Hitbox
+Enemy ..|> EnemyListener
 ' vvv Changer pour un Prototype pattern vvv
 Corn *-- Projectile
 

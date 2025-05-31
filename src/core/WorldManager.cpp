@@ -4,17 +4,20 @@
 WorldManager::WorldManager(sf::RenderWindow *window) :
     worldDef{ b2DefaultWorldDef() },
     worldId{ b2CreateWorld(&worldDef) },
-    window { window }
+    window { window },
+    tempoTimePlayer { std::clock() }
 {
+    tempoTimeEntities = tempoTimePlayer;
+
     b2World_SetGravity(worldId, b2Vec2{ 0, 0 });
 
     if (!texture.loadFromFile("resources/testSprite.png")) {
         std::cerr << "Échec du chargement de la texture de test\n";
     }
 
-    int r = 20;
+    int r = 25;
     beatIndicator.setRadius(r);
-    beatIndicator.setPosition(sf::Vector2f(window->getSize().x/2 - r, window->getSize().y/2- r));
+    beatIndicator.setPosition(sf::Vector2f(window->getSize().x/2 - r, window->getSize().y*5/6- r));
 }
 
 void WorldManager::moveRight() { entities[0]->move(100, 0); }
@@ -42,25 +45,65 @@ void WorldManager::renderEntities() {
     for (const auto& wall : walls) {
         wall->renderWall(window);
     }
+    for (const auto& hitbox : hitboxes) {
+        hitbox->draw(window, sf::Color::Yellow);
+    }
     window->draw(beatIndicator);
 }
 
 void WorldManager::updateWorld() {
-    b2World_Step(worldId, 2*timeStep, subStepCount);
+    long clock = std::clock();
 
-    long c = std::clock();
-    long modC = c % bpm;
-    if (modC >= (bpm - delta2) || modC <= delta2) {
+    updatePlayer();
+    b2World_Step(worldId, timeStep, subStepCount);
+    updateAll(clock);
+    updateTempo(clock);
+}
+
+void WorldManager::updateAll(long clock) {
+    for (auto& entity : entities) {
+        entity->update(clock);
+    }
+}
+
+void WorldManager::updatePlayer() {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Right)) {
+        entities[0]->attack(worldId, b2Vec2(1, 0), 1);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Left)) {
+        entities[0]->attack(worldId, b2Vec2(-1, 0), 1);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Up)) {
+        entities[0]->attack(worldId, b2Vec2(0, -1), 1);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Down)) {
+        entities[0]->attack(worldId, b2Vec2(0, 1), 1);
+    }
+}
+
+void WorldManager::updateTempo(long clock) {
+
+    if (clock >= (tempoTimePlayer - delta2) && clock <= (tempoTimePlayer + delta2)) {
         inTempo = true;
         beatIndicator.setFillColor(sf::Color::Green);
     }
-    else if (modC >= (bpm - delta) || modC <= delta) {
+    else if (clock >= (tempoTimePlayer - delta) && clock <= (tempoTimePlayer + delta)) {
         inTempo = true;
         beatIndicator.setFillColor(sf::Color::Red);
     }
-    else {
+    else  {
+        if (clock > (tempoTimePlayer - delta)) {
+            tempoTimePlayer += bpm;
+        }
         beatIndicator.setFillColor(sf::Color::Red);
         inTempo = false;
+    }
+
+    if (clock > tempoTimeEntities) {
+        tempoTimeEntities += bpm;
+        for (auto& entity : entities) {
+            entity->updateTempo();
+        }
     }
 }
 
