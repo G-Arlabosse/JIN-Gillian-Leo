@@ -35,7 +35,7 @@ class		Wall{
 {method}
 }
 
-class		World{
+class		WorldManager{
 {field} 
 {method}
 }
@@ -65,8 +65,9 @@ Enemy ..|> Entity
 Corn ..|> Enemy
 Milk ..|> Enemy
 Carrot ..|> Enemy
-World *-- Entity
-World *-- Wall
+WorldManager *-- Entity
+WorldManager *-- Wall
+GameManager *-- WorldManager
 ' vvv Modifications éventuelles vvv
 Entity *-- Hitbox
 Entity *-- Hurtbox
@@ -74,6 +75,7 @@ Hurtbox o-- Entity
 ' vvv Implémenter Médiator ? vvv
 Hitbox <--> Hurtbox
 Projectile *-- Hitbox
+Wall *-- Hitbox
 ' vvv Changer pour un Prototype pattern vvv
 Corn *-- Projectile
 

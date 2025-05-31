@@ -6,8 +6,11 @@
 class Hitbox {
 public:
 	Hitbox(const b2WorldId &worldId, float pos_x, float pos_y, const b2Vec2 &hitboxSize);
-	void Draw(sf::RenderWindow *window) const;
+	void draw(sf::RenderWindow *window, sf::Color color) const;
 	void move(float x, float y);
+	void setType(b2BodyType bodyType);
+	void setLinearDamping(float value);
+	b2Vec2 getPosition();
 
 private:
 	b2BodyDef bodyDef;
