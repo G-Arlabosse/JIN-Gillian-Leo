@@ -1,20 +1,12 @@
 #include "Entity.h"
 #include <iostream>
 
-int moveAmplitute = 200;
-b2Vec2 movUp = { 0, -moveAmplitute };
-b2Vec2 movRight = { moveAmplitute, 0 };
-b2Vec2 movDown = { 0, moveAmplitute };
-b2Vec2 movLeft = { -moveAmplitute, 0 };
-b2Vec2 movWait = b2Vec2_zero;
-
-std::vector<b2Vec2> movementPattern = { movRight, movWait, movLeft, movWait, 
-movDown, movUp, movUp, movDown
-};
-
-Entity::Entity(const b2WorldId &worldId, float pos_x, float pos_y, int hp, b2Vec2& hurtboxSize, sf::Texture* texture, bool renderDebugBoxes=false) :
-	hurtbox{ Hurtbox(worldId, pos_x, pos_y, hurtboxSize) },
-	hitbox{ Hitbox(worldId, pos_x, pos_y, {hurtboxSize.x/2, hurtboxSize.y }, 10) },
+Entity::Entity(const b2WorldId &worldId, float pos_x, float pos_y, int hp, b2Vec2& hurtboxSize, sf::Texture* texture, 
+		uint64_t categoryBitsHurtbox, uint64_t maskBitsHurtbox,
+		uint64_t categoryBitsHitbox, uint64_t maskBitsHitbox,
+		bool renderDebugBoxes=false) :
+	hurtbox{ Hurtbox(worldId, pos_x, pos_y, hurtboxSize, categoryBitsHurtbox, maskBitsHurtbox) },
+	hitbox{ Hitbox(worldId, pos_x, pos_y, {hurtboxSize.x/2, hurtboxSize.y }, 10, categoryBitsHitbox, maskBitsHitbox) },
 	pos_x{ pos_x },
 	pos_y{ pos_y },
 	maxHp{ hp },
@@ -22,7 +14,7 @@ Entity::Entity(const b2WorldId &worldId, float pos_x, float pos_y, int hp, b2Vec
 	renderDebugBoxes{ renderDebugBoxes },
 	sprite{ sf::Sprite(*texture) }
 {
-	hurtbox.setType(b2_dynamicBody);
+	hurtbox.setType(b2_dynamicBody); //kinematic body à terme
 	hurtbox.setLinearDamping(3);
 
 	float scaleX = 5 * hurtboxSize.x / texture->getSize().x;
@@ -51,15 +43,6 @@ void Entity::renderEntity(sf::RenderWindow *window) {
 		hurtbox.draw(window, sf::Color::Red);
 		hitbox.draw(window, sf::Color::Yellow);
 	}
-}
-
-void Entity::move(float x, float y) {
-	//hitbox.move(x, y);
-}
-
-void Entity::updateTempo() {
-	patternState = (patternState + 1) % movementPattern.size();
-	hurtbox.move(movementPattern[patternState]);
 }
 
 void Entity::update(long clock) {

@@ -60,6 +60,11 @@ class		Projectile{
 {method}
 }
 
+class		TextureHandler{
+{field}		textures: map<string, Texture>
+{method}	getTexture(string name)
+}
+
 Player ..|> Entity
 Enemy ..|> Entity
 Corn ..|> Enemy
@@ -76,7 +81,9 @@ Hurtbox o-- Entity
 Hitbox <--> Hurtbox
 Projectile *-- Hitbox
 Wall *-- Hitbox
-Enemy ..|> EnemyListener
+Entity --> TextureHandler
+Wall --> TextureHandler
+Projectile --> TextureHandler
 ' vvv Changer pour un Prototype pattern vvv
 Corn *-- Projectile
 

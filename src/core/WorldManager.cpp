@@ -20,16 +20,12 @@ WorldManager::WorldManager(sf::RenderWindow *window) :
     beatIndicator.setPosition(sf::Vector2f(window->getSize().x/2 - r, window->getSize().y*5/6- r));
 }
 
-void WorldManager::moveRight() { entities[0]->move(100, 0); }
-void WorldManager::moveLeft() { entities[0]->move(-100, 0); }
-void WorldManager::moveUp() { entities[0]->move(0, -100); }
-void WorldManager::moveDown() { entities[0]->move(0, 100); }
+void WorldManager::createPlayer(float pos_x, float pos_y, bool showHitbox=false) {
+    player = std::make_unique<Player>(worldId, pos_x, pos_y, &texture, showHitbox);
+}
 
-void WorldManager::createEntity(float pos_x, float pos_y, int hp, float hitboxSizeX, float hitboxSizeY, bool showHitbox=false) {
-    auto hitboxSize = b2Vec2{ hitboxSizeX, hitboxSizeY };
-    Entity entity0(worldId, pos_x, pos_y, hp, hitboxSize, &texture, showHitbox);
-    auto entity = std::make_unique<Entity>(worldId, pos_x, pos_y, hp, hitboxSize, &texture, showHitbox);
-    entities.push_back(std::move(entity));
+void WorldManager::createEnemy(float pos_x, float pos_y, bool showHitbox = false) {
+    enemies.push_back(std::make_unique<Enemy>(worldId, pos_x, pos_y, &texture, showHitbox));
 }
 
 void WorldManager::createWall(float pos_x, float pos_y, float hitboxSizeX, float hitboxSizeY, bool showHitbox) {
@@ -39,9 +35,10 @@ void WorldManager::createWall(float pos_x, float pos_y, float hitboxSizeX, float
 }
 
 void WorldManager::renderEntities() {
-    for (const auto& entity : entities) {
+    for (const auto& entity : enemies) {
         entity->renderEntity(window);
     }
+    player->renderEntity(window);
     for (const auto& wall : walls) {
         wall->renderWall(window);
     }
@@ -61,23 +58,36 @@ void WorldManager::updateWorld() {
 }
 
 void WorldManager::updateAll(long clock) {
-    for (auto& entity : entities) {
-        entity->update(clock);
+    for (const auto& enemy : enemies) {
+        enemy->update(clock);
     }
+    player->update(clock);
 }
 
 void WorldManager::updatePlayer() {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Right)) {
-        entities[0]->attack(worldId, b2Vec2(1, 0), 1);
+        player->attack(worldId, b2Vec2(1, 0), 1);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Left)) {
-        entities[0]->attack(worldId, b2Vec2(-1, 0), 1);
+        player->attack(worldId, b2Vec2(-1, 0), 1);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Up)) {
-        entities[0]->attack(worldId, b2Vec2(0, -1), 1);
+        player->attack(worldId, b2Vec2(0, -1), 1);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Down)) {
-        entities[0]->attack(worldId, b2Vec2(0, 1), 1);
+        player->attack(worldId, b2Vec2(0, 1), 1);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) {
+        player->move(0, -200);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
+        player->move(-200, 0);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+        player->move(0, 200);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+        player->move(200, 0);
     }
 }
 
@@ -101,8 +111,8 @@ void WorldManager::updateTempo(long clock) {
 
     if (clock > tempoTimeEntities) {
         tempoTimeEntities += bpm;
-        for (auto& entity : entities) {
-            entity->updateTempo();
+        for (auto& enemy : enemies) {
+            enemy->updateTempo();
         }
     }
 }

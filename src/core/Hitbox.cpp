@@ -1,7 +1,7 @@
 #include "Hitbox.h"
 #include <iostream>
 
-Hitbox::Hitbox(const b2WorldId& worldId, float pos_x, float pos_y, const b2Vec2& hitboxSize, float damage) {
+Hitbox::Hitbox(const b2WorldId& worldId, float pos_x, float pos_y, const b2Vec2& hitboxSize, float damage, uint64_t categoryBits, uint64_t maskBits) {
     bodyDef = b2DefaultBodyDef();
     bodyDef.position = b2Vec2{ pos_x, pos_y };
     bodyDef.fixedRotation = true;
@@ -15,6 +15,8 @@ Hitbox::Hitbox(const b2WorldId& worldId, float pos_x, float pos_y, const b2Vec2&
 
     shapeDef = b2DefaultShapeDef();
     shapeDef.isSensor = true;
+    shapeDef.filter.categoryBits = categoryBits;
+    shapeDef.filter.maskBits = maskBits;
 
     shapeDef.enableSensorEvents = true;
     shapeId = b2CreatePolygonShape(id, &shapeDef, &polygon);
@@ -22,6 +24,11 @@ Hitbox::Hitbox(const b2WorldId& worldId, float pos_x, float pos_y, const b2Vec2&
 
 void Hitbox::draw(sf::RenderWindow* window, sf::Color color) const {
     if (!activeHitbox) { return; }
+    b2ShapeId overlaps[2]{ 0 };
+    int shapeSensorCount = b2Shape_GetSensorOverlaps(shapeId, overlaps, 2);
+    if (overlaps[0].index1 != 0 && b2Shape_IsValid(overlaps[0])) {
+        color = sf::Color(0, 255, 0);
+    }
 
     b2Vec2 position = b2Body_GetPosition(id);
     b2Rot rotation = b2Body_GetRotation(id);

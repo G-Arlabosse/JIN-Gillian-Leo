@@ -1,7 +1,7 @@
 #include "Hurtbox.h"
 #include <iostream>
 
-Hurtbox::Hurtbox(const b2WorldId &worldId, float pos_x, float pos_y, const b2Vec2 &hitboxSize) {
+Hurtbox::Hurtbox(const b2WorldId &worldId, float pos_x, float pos_y, const b2Vec2 &hitboxSize, uint64_t categoryBits, uint64_t maskBits) {
     bodyDef = b2DefaultBodyDef();
     bodyDef.position = b2Vec2{ pos_x, pos_y };
     bodyDef.fixedRotation = true;
@@ -11,9 +11,10 @@ Hurtbox::Hurtbox(const b2WorldId &worldId, float pos_x, float pos_y, const b2Vec
     polygon = b2MakeBox(hitboxSize.x, hitboxSize.y);
 
     shapeDef = b2DefaultShapeDef();
-    //shapeDef.isSensor = true;
-
+    shapeDef.filter.categoryBits = categoryBits;
+    shapeDef.filter.maskBits = maskBits;
     shapeDef.enableSensorEvents = true;
+
     shapeId = b2CreatePolygonShape(id, &shapeDef, &polygon);
 }
 

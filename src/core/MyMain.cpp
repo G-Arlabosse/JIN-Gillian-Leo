@@ -7,8 +7,8 @@ int myMain() {
 
     auto worldManager = std::make_unique<WorldManager>(window.get());
     
-    worldManager->createEntity(300, 300, 3, 20, 20, true);
-    worldManager->createEntity(400, 200, 3, 20, 20, true);
+    worldManager->createPlayer(300, 300, true);
+    worldManager->createEnemy(400, 200, true);
 
     worldManager->createWall(200, 200, 20, 20, true);
     worldManager->createWall(240, 200, 20, 20, true);

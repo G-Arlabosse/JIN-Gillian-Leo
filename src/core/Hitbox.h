@@ -5,7 +5,7 @@
 
 class Hitbox {
 public:
-	Hitbox(const b2WorldId& worldId, float pos_x, float pos_y, const b2Vec2& hitboxSize, float damage);
+	Hitbox(const b2WorldId& worldId, float pos_x, float pos_y, const b2Vec2& hitboxSize, float damage, uint64_t categoryBits, uint64_t maskBits);
 	void draw(sf::RenderWindow* window, sf::Color color) const;
 	void move(float x, float y);
 	void move(b2Vec2 mov);
