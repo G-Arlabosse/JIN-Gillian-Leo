@@ -11,7 +11,7 @@ WorldManager::WorldManager(sf::RenderWindow *window) :
 
     b2World_SetGravity(worldId, b2Vec2{ 0, 0 });
 
-    if (!texture.loadFromFile("resources/testSprite.png")) {
+    if (!texture.loadFromFile("resources/sprites/fraise_animated.png")) {
         std::cerr << "Échec du chargement de la texture de test\n";
     }
 

@@ -27,7 +27,7 @@ int myMain() {
 
         worldManager->updateWorld();
 
-        window->clear();
+        window->clear(sf::Color(128,128,128));
         worldManager->renderEntities();
         window->display();
     }

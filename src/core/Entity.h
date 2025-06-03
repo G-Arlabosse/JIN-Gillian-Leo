@@ -23,7 +23,10 @@ private:
 	int maxHp;
 	int hp;
 	bool renderDebugBoxes;
-	sf::Sprite sprite;
+	sf::Texture sprite_frames;
+	sf::Vector2i frame_pos;
+  int sprite_size;
+        float sprite_scale;
 
 	int patternState;
 };

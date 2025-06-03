@@ -20,18 +20,21 @@ Entity::Entity(const b2WorldId &worldId, float pos_x, float pos_y, int hp, b2Vec
 	maxHp{ hp },
 	hp{ hp },
 	renderDebugBoxes{ renderDebugBoxes },
-	sprite{ sf::Sprite(*texture) }
+	sprite_frames{ *texture },
+  frame_pos{ sf::Vector2i{0,0} },
+  sprite_size{(int)texture->getSize().y},
+	sprite_scale{2 * hurtboxSize.x / sprite_size}
 {
 	hurtbox.setType(b2_dynamicBody);
 	hurtbox.setLinearDamping(3);
 
-	float scaleX = 5 * hurtboxSize.x / texture->getSize().x;
-	float scaleY = 5 * hurtboxSize.y / texture->getSize().y;
-	sf::Vector2 size = sprite.getTexture().getSize();
-	float middleX = size.x / 2;
-	float middleY = size.y / 2;
-	sprite.scale({ scaleX, scaleY });
-	sprite.setOrigin({ middleX, middleY });
+	//float scaleX = 2 * hurtboxSize.x / texture->getSize().x;
+	//float scaleY = 2 * hurtboxSize.y / texture->getSize().y;
+	////sf::Vector2 size = sprite.getTexture().getSize();
+ // float middleX = sprite_size / 2;
+ // float middleY = sprite_size / 2;
+	//sprite.scale({ scaleX, scaleY });
+	//sprite.setOrigin({ middleX, middleY });
 }
 
 void Entity::attack(b2WorldId &worldId, b2Vec2 direction, float damage) {
@@ -43,6 +46,12 @@ void Entity::attack(b2WorldId &worldId, b2Vec2 direction, float damage) {
 }
 
 void Entity::renderEntity(sf::RenderWindow *window) {
+  // sf::Vector2 size = sprite.getTexture().getSize();
+  float middle = (float)sprite_size / 2.f;
+  sf::Sprite sprite(sprite_frames, sf::IntRect(frame_pos, {sprite_size,sprite_size}));
+  sprite.scale({sprite_scale, sprite_scale});
+  sprite.setOrigin({middle, middle});
+
 	b2Vec2 pos = hurtbox.getPosition();
 	sprite.setPosition(sf::Vector2f(pos.x, pos.y));
 
@@ -60,6 +69,7 @@ void Entity::move(float x, float y) {
 void Entity::updateTempo() {
 	patternState = (patternState + 1) % movementPattern.size();
 	hurtbox.move(movementPattern[patternState]);
+  frame_pos.x = (frame_pos.x+16) % 128;
 }
 
 void Entity::update(long clock) {
