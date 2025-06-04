@@ -26,6 +26,9 @@ private:
 	bool renderDebugBoxes;
   TextureHandler texture_handler;
 
+	float sprite_scale;
+  float sprite_middle_x;
+  float sprite_middle_y;
 
 	int patternState;
 };
