@@ -54,3 +54,7 @@ void Hurtbox::move(b2Vec2 mov) {
 b2Vec2 Hurtbox::getPosition() {
     return b2Body_GetPosition(id);
 }
+
+b2WorldId Hurtbox::getWorldId() {
+    return b2Body_GetWorld(id);
+}
