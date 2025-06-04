@@ -18,41 +18,60 @@ const void Graph::setHeight(int new_height) {
 
 const void Graph::addNode(int x, int y) {
     int id = y * width + x;
-    struct node node{id, x, y, 0, 0};
+    struct node node{id, x, y};
     nodes[id] = std::make_unique<struct node>(node);
 }
 
 const void Graph::initGraphTransitions() {
     std::vector<b2Vec2> offsets = {
-        {1, 0}, {0, 1}, {-1, 0}, {0, -1}
+        {0, -1} , {1, 0}, {0, 1}, {-1, 0},
+    //     Up      Right   Down    Left      
     };
-
+    std::vector<bool> dirOk;
+    std::vector<std::pair<int, int>> diags = {
+        {0, 1},   {1, 2},    {2, 3},  {3, 0}
+    //  UpRight, DownRight, DownLeft, UpLeft 
+    };
+    
     struct node adjacent_node;
 
     for (auto& [id, node] : nodes) {
-        for (b2Vec2& offset : offsets) {
-            b2Vec2 new_coords = node->coords + offset;
+        dirOk = { false, false, false, false };
+        for (int i=0; i<4; i++) {
+            b2Vec2 new_coords = node->coords + offsets[i];
             int new_id = getCoordsId(new_coords);
-            if (new_coords.x >= 0
-                && new_coords.x <= width
-                && new_coords.y >= 0
-                && new_coords.y <= height
-                && nodes.contains(new_id)) 
-            {
-                node->transitions.push_back(new_id);
+            if (new_coords.x >= 0 && new_coords.x <= width
+                    && new_coords.y >= 0 && new_coords.y <= height
+                    && nodes.contains(new_id)) {
+                dirOk[i] = true;
+                struct transition new_transition { new_id, 10 };
+                node->transitions.push_back(new_transition);
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            auto diag = diags[i];
+            if (dirOk[diag.first] && dirOk[diag.second]) {
+                b2Vec2 new_coords = node->coords + offsets[diag.first] + offsets[diag.second];
+                int new_id = getCoordsId(new_coords);
+                if (new_coords.x >= 0 && new_coords.x <= width
+                        && new_coords.y >= 0 && new_coords.y <= height
+                        && nodes.contains(new_id)) {
+                    struct transition new_transition { new_id, 14 };
+                    node->transitions.push_back(new_transition);
+                }
             }
         }
     }
 }
 
 const void Graph::dumpGraph() {
-    for (const auto& [id, node] : nodes) {
+    /*for (const auto& [id, node] : nodes) {
         std::cout << "Node " << id << " (" << node->coords.x << ", " << node->coords.y << ") is empty and has " << node->transitions.size() << " empty adjacent tiles : \n";
         for (const auto& neighbour_id : node->transitions) {
             std::cout << "(" << nodes[neighbour_id]->coords.x << "," << nodes[neighbour_id]->coords.y << ") ";
         }
         std::cout << std::endl;
-    }
+    }*/
 }
 
 struct NodeComparator {
@@ -129,9 +148,10 @@ std::vector<b2Vec2> Graph::getPath(b2Vec2& start, b2Vec2& goal) {
         struct node* current_node = nodes[current_id].get();
 
         // Explorer les voisins
-        for (int neighbor_id : current_node->transitions) {
+        for (auto transition : current_node->transitions) {
+            int neighbor_id = transition.neighbor_id;
             struct node* neighbor_node = nodes[neighbor_id].get();
-            int tentative_gScore = gScore[current_id] + 1; // Coût uniforme supposé
+            int tentative_gScore = gScore[current_id] + transition.weight; // Coût uniforme supposé
 
             if (tentative_gScore < gScore[neighbor_id]) {
                 cameFrom[neighbor_id] = current_id;

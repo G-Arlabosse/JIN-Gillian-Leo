@@ -9,11 +9,14 @@
 #include <set>
 #include <limits>
 
+const struct transition {
+	int neighbor_id;
+	int weight;
+};
 const struct node {
 	int id;
 	b2Vec2 coords;
-	int weight, heuristic;
-	std::vector<int> transitions;
+	std::vector<struct transition> transitions;
 };
 
 class Graph {
