@@ -20,7 +20,7 @@ Entity::Entity(const b2WorldId &worldId, float pos_x, float pos_y, int hp, b2Vec
 	maxHp{ hp },
 	hp{ hp },
 	renderDebugBoxes{ renderDebugBoxes },
-  texture_handler{TextureHandler(*texture,1,8 )} {
+  texture_handler{TextureHandler(*texture, {8, 8}, 600)} {
 	hurtbox.setType(b2_dynamicBody);
 	hurtbox.setLinearDamping(3);
   texture_handler.setScale(3);

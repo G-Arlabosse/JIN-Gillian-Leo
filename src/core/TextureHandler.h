@@ -9,13 +9,15 @@ class TextureHandler {
   sf::Texture texture;
   std::unique_ptr<sf::Sprite> sprite;
   int lines;
-  int columns;
+  std::vector<int> animation_columns;
   int size;
   float scale;
   sf::Vector2i frame_pos;
+  std::vector<float> animation_speeds;
+  int current_animation;
  public:
-  TextureHandler(const sf::Texture& t, int lines, int columns);
-  void changeAnimation(std::string_view name);
+  TextureHandler(const sf::Texture& t, std::vector<int>, int tempo);
+  void changeAnimation(int animation_number);
   void nextFrame();
   sf::Sprite getSprite() const;
   int getSize() const;
