@@ -3,6 +3,7 @@
 #include "SFML/Graphics.hpp"
 #include "Hurtbox.h"
 #include "Hitbox.h"
+#include "TextureHandler.h"
 #include <vector>
 #include <memory>
 
@@ -23,10 +24,8 @@ private:
 	int maxHp;
 	int hp;
 	bool renderDebugBoxes;
-	sf::Texture sprite_frames;
-	sf::Vector2i frame_pos;
-  int sprite_size;
-        float sprite_scale;
+  TextureHandler texture_handler;
+
 
 	int patternState;
 };

@@ -3,6 +3,6 @@ add_library(lib_core
   MyMain.h
   "Hurtbox.cpp"
   Hurtbox.h
- "WorldManager.h" "Entity.h" "Entity.cpp" "WorldManager.cpp" "Wall.h" "Wall.cpp" "MyMainTest.h" "MyMainTest.cpp" "Hitbox.h" "Hitbox.cpp")
+ "WorldManager.h" "Entity.h" "Entity.cpp" "WorldManager.cpp" "Wall.h" "Wall.cpp" "MyMainTest.h" "MyMainTest.cpp" "Hitbox.h" "Hitbox.cpp" "TextureHandler.cpp" "TextureHandler.h")
 target_include_directories(lib_core PUBLIC ./)
 target_link_libraries(lib_core PUBLIC sfml-graphics box2d)
