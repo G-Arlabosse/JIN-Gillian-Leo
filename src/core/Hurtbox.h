@@ -12,6 +12,7 @@ public:
 	void setType(b2BodyType bodyType);
 	void setLinearDamping(float value);
 	b2Vec2 getPosition();
+	b2WorldId getWorldId();
 
 private:
 	b2BodyDef bodyDef;

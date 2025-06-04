@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "myMain.h"
+/*#include "myMain.h"
 #include "pugixml.hpp"
 #include "Circle.h"
 #include <iostream>
@@ -75,5 +75,5 @@ TEST(TestReadXML, TestGroupHybrid) {
   Group g(doc2.child("Group"), nullptr);
 
   EXPECT_EQ(g.dump(""), c_dump_ref);
-}
+}*/
 

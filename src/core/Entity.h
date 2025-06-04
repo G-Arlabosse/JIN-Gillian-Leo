@@ -5,6 +5,9 @@
 #include "Hitbox.h"
 #include <vector>
 #include <memory>
+#include "Constants.h"
+
+class LevelManager;
 
 class Entity {
 public:
@@ -17,6 +20,7 @@ public:
 	void renderEntity(sf::RenderWindow *window);
 	void attack(b2WorldId &worldId, b2Vec2 direction, float damage);
 	void update(long clock);
+	b2Vec2 getPosition();
 
 	virtual void move(float x, float y) = 0;
 	virtual void updateTempo() = 0;

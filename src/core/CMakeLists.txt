@@ -1,4 +1,5 @@
 add_library(lib_core
+  "Constants.h"
   "MyMain.cpp" "MyMain.h"
   "Hurtbox.cpp" "Hurtbox.h"
   "WorldManager.cpp" "WorldManager.h"
@@ -7,6 +8,8 @@ add_library(lib_core
   "MyMainTest.cpp" "MyMainTest.h"
   "Hitbox.cpp" "Hitbox.h" 
   "Player.cpp" "Player.h"
-  "Enemy.cpp" "Enemy.h" "Constants.h")
+  "Enemy.cpp" "Enemy.h" 
+  "LevelManager.cpp" "LevelManager.h" 
+  "Graph.cpp" "Graph.h")
 target_include_directories(lib_core PUBLIC ./)
 target_link_libraries(lib_core PUBLIC sfml-graphics box2d)

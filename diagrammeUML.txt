@@ -45,6 +45,16 @@ class		GameManager{
 {method}
 }
 
+class		LevelManager{
+{field} 
+{method}
+}
+
+class		Graph{
+{field} 
+{method}
+}
+
 class		Hitbox{
 {field} 
 {method}
@@ -70,8 +80,11 @@ Enemy ..|> Entity
 Corn ..|> Enemy
 Milk ..|> Enemy
 Carrot ..|> Enemy
-WorldManager *-- Entity
-WorldManager *-- Wall
+WorldManager*-- LevelManager
+LevelManager *-- Graph
+Entity --> Graph
+LevelManager *-- Entity
+LevelManager *-- Wall
 GameManager *-- WorldManager
 ' vvv Modifications éventuelles vvv
 Entity *-- Hitbox

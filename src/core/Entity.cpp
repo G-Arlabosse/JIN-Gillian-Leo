@@ -6,7 +6,7 @@ Entity::Entity(const b2WorldId &worldId, float pos_x, float pos_y, int hp, b2Vec
 		uint64_t categoryBitsHitbox, uint64_t maskBitsHitbox,
 		bool renderDebugBoxes=false) :
 	hurtbox{ Hurtbox(worldId, pos_x, pos_y, hurtboxSize, categoryBitsHurtbox, maskBitsHurtbox) },
-	hitbox{ Hitbox(worldId, pos_x, pos_y, {hurtboxSize.x/2, hurtboxSize.y }, 10, categoryBitsHitbox, maskBitsHitbox) },
+	hitbox{ Hitbox(worldId, pos_x, pos_y, {hurtboxSize.x/2, hurtboxSize.y*4/3 }, 10, categoryBitsHitbox, maskBitsHitbox) },
 	pos_x{ pos_x },
 	pos_y{ pos_y },
 	maxHp{ hp },
@@ -29,7 +29,7 @@ Entity::Entity(const b2WorldId &worldId, float pos_x, float pos_y, int hp, b2Vec
 void Entity::attack(b2WorldId &worldId, b2Vec2 direction, float damage) {
 	if (!hitbox.isActive()) {
 		b2Rot rot = b2ComputeRotationBetweenUnitVectors({1,0}, direction);
-		b2Vec2 position = hurtbox.getPosition() + direction * 50;
+		b2Vec2 position = hurtbox.getPosition() + direction * sizeMultiplier;
 		hitbox.wake(position, rot);
 	}
 }
@@ -47,4 +47,8 @@ void Entity::renderEntity(sf::RenderWindow *window) {
 
 void Entity::update(long clock) {
 	hitbox.updateHitbox(clock);
+}
+
+b2Vec2 Entity::getPosition() {
+	return hurtbox.getPosition();
 }

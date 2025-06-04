@@ -6,7 +6,7 @@
 
 class Wall {
 public:
-	Wall(const b2WorldId& worldId, float pos_x, float pos_y, const b2Vec2& hitboxSize, bool renderDebugBoxes);
+	Wall(const b2WorldId& worldId, float pos_x, float pos_y, bool renderDebugBoxes);
 	void renderWall(sf::RenderWindow* window) const;
 
 private:
