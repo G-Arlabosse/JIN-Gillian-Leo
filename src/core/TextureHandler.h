@@ -10,7 +10,8 @@ class TextureHandler {
   std::unique_ptr<sf::Sprite> sprite;
   int lines;
   std::vector<int> animation_columns;
-  int size;
+  int size_x;
+  int size_y;
   float scale;
   sf::Vector2i frame_pos;
   std::vector<float> animation_speeds;
@@ -21,7 +22,8 @@ class TextureHandler {
   void changeAnimation(int animation_number);
   void nextFrame();
   sf::Sprite getSprite() const;
-  int getSize() const;
+  int getSize_x() const;
+  int getSize_y() const;
   float getScale() const;
   void setScale(float s);
   void update(long clock);
