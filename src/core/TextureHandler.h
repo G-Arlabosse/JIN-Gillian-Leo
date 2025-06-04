@@ -15,6 +15,7 @@ class TextureHandler {
   sf::Vector2i frame_pos;
   std::vector<float> animation_speeds;
   int current_animation;
+  long last_frame_time;
  public:
   TextureHandler(const sf::Texture& t, std::vector<int>, int tempo);
   void changeAnimation(int animation_number);
@@ -23,4 +24,5 @@ class TextureHandler {
   int getSize() const;
   float getScale() const;
   void setScale(float s);
+  void update(long clock);
 };

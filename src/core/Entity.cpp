@@ -71,4 +71,5 @@ void Entity::updateTempo() {
 
 void Entity::update(long clock) {
 	hitbox.updateHitbox(clock);
+  texture_handler.update(clock);
 }

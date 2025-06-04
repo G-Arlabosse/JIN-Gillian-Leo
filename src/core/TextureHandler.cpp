@@ -15,6 +15,7 @@ TextureHandler::TextureHandler(const sf::Texture& t, std::vector<int> animation_
   for (int i = 0; i < animation_columns.size(); i++) {
     animation_speeds[i] = (float)tempo / (float)animation_columns[i];
   }
+  last_frame_time = std::clock();
 }
 
 void TextureHandler::changeAnimation(int animation_number) {
@@ -34,3 +35,10 @@ int TextureHandler::getSize() const { return size; }
 float TextureHandler::getScale() const { return scale; }
 
 void TextureHandler::setScale(float s) { scale = s; }
+
+void TextureHandler::update(long clock) {
+  if (clock > last_frame_time + animation_speeds[current_animation]) {
+    last_frame_time = clock;
+    nextFrame();
+  }
+}
