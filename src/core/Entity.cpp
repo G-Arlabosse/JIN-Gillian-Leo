@@ -12,18 +12,18 @@ Entity::Entity(const b2WorldId &worldId, float pos_x, float pos_y, int hp, b2Vec
 	maxHp{ hp },
 	hp{ hp },
 	renderDebugBoxes{ renderDebugBoxes },
-	sprite{ sf::Sprite(*texture) }
-{
-	hurtbox.setType(b2_dynamicBody); //kinematic body à terme
+  texture_handler{TextureHandler(*texture, {8, 8}, 600)} {
+	hurtbox.setType(b2_dynamicBody); //kinematic body ï¿½ terme
 	hurtbox.setLinearDamping(3);
+  texture_handler.setScale(3);
 
-	float scaleX = 5 * hurtboxSize.x / texture->getSize().x;
-	float scaleY = 5 * hurtboxSize.y / texture->getSize().y;
-	sf::Vector2 size = sprite.getTexture().getSize();
-	float middleX = size.x / 2;
-	float middleY = size.y / 2;
-	sprite.scale({ scaleX, scaleY });
-	sprite.setOrigin({ middleX, middleY });
+	//float scaleX = 2 * hurtboxSize.x / texture->getSize().x;
+	//float scaleY = 2 * hurtboxSize.y / texture->getSize().y;
+	////sf::Vector2 size = sprite.getTexture().getSize();
+ // float middleX = sprite_size / 2;
+ // float middleY = sprite_size / 2;
+	//sprite.scale({ scaleX, scaleY });
+	//sprite.setOrigin({ middleX, middleY });
 }
 
 void Entity::attack(b2WorldId &worldId, b2Vec2 direction, float damage) {
@@ -35,6 +35,12 @@ void Entity::attack(b2WorldId &worldId, b2Vec2 direction, float damage) {
 }
 
 void Entity::renderEntity(sf::RenderWindow *window) {
+  // sf::Vector2 size = sprite.getTexture().getSize();
+  float middle = (float)texture_handler.getSize() / 2.f;
+  sf::Sprite sprite = texture_handler.getSprite();
+  sprite.scale({texture_handler.getScale(), texture_handler.getScale()});
+  sprite.setOrigin({middle, middle});
+
 	b2Vec2 pos = hurtbox.getPosition();
 	sprite.setPosition(sf::Vector2f(pos.x, pos.y));
 
@@ -45,6 +51,17 @@ void Entity::renderEntity(sf::RenderWindow *window) {
 	}
 }
 
+void Entity::move(float x, float y) {
+	//hitbox.move(x, y);
+}
+
+void Entity::updateTempo() {
+	patternState = (patternState + 1) % movementPattern.size();
+	hurtbox.move(movementPattern[patternState]);
+  texture_handler.nextFrame();
+}
+
 void Entity::update(long clock) {
 	hitbox.updateHitbox(clock);
+  texture_handler.update(clock);
 }
