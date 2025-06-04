@@ -12,7 +12,7 @@ LevelManager::LevelManager():
     beatIndicator.setRadius(r);
     beatIndicator.setPosition(sf::Vector2f(500 - r, 400 - r));
 
-    if (!texture.loadFromFile("resources/testSprite.png")) {
+    if (!texture.loadFromFile("resources/sprites/fraise_animated.png")) {
         std::cerr << "Echec du chargement de la texture de test\n";
     }
 }
