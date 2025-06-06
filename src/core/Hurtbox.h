@@ -5,19 +5,39 @@
 
 class Hurtbox {
 public:
+	//Constructor
 	Hurtbox(const b2WorldId &worldId, float pos_x, float pos_y, const b2Vec2 &hitboxSize, uint64_t categoryBits, uint64_t maskBits);
+	
+	void destroy();
+
+	//Draws the hitbox on the window if debugDraw was activated
 	void draw(sf::RenderWindow *window, sf::Color color) const;
+
+	//Move function
 	void move(float x, float y);
+	//Move function
 	void move(b2Vec2 mov);
+
+	//SETTER: sets the bodyType of the box2d body
 	void setType(b2BodyType bodyType);
+	//TODO-Must be removed long term ?
+
+	//SETTER: set the box2d linear dampling
 	void setLinearDamping(float value);
+	//TODO-Must be removed to make more controllable movement
+
+	//GETTER: returns the hurtbox's position
 	b2Vec2 getPosition();
+
+	//GETTER: returns the worldId in which the hurbox lives
 	b2WorldId getWorldId();
 
+	b2ShapeId getShapeId();
+
 private:
-	b2BodyDef bodyDef;
-	b2BodyId id;
-	b2Polygon polygon;
-	b2ShapeDef shapeDef;
-	b2ShapeId shapeId;
+	std::unique_ptr<b2BodyDef> bodyDef;
+	std::unique_ptr<b2BodyId> id;
+	std::unique_ptr<b2Polygon> polygon;
+	std::unique_ptr<b2ShapeDef> shapeDef;
+	std::unique_ptr<b2ShapeId> shapeId;
 };

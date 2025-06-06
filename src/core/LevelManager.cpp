@@ -17,12 +17,43 @@ LevelManager::LevelManager():
     }
 }
 
+void LevelManager::notifyDamage(int32_t hurtboxIndex, int damage) {
+    if (hurtboxIndex == player->getShapeIndex()) {
+        player->updateDamage(damage);
+        return;
+    }
+    else if (enemies.contains(hurtboxIndex)) {
+        enemies[hurtboxIndex]->updateDamage(damage);
+        std::cout << "touched entity n" << hurtboxIndex << std::endl;
+        return;
+    }
+    else {
+        //terminate();
+    }
+}
+
+void LevelManager::notifyDeath(int32_t hurtboxIndex) {
+    if (hurtboxIndex == player->getShapeIndex()) {
+        //Notify game finished
+        return;
+    }
+    else if (enemies.contains(hurtboxIndex)) {
+        enemies[hurtboxIndex]->destroy();
+        enemies.erase(hurtboxIndex);
+        return;
+    }
+    else { 
+        //terminate(); 
+    }
+}
+
 void LevelManager::createPlayer(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
-    player = std::make_unique<Player>(worldId, pos_x, pos_y, &texture, showHitbox);
+    player = std::make_unique<Player>(worldId, pos_x, pos_y, &texture, this, showHitbox);
 }
 
 void LevelManager::createEnemy(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
-    enemies.push_back(std::make_unique<Enemy>(worldId, pos_x, pos_y, &texture, levelGraph.get(), showHitbox));
+    auto enemy = std::make_unique<Enemy>(worldId, pos_x, pos_y, &texture, levelGraph.get(), this, showHitbox);
+    enemies[enemy->getShapeIndex()] = std::move(enemy);
 }
 
 void LevelManager::createWall(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox) {
@@ -40,7 +71,7 @@ void LevelManager::updateLevel(b2WorldId& worldId) {
 }
 
 void LevelManager::updateAll(long clock) {
-    for (const auto& enemy : enemies) {
+    for (const auto& [index, enemy] : enemies) {
         enemy->update(clock);
     }
     player->update(clock);
@@ -49,30 +80,7 @@ void LevelManager::updateAll(long clock) {
 
 
 void LevelManager::updatePlayer(b2WorldId& worldId) {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Right)) {
-        player->attack(worldId, b2Vec2(1, 0), 1);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Left)) {
-        player->attack(worldId, b2Vec2(-1, 0), 1);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Up)) {
-        player->attack(worldId, b2Vec2(0, -1), 1);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Down)) {
-        player->attack(worldId, b2Vec2(0, 1), 1);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) {
-        player->move(0, -200);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
-        player->move(-200, 0);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-        player->move(0, 200);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-        player->move(200, 0);
-    }
+    
 }
 
 void LevelManager::updateTempo(long clock) {
@@ -95,7 +103,7 @@ void LevelManager::updateTempo(long clock) {
 
     if (clock > tempoTimeEntities) {
         tempoTimeEntities += tempoMS;
-        for (auto& enemy : enemies) {
+        for (auto& [index, enemy] : enemies) {
             enemy->updateTempo(getPlayerPosition());
         }
     }
@@ -106,7 +114,7 @@ bool LevelManager::isInTempo() {
 }
 
 void LevelManager::renderEntities(sf::RenderWindow *window) {
-    for (const auto& enemy : enemies) {
+    for (const auto& [index,enemy] : enemies) {
         enemy->renderEnemy(window);
     }
     player->renderEntity(window);

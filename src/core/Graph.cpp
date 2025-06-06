@@ -37,6 +37,7 @@ const void Graph::initGraphTransitions() {
 
     for (auto& [id, node] : nodes) {
         dirOk = { false, false, false, false };
+        //Cardinal directions
         for (int i=0; i<4; i++) {
             b2Vec2 new_coords = node->coords + offsets[i];
             int new_id = getCoordsId(new_coords);
@@ -48,6 +49,7 @@ const void Graph::initGraphTransitions() {
                 node->transitions.push_back(new_transition);
             }
         }
+        //Diagonal directions
         for (int i = 0; i < 4; i++) {
             auto diag = diags[i];
             if (dirOk[diag.first] && dirOk[diag.second]) {
@@ -84,19 +86,17 @@ const int Graph::getCoordsId(b2Vec2 coords) {
     return coords.x + coords.y * width;
 }
 
-// Fonction pour reconstruire le chemin
 std::vector<b2Vec2> Graph::reconstructPath(const std::map<int, int>& cameFrom, int current_id) {
     std::vector<b2Vec2> path;
-    path.push_back(nodes[current_id]->coords); // Ajouter le nœud final
+    path.push_back(nodes[current_id]->coords);
     while (cameFrom.find(current_id) != cameFrom.end()) {
         current_id = cameFrom.at(current_id);
         path.push_back(nodes[current_id]->coords);
     }
-    std::reverse(path.begin(), path.end()); // Inverser pour obtenir le chemin du départ à l'arrivée
+    std::reverse(path.begin(), path.end());
     return path;
 }
 
-// Implémentation de l'algorithme A*
 std::vector<b2Vec2> Graph::getPath(b2Vec2& start, b2Vec2& goal) {
     int start_x = (int)((start.x + sizeMultiplier / 2) / sizeMultiplier);
     int start_y = (int)((start.y + sizeMultiplier / 2) / sizeMultiplier);
@@ -109,27 +109,26 @@ std::vector<b2Vec2> Graph::getPath(b2Vec2& start, b2Vec2& goal) {
     int start_id = getCoordsId(unscaled_start);
     int goal_id = getCoordsId(unscaled_goal);
 
-    // Vérifier si les nœuds de départ et d'arrivée existent
+    // Checks if the given nodes exist
     if (!nodes.count(start_id) || !nodes.count(goal_id)) {
-        std::cout << "Pas de chemin possible\n";
-        return {}; // Pas de chemin possible
+        std::cout << "Either Node Start or Goal doesnt exist\n";
+        return {};
     }
 
-    // File de priorité pour l'ensemble ouvert
+    // Priority Queue for nodes to explore
     std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, NodeComparator> openSet;
-    std::set<int> openSetTracker; // Pour vérifier rapidement si un nœud est dans openSet
+    std::set<int> openSetTracker; // To quickly check if a node is in openSet
 
-    std::map<int, int> cameFrom; // Pour reconstruire le chemin
+    std::map<int, int> cameFrom; // Used later to reconstruct the path
 
-    // Initialisation des scores
-    std::map<int, int> gScore;
-    std::map<int, int> fScore;
+    std::map<int, int> gScore; //G score, the weight of the path
+    std::map<int, int> fScore; //F score, the heuristic of the path
     for (const auto& pair : nodes) {
         gScore[pair.first] = std::numeric_limits<int>::max();
         fScore[pair.first] = std::numeric_limits<int>::max();
     }
     gScore[start_id] = 0;
-    fScore[start_id] = b2Distance(unscaled_start, unscaled_goal);
+    fScore[start_id] = 10 * b2Distance(unscaled_start, unscaled_goal);
 
     openSet.push({ start_id, fScore[start_id] });
     openSetTracker.insert(start_id);
@@ -140,23 +139,23 @@ std::vector<b2Vec2> Graph::getPath(b2Vec2& start, b2Vec2& goal) {
         openSet.pop();
         openSetTracker.erase(current_id);
 
-        // Si on atteint l'objectif, reconstruire et retourner le chemin
+        // Arrived to the goal
         if (current_id == goal_id) {
             return reconstructPath(cameFrom, current_id);
         }
 
         struct node* current_node = nodes[current_id].get();
 
-        // Explorer les voisins
+        // Explore neighbors
         for (auto transition : current_node->transitions) {
             int neighbor_id = transition.neighbor_id;
             struct node* neighbor_node = nodes[neighbor_id].get();
-            int tentative_gScore = gScore[current_id] + transition.weight; // Coût uniforme supposé
+            int tentative_gScore = gScore[current_id] + transition.weight;
 
             if (tentative_gScore < gScore[neighbor_id]) {
                 cameFrom[neighbor_id] = current_id;
                 gScore[neighbor_id] = tentative_gScore;
-                fScore[neighbor_id] = tentative_gScore + b2Distance(neighbor_node->coords, goal);
+                fScore[neighbor_id] = tentative_gScore + 10 * b2Distance(neighbor_node->coords, goal);
 
                 if (openSetTracker.find(neighbor_id) == openSetTracker.end()) {
                     openSet.push({ neighbor_id, fScore[neighbor_id] });
@@ -166,7 +165,7 @@ std::vector<b2Vec2> Graph::getPath(b2Vec2& start, b2Vec2& goal) {
         }
     }
 
-    return {}; // Pas de chemin trouvé
+    return {}; // No path found
 }
 
 sf::VertexArray Graph::getPathRender(std::vector<b2Vec2>& path) {

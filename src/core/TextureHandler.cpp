@@ -1,7 +1,7 @@
 #include "TextureHandler.h"
 #include <algorithm>
 
-
+//Passer un vector<int> en argument du constructeur ?
 TextureHandler::TextureHandler(const sf::Texture& t, std::vector<int> animation_columns, int tempo)
     : texture{t},
       lines{(int)animation_columns.size()},
@@ -25,7 +25,7 @@ void TextureHandler::changeAnimation(int animation_number) {
 
 void TextureHandler::nextFrame() {
   frame_pos.x = (frame_pos.x + size) % (size * animation_columns[current_animation]);
-  sprite = std::make_unique<sf::Sprite>(texture, sf::IntRect(frame_pos, {size, size}));
+  sprite->setTextureRect(sf::IntRect(frame_pos, { size, size }));
 }
 
 sf::Sprite TextureHandler::getSprite() const { return *sprite; }

@@ -15,25 +15,24 @@ const std::vector<b2Vec2> movementPattern = { movRight, movWait, movLeft, movWai
 movDown, movUp, movUp, movDown
 };
 
-Enemy::Enemy(const b2WorldId& worldId, float pos_x, float pos_y, sf::Texture* texture, Graph* levelGraph, bool renderDebugBoxes) :
+Enemy::Enemy(const b2WorldId& worldId, float pos_x, float pos_y, 
+		sf::Texture* texture, Graph* levelGraph,
+		LevelMediator* levelMediator, bool renderDebugBoxes) :
 	Entity(worldId, pos_x, pos_y, 3, enemyHitbox, texture,
 		entityType::ENEMY_HURTBOX, entityType::WALL | entityType::PLAYER_HITBOX | entityType::PLAYER_HURTBOX,
 		entityType::ENEMY_HITBOX, entityType::PLAYER_HURTBOX,
-		renderDebugBoxes),
-	patternState{ 0 },
+		levelMediator, renderDebugBoxes),
 	levelGraph{ levelGraph }
 {}
 
 void Enemy::move(float x, float y)
-{
-	
-}
+{}
 
 void Enemy::updateTempo() {}
 
 void Enemy::getMoveCoords(b2Vec2& playerPos) {
-	auto worldId = hurtbox.getWorldId();
-	auto origin = hurtbox.getPosition();
+	auto worldId = hurtbox->getWorldId();
+	auto origin = hurtbox->getPosition();
 	auto translation = b2Sub(playerPos, origin);
 	//Make it a field ?// // // // // // // // // // // // // // // // // // // // // // // //
 	b2QueryFilter filter = b2DefaultQueryFilter();
@@ -53,7 +52,11 @@ void Enemy::getMoveCoords(b2Vec2& playerPos) {
 			pathDebug[1].color = sf::Color::Cyan;
 		}
 		else if (entityFilter == entityType::WALL) {
-			//pathfinding
+			//Testing if half of the path has been traveled so far.
+			//If no, keep going
+			//TODO
+			
+			//Else, ask to recalculate
 			auto my_pos = getPosition();
 			auto path = levelGraph->getPath(my_pos, playerPos);
 			pathDebug = levelGraph->getPathRender(path);
