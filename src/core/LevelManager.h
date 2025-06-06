@@ -30,8 +30,11 @@ public:
 	void notifyDamage(int32_t hurtboxId, int damage) override;
 	void notifyDeath(int32_t hurtboxId) override;
 
-	//Loads the level with the given id inside worldId
-	void loadLevel(b2WorldId& worldId, int levelId);
+	// Loads the level with the given name inside worldId
+  void loadLevel(b2WorldId& worldId, const std::string& level_name);
+
+  // Loads the first level inside worldId
+  void loadFirstLevel(b2WorldId& worldId);
 
 	/*
 	Updates the level

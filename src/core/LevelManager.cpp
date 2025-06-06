@@ -125,9 +125,9 @@ void LevelManager::renderEntities(sf::RenderWindow *window) {
     window->draw(path_render);
 }
 
-void LevelManager::loadLevel(b2WorldId& worldId, int id) {
+void LevelManager::loadLevel(b2WorldId& worldId, const std::string& name) {
     std::string levelLine;
-    std::ifstream levelFile("resources/Level0.txt");
+    std::ifstream levelFile("resources/rooms/TestStartRoom.txt");
     
     bool showHitboxes = true;
     int y = 0;
@@ -138,18 +138,30 @@ void LevelManager::loadLevel(b2WorldId& worldId, int id) {
         for (auto tile : levelLine) {
             switch (tile) {
             case '#':
-                createWall(worldId, x* sizeMultiplier, y*sizeMultiplier, showHitboxes);
-                goto noNode;
+              createWall(worldId, x* sizeMultiplier, y*sizeMultiplier, showHitboxes);
+              goto noNode;
+            case 'U':
+              createWall(worldId, x * sizeMultiplier, y * sizeMultiplier, showHitboxes);
+              goto noNode;
+            case 'D':
+              createWall(worldId, x * sizeMultiplier, y * sizeMultiplier, showHitboxes);
+              goto noNode;
+            case 'L':
+              createWall(worldId, x * sizeMultiplier, y * sizeMultiplier, showHitboxes);
+              goto noNode;
+            case 'R':
+              createWall(worldId, x * sizeMultiplier, y * sizeMultiplier, showHitboxes);
+              goto noNode;
             case 'p':
-                createPlayer(worldId, x* sizeMultiplier, y* sizeMultiplier, showHitboxes);
-                break;
+              createPlayer(worldId, x* sizeMultiplier, y* sizeMultiplier, showHitboxes);
+              break;
             case 'e':
-                createEnemy(worldId, x* sizeMultiplier, y* sizeMultiplier, showHitboxes);
-                break;
+              createEnemy(worldId, x* sizeMultiplier, y* sizeMultiplier, showHitboxes);
+              break;
             case '-':
-                break;
+              break;
             default:
-                break;
+              break;
             }
             levelGraph->addNode(x, y);
 
@@ -165,6 +177,12 @@ void LevelManager::loadLevel(b2WorldId& worldId, int id) {
 
     levelGraph->initGraphTransitions();
     levelGraph->dumpGraph();
+}
+
+void LevelManager::loadFirstLevel(b2WorldId& worldId) {
+  std::string levelLine;
+  loadLevel(worldId, "TestStartRoom");
+  createPlayer(worldId, 5.5f * sizeMultiplier, 5.5f * sizeMultiplier, true);
 }
 
 b2Vec2 LevelManager::getPlayerPosition() {

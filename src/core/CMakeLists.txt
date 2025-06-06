@@ -12,6 +12,6 @@ add_library(lib_core
   "LevelManager.cpp" "LevelManager.h" 
   "Graph.cpp" "Graph.h"
   "TextureHandler.cpp" "TextureHandler.h" 
-  "LevelMediator.h")
+  "LevelMediator.h" "LevelTransition.cpp" "LevelTransition.h")
 target_include_directories(lib_core PUBLIC ./)
 target_link_libraries(lib_core PUBLIC sfml-graphics box2d)

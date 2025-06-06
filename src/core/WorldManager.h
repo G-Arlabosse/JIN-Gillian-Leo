@@ -15,6 +15,8 @@ public:
 	void renderWorld();
 	void updateWorld();
 	void startGame();
+  std::vector<std::vector<std::string>> makeMap();
+  void changeLevel(std::string_view direction);
 
 private:
 	//box2d World
@@ -27,5 +29,10 @@ private:
 	//SFML window
 	std::unique_ptr<sf::RenderWindow> window;
 	std::unique_ptr<sf::View> camera;
+
+	//Map made of multiple levels
+  std::vector<std::vector<std::string>> map;
+  int level_x;
+  int level_y;
 
 };
