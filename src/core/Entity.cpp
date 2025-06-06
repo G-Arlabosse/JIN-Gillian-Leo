@@ -12,12 +12,12 @@ Entity::Entity(const b2WorldId& worldId, float pos_x, float pos_y, int hp, b2Vec
 	maxHp{ hp },
 	hp{ hp },
 	renderDebugBoxes{ renderDebugBoxes },
-  texture_handler{ std::make_unique<TextureHandler>(*texture, std::vector<int>{8, 8}, 600) },
+  texture_handler{ std::make_unique<TextureHandler>(*texture, std::vector<int>{8}, 600) },
 	levelMediator{ levelMediator }
 {
-  hurtbox.setType(b2_dynamicBody);
-  hurtbox.setLinearDamping(3);
-  texture_handler.setScale(3);
+  hurtbox->setType(b2_dynamicBody);
+  hurtbox->setLinearDamping(3);
+  texture_handler->setScale(3);
   sprite_scale = texture_handler->getScale();
   sprite_middle_x = (float)texture_handler->getSize_x() / 2.f;
   sprite_middle_y = (float)texture_handler->getSize_y() / 2.f;

@@ -9,7 +9,8 @@ TextureHandler::TextureHandler(const sf::Texture& t, std::vector<int> animation_
       size_x{(int)t.getSize().x / *std::max_element(animation_columns.begin(), animation_columns.end())},
       size_y{(int)t.getSize().y / (int)animation_columns.size()},
       frame_pos{sf::Vector2i{0, 0}},
-      current_animation{0} {
+      current_animation{0} 
+{
   sprite = std::make_unique<sf::Sprite>(t);
   animation_speeds = std::vector<float>(lines);
   animation_columns.assign(animation_columns.begin(), animation_columns.end());
@@ -25,8 +26,8 @@ void TextureHandler::changeAnimation(int animation_number) {
 }
 
 void TextureHandler::nextFrame() {
-  frame_pos.x = (frame_pos.x + size) % (size * animation_columns[current_animation]);
-  sprite->setTextureRect(sf::IntRect(frame_pos, { size, size }));
+  frame_pos.x = (frame_pos.x + size_x) % (size_x * animation_columns[current_animation]);
+  sprite->setTextureRect(sf::IntRect(frame_pos, { size_x, size_y }));
 }
 
 sf::Sprite TextureHandler::getSprite() const { return *sprite; }
