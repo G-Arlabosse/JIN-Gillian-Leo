@@ -12,13 +12,13 @@ public:
 		LevelMediator* levelMediator, bool renderDebugBoxes);
 	
 	//Centralize later in Entity ?
-	void move(float x, float y) override;
+	void move(b2Vec2& target, float tempoMS);
 
 	void updateTempo() override;
 
 	/*Another updateTempo to get the playerPosition
 	Should try to do it in another way ?*/
-	void updateTempo(b2Vec2 playerPos);
+	void updateTempo(b2Vec2 playerPos, float tempoMS);
 
 	//Temporary, just to draw the A* path
 	void renderEnemy(sf::RenderWindow* window);
@@ -27,8 +27,11 @@ public:
 	When the MOVE_ACTION is called
 	Returns the direction towards the enemy moves
 	*/ 
-	void getMoveCoords(b2Vec2& playerPos);
+	b2Vec2 getMoveCoords(b2Vec2& playerPos);
 private:
 	Graph* levelGraph;
 	sf::VertexArray pathDebug;
+	std::vector<b2Vec2> path;
+	int pathAdvancement;
+	int pathLimit;
 };

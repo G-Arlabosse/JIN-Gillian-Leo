@@ -2,35 +2,40 @@
 #include <iostream>
 #include "Constants.h"
 
-const int moveAmplitute = 200;
-const b2Vec2 movUp = { 0, -moveAmplitute };
-const b2Vec2 movRight = { moveAmplitute, 0 };
-const b2Vec2 movDown = { 0, moveAmplitute };
-const b2Vec2 movLeft = { -moveAmplitute, 0 };
-const b2Vec2 movWait = b2Vec2_zero;
+b2Vec2 enemyHitbox{ 13, 13 };
 
-b2Vec2 enemyHitbox{ 15, 15 };
-
-const std::vector<b2Vec2> movementPattern = { movRight, movWait, movLeft, movWait,
-movDown, movUp, movUp, movDown
+const enum patternTypes {
+	ACTION, WAIT
 };
 
-Enemy::Enemy(const b2WorldId& worldId, float pos_x, float pos_y, 
-		sf::Texture* texture, Graph* levelGraph,
-		LevelMediator* levelMediator, bool renderDebugBoxes) :
+const std::vector<patternTypes> movementPattern = { WAIT, ACTION };
+
+Enemy::Enemy(const b2WorldId& worldId, float pos_x, float pos_y,
+	sf::Texture* texture, Graph* levelGraph,
+	LevelMediator* levelMediator, bool renderDebugBoxes) :
 	Entity(worldId, pos_x, pos_y, 3, enemyHitbox, texture,
 		entityType::ENEMY_HURTBOX, entityType::WALL | entityType::PLAYER_HITBOX | entityType::PLAYER_HURTBOX,
 		entityType::ENEMY_HITBOX, entityType::PLAYER_HURTBOX,
 		levelMediator, renderDebugBoxes),
-	levelGraph{ levelGraph }
+	levelGraph{ levelGraph },
+	pathAdvancement{ 0 },
+	pathLimit{ 0 }
 {}
 
-void Enemy::move(float x, float y)
-{}
+void Enemy::move(b2Vec2& target, float tempoMS) {
+	auto pos = getPosition();
+	auto bodyId = hurtbox->getBodyId();
+	auto direction = b2Normalize(b2Sub(target, pos));
+	float d = b2Distance(target, pos);
+	float lambda = b2Body_GetLinearDamping(bodyId);
+	float t = tempoMS / 1000;
+	auto v = lambda * d / (1 - exp(-lambda * t));
+	b2Body_SetLinearVelocity(bodyId, direction * v);
+}
 
 void Enemy::updateTempo() {}
 
-void Enemy::getMoveCoords(b2Vec2& playerPos) {
+b2Vec2 Enemy::getMoveCoords(b2Vec2& playerPos) {
 	auto worldId = hurtbox->getWorldId();
 	auto origin = hurtbox->getPosition();
 	auto translation = b2Sub(playerPos, origin);
@@ -50,16 +55,23 @@ void Enemy::getMoveCoords(b2Vec2& playerPos) {
 			pathDebug[1].position = sf::Vector2(raycastResult.point.x, raycastResult.point.y);
 			pathDebug[0].color = sf::Color::Cyan;
 			pathDebug[1].color = sf::Color::Cyan;
+			auto pos = getPosition();
+			auto target = b2Normalize(b2Sub(playerPos, pos)) * sizeMultiplier + pos;
+			pathLimit = 0;
+			return target;
 		}
 		else if (entityFilter == entityType::WALL) {
 			//Testing if half of the path has been traveled so far.
-			//If no, keep going
-			//TODO
+			if (pathAdvancement >= pathLimit) {
+				auto my_pos = getPosition();
+				path = levelGraph->getPath(my_pos, playerPos);
+				pathDebug = levelGraph->getPathRender(path);
+				pathAdvancement = 0;
+				pathLimit = path.size() / 2;
+			}
+			pathAdvancement++;
+			return path[pathAdvancement] * sizeMultiplier;
 			
-			//Else, ask to recalculate
-			auto my_pos = getPosition();
-			auto path = levelGraph->getPath(my_pos, playerPos);
-			pathDebug = levelGraph->getPathRender(path);
 		}
 		else {
 			pathDebug = sf::VertexArray(sf::PrimitiveType::LineStrip, 2);
@@ -68,12 +80,14 @@ void Enemy::getMoveCoords(b2Vec2& playerPos) {
 			pathDebug[0].color = sf::Color::Red;
 			pathDebug[1].color = sf::Color::Red;
 			std::cout << "Touching wrong entityType: " << entityFilter << std::endl;
+			return getPosition();
 		}
 	}
 }
 
-void Enemy::updateTempo(b2Vec2 playerPos) {
-	getMoveCoords(playerPos);
+void Enemy::updateTempo(b2Vec2 playerPos, float tempoMS) {
+	auto target = getMoveCoords(playerPos);
+	move(target, tempoMS);
 }
 
 

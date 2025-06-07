@@ -31,12 +31,6 @@ public:
 	*/
 	void attack(b2Vec2 direction, float damage); //Should remove worldId
 
-	/*
-	-Entity ACTION lock must be free
-	Moves in the given direction
-	*/
-	virtual void move(float x, float y) = 0;
-
 	//GETTER: returns the position
 	b2Vec2 getPosition();
 	

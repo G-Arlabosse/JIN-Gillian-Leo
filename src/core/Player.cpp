@@ -1,7 +1,8 @@
 #include "Player.h"
 #include "Constants.h"
+#include "iostream"
 
-b2Vec2 playerHitbox{ 15, 15 };
+b2Vec2 playerHitbox{ 13, 13 };
 
 Player::Player(const b2WorldId& worldId, float pos_x, float pos_y, sf::Texture* texture, LevelMediator* levelMediator, bool renderDebugBoxes) :
 	Entity(worldId, pos_x, pos_y, 3, playerHitbox, texture, 
@@ -19,9 +20,9 @@ void Player::attack(b2Vec2 direction, float damage) {
 	}
 }
 
-void Player::move(float x, float y) {
+void Player::move(b2Vec2& target) {
 	if (!actionLocked) {
-		hurtbox->move(x, y);
+		b2Body_SetLinearVelocity(hurtbox->getBodyId(), target * 5);
 	}
 }
 
@@ -38,6 +39,8 @@ void Player::update(long clock) {
 }
 
 void Player::updateInput() {
+	b2Vec2 offset = b2Vec2_zero;
+	bool movement = false;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Right)) {
 		attack(b2Vec2(1, 0), 1);
 	}
@@ -51,17 +54,27 @@ void Player::updateInput() {
 		attack(b2Vec2(0, 1), 1);
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) {
-		move(0, -200);
+		offset += {0, -1};
+		movement = true;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
-		move(-200, 0);
+		offset += {-1, 0};
+		movement = true;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-		move(0, 200);
+		offset += {0, 1};
+		movement = true;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-		move(200, 0);
+		offset += {1, 0};
+		movement = true;
 	}
+	if (movement && !actionLocked) {
+		std::cout << "Move\n";
+		auto target = b2Normalize(offset) * sizeMultiplier;
+		move(target);
+	}
+
 }
 
 bool Player::lockAction() {

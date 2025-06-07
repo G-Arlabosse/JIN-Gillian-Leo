@@ -104,7 +104,7 @@ void LevelManager::updateTempo(long clock) {
     if (clock > tempoTimeEntities) {
         tempoTimeEntities += tempoMS;
         for (auto& [index, enemy] : enemies) {
-            enemy->updateTempo(getPlayerPosition());
+            enemy->updateTempo(getPlayerPosition(), tempoMS);
         }
     }
 }

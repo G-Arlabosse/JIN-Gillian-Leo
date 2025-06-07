@@ -16,7 +16,7 @@ Entity::Entity(const b2WorldId& worldId, float pos_x, float pos_y, int hp, b2Vec
 	levelMediator{ levelMediator }
 {
 	hurtbox->setType(b2_dynamicBody); //kinematic body a terme ?
-	hurtbox->setLinearDamping(3);
+	hurtbox->setLinearDamping(5);
 	texture_handler->setScale(3);
 
 	//float scaleX = 2 * hurtboxSize.x / texture->getSize().x;
@@ -30,7 +30,7 @@ Entity::Entity(const b2WorldId& worldId, float pos_x, float pos_y, int hp, b2Vec
 
 void Entity::attack(b2Vec2 direction, float damage) {
 	b2Rot rot = b2ComputeRotationBetweenUnitVectors({1,0}, direction);
-	b2Vec2 position = hurtbox->getPosition() + direction * sizeMultiplier;
+	b2Vec2 position = hurtbox->getPosition() + direction * 26;
 	hitbox->wake(position, rot);
 }
 
@@ -53,10 +53,6 @@ void Entity::renderEntity(sf::RenderWindow *window) {
 		hurtbox->draw(window, sf::Color::Red);
 		hitbox->draw(window, sf::Color::Yellow);
 	}
-}
-
-void Entity::move(float x, float y) {
-	//hitbox.move(x, y);
 }
 
 void Entity::updateTempo() {
