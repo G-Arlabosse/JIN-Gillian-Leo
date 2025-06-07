@@ -25,7 +25,7 @@ const int subStepCount = 8;
 class LevelManager: public LevelMediator {
 public:
 	//Constructor
-	explicit LevelManager();
+	explicit LevelManager(sf::RenderWindow* window);
 
 	void notifyDamage(int32_t hurtboxId, int damage) override;
 	void notifyDeath(int32_t hurtboxId) override;
@@ -46,7 +46,7 @@ public:
 	void updateTempo(long clock);
 
 	//Updates the player, should be moved in player.cpp ?
-	void updatePlayer(b2WorldId& worldId);
+	//void updatePlayer(b2WorldId& worldId);
 
 	//GETTER: returns true if in the beat hit window
 	bool isInTempo();

@@ -4,7 +4,6 @@
 WorldManager::WorldManager() :
     worldDef{ b2DefaultWorldDef() },
     worldId{ b2CreateWorld(&worldDef) },
-    levelManager{ std::make_unique<LevelManager>() },
     window{ std::make_unique<sf::RenderWindow>(sf::VideoMode({ 1000, 700 }), "JinProject") },
     camera { std::make_unique<sf::View>() }
 {
@@ -13,6 +12,7 @@ WorldManager::WorldManager() :
     camera->setSize({ 1000, 700 });
     window->setView(*camera);
     b2World_SetGravity(worldId, b2Vec2{ 0, 0 });
+    levelManager = std::make_unique<LevelManager>(window.get());
 }
 
 void WorldManager::renderWorld() {

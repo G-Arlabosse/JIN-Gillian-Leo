@@ -31,27 +31,31 @@ void Player::updateTempo() {
 }
 
 void Player::update(long clock) {
-	updateInput();
 	Entity::update(clock);
 	if (actionLocked && clock > actionLockClock + 300) {
 		unlockAction();
 	}
 }
 
-void Player::updateInput() {
+b2Vec2 getMousePosition(const sf::RenderWindow* window) {
+	auto posMouse = sf::Mouse::getPosition(*window);
+	auto viewSize = window->getView().getSize();
+	auto posCamera = window->getView().getCenter();
+	return b2Vec2(posMouse.x - viewSize.x / 2 + posCamera.x, posMouse.y - viewSize.y / 2 + posCamera.y);
+}
+
+void Player::updateInput(const sf::RenderWindow *window) {
 	b2Vec2 offset = b2Vec2_zero;
 	bool movement = false;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Right)) {
-		attack(b2Vec2(1, 0), 1);
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+		auto mousePos = getMousePosition(window);
+		auto direction = b2Normalize(b2Sub(mousePos, getPosition()));
+		attack(direction, 1);
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Left)) {
-		attack(b2Vec2(-1, 0), 1);
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Up)) {
-		attack(b2Vec2(0, -1), 1);
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Down)) {
-		attack(b2Vec2(0, 1), 1);
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
+		if (lockAction()) {
+			shield();
+		}
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) {
 		offset += {0, -1};

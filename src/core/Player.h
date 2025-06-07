@@ -10,7 +10,7 @@ public:
 	void attack(b2Vec2 direction, float damage);
 	void updateTempo() override;
 	void update(long clock);
-	void updateInput();
+	void updateInput(const sf::RenderWindow *window);
 private:
 	bool lockAction();
 	void unlockAction();

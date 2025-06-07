@@ -2,9 +2,10 @@
 #include <iostream>
 #include <fstream>
 
-LevelManager::LevelManager():
+LevelManager::LevelManager(sf::RenderWindow *window):
     tempoTimePlayer{ std::clock() },
-    levelGraph{ std::make_unique<Graph>() }
+    levelGraph{ std::make_unique<Graph>() },
+    window{ window }
 {
     tempoTimeEntities = tempoTimePlayer;
 
@@ -63,7 +64,6 @@ void LevelManager::createWall(b2WorldId& worldId, float pos_x, float pos_y, bool
 void LevelManager::updateLevel(b2WorldId& worldId) {
     long clock = std::clock();
 
-    updatePlayer(worldId);
     b2World_Step(worldId, timeStep, subStepCount);
     updateAll(clock);
     updateTempo(clock);
@@ -73,14 +73,10 @@ void LevelManager::updateAll(long clock) {
     for (const auto& [index, enemy] : enemies) {
         enemy->update(clock);
     }
+    player->updateInput(window);
     player->update(clock);
 }
 
-
-
-void LevelManager::updatePlayer(b2WorldId& worldId) {
-    
-}
 
 void LevelManager::updateTempo(long clock) {
 

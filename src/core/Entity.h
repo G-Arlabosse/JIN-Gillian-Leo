@@ -29,7 +29,9 @@ public:
 	Attacks in the given direction
 	Wakes the hitbox
 	*/
-	void attack(b2Vec2 direction, float damage); //Should remove worldId
+	void attack(b2Vec2 direction, float damage);
+
+	void shield();
 
 	//GETTER: returns the position
 	b2Vec2 getPosition();
@@ -58,4 +60,9 @@ protected:
 	bool renderDebugBoxes;
     std::unique_ptr<TextureHandler> texture_handler;
 	LevelMediator* levelMediator;
+
+	bool shieldUp;
+	long shieldClock;
+
+	sf::Color hurtboxColor = sf::Color::Red;
 };
