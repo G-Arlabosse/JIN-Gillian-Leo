@@ -18,7 +18,7 @@ public:
 		LevelMediator* levelMediator, bool renderDebugBoxes);
 	
 	//Destructor
-	virtual ~Entity() = default;
+	virtual ~Entity()=default;
 	void destroy();
 
 	//Render the entity with its Texture Handler

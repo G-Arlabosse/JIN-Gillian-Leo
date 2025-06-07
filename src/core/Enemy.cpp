@@ -3,6 +3,7 @@
 #include "Constants.h"
 
 b2Vec2 enemyHitbox{ 13, 13 };
+const float range = 60;
 
 const enum patternTypes {
 	ACTION, WAIT
@@ -19,7 +20,8 @@ Enemy::Enemy(const b2WorldId& worldId, float pos_x, float pos_y,
 		levelMediator, renderDebugBoxes),
 	levelGraph{ levelGraph },
 	pathAdvancement{ 0 },
-	pathLimit{ 0 }
+	pathLimit{ 0 },
+	patternAdvancement{ 0 }
 {}
 
 void Enemy::move(b2Vec2& target, float tempoMS) {
@@ -35,7 +37,7 @@ void Enemy::move(b2Vec2& target, float tempoMS) {
 
 void Enemy::updateTempo() {}
 
-b2Vec2 Enemy::getMoveCoords(b2Vec2& playerPos) {
+rayCastResult Enemy::getActionType(b2Vec2& playerPos) {
 	auto worldId = hurtbox->getWorldId();
 	auto origin = hurtbox->getPosition();
 	auto translation = b2Sub(playerPos, origin);
@@ -49,29 +51,23 @@ b2Vec2 Enemy::getMoveCoords(b2Vec2& playerPos) {
 	if (raycastResult.hit) {
 		uint16_t entityFilter = b2Shape_GetFilter(raycastResult.shapeId).categoryBits;
 		if (entityFilter == entityType::PLAYER_HURTBOX) {
-			//move toward player
+			float distance = b2Distance(origin, playerPos);
 			pathDebug = sf::VertexArray(sf::PrimitiveType::LineStrip, 2);
 			pathDebug[0].position = sf::Vector2(origin.x, origin.y);
 			pathDebug[1].position = sf::Vector2(raycastResult.point.x, raycastResult.point.y);
-			pathDebug[0].color = sf::Color::Cyan;
-			pathDebug[1].color = sf::Color::Cyan;
-			auto pos = getPosition();
-			auto target = b2Normalize(b2Sub(playerPos, pos)) * sizeMultiplier + pos;
-			pathLimit = 0;
-			return target;
+			if (distance < range) {
+				pathDebug[0].color = sf::Color::Green;
+				pathDebug[1].color = sf::Color::Green;
+				return ATTACK;
+			}
+			else {
+				pathDebug[0].color = sf::Color::Cyan;
+				pathDebug[1].color = sf::Color::Cyan;
+				return MOVE_PLAYER;
+			}
 		}
 		else if (entityFilter == entityType::WALL) {
-			//Testing if half of the path has been traveled so far.
-			if (pathAdvancement >= pathLimit) {
-				auto my_pos = getPosition();
-				path = levelGraph->getPath(my_pos, playerPos);
-				pathDebug = levelGraph->getPathRender(path);
-				pathAdvancement = 0;
-				pathLimit = path.size() / 2;
-			}
-			pathAdvancement++;
-			return path[pathAdvancement] * sizeMultiplier;
-			
+			return MOVE_WALL;
 		}
 		else {
 			pathDebug = sf::VertexArray(sf::PrimitiveType::LineStrip, 2);
@@ -80,14 +76,48 @@ b2Vec2 Enemy::getMoveCoords(b2Vec2& playerPos) {
 			pathDebug[0].color = sf::Color::Red;
 			pathDebug[1].color = sf::Color::Red;
 			std::cout << "Touching wrong entityType: " << entityFilter << std::endl;
-			return getPosition();
+			return ALERT;
 		}
 	}
 }
 
+b2Vec2 Enemy::getMoveCoords(b2Vec2& playerPos, rayCastResult result) {
+	auto origin = hurtbox->getPosition();
+	if (result == MOVE_PLAYER) {
+		//move toward player
+		auto target = b2Normalize(b2Sub(playerPos, origin)) * sizeMultiplier + origin;
+		pathLimit = 0;
+		return target;
+	}
+	else if (result == MOVE_WALL) {
+			//Testing if half of the path has been traveled so far.
+			if (pathAdvancement >= pathLimit) {
+				path = levelGraph->getPath(origin, playerPos);
+				pathDebug = levelGraph->getPathRender(path);
+				pathAdvancement = 0;
+				pathLimit = path.size() / 2;
+			}
+			pathAdvancement++;
+			return path[pathAdvancement] * sizeMultiplier;
+			
+	}
+	else if (result == ATTACK) {
+		auto direction = b2Normalize(b2Sub(playerPos, origin));
+		attack(direction, 1);
+		return getPosition();
+	}
+	else {
+		return getPosition();
+	}
+}
+
 void Enemy::updateTempo(b2Vec2 playerPos, float tempoMS) {
-	auto target = getMoveCoords(playerPos);
-	move(target, tempoMS);
+	if (movementPattern[patternAdvancement] == ACTION) {
+		auto result = getActionType(playerPos);
+		auto target = getMoveCoords(playerPos, result);
+		move(target, tempoMS);
+	}
+	patternAdvancement = (patternAdvancement + 1) % (movementPattern.size());
 }
 
 

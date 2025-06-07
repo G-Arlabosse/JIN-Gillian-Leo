@@ -70,7 +70,6 @@ void Player::updateInput() {
 		movement = true;
 	}
 	if (movement && !actionLocked) {
-		std::cout << "Move\n";
 		auto target = b2Normalize(offset) * sizeMultiplier;
 		move(target);
 	}

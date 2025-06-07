@@ -4,6 +4,10 @@
 #include "Player.h"
 #include "Graph.h"
 
+const enum rayCastResult {
+	MOVE_PLAYER, MOVE_WALL, ATTACK, ALERT
+};
+
 class Enemy : public Entity {
 public:
 	//Constructor
@@ -27,11 +31,14 @@ public:
 	When the MOVE_ACTION is called
 	Returns the direction towards the enemy moves
 	*/ 
-	b2Vec2 getMoveCoords(b2Vec2& playerPos);
+	b2Vec2 getMoveCoords(b2Vec2& playerPos, rayCastResult result);
+	rayCastResult getActionType(b2Vec2& playerPos);
+
 private:
 	Graph* levelGraph;
 	sf::VertexArray pathDebug;
 	std::vector<b2Vec2> path;
 	int pathAdvancement;
 	int pathLimit;
+	int patternAdvancement;
 };

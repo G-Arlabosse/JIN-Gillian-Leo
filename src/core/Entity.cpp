@@ -30,11 +30,9 @@ Entity::Entity(const b2WorldId& worldId, float pos_x, float pos_y, int hp, b2Vec
 
 void Entity::attack(b2Vec2 direction, float damage) {
 	b2Rot rot = b2ComputeRotationBetweenUnitVectors({1,0}, direction);
-	b2Vec2 position = hurtbox->getPosition() + direction * 26;
+	b2Vec2 position = hurtbox->getPosition() + direction * sizeMultiplier;
 	hitbox->wake(position, rot);
 }
-
-
 
 void Entity::renderEntity(sf::RenderWindow *window) {
 	// sf::Vector2 size = sprite.getTexture().getSize();

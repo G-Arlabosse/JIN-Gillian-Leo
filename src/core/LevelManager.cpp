@@ -24,17 +24,16 @@ void LevelManager::notifyDamage(int32_t hurtboxIndex, int damage) {
     }
     else if (enemies.contains(hurtboxIndex)) {
         enemies[hurtboxIndex]->updateDamage(damage);
-        std::cout << "touched entity n" << hurtboxIndex << std::endl;
         return;
     }
     else {
-        //terminate();
+        terminate();
     }
 }
 
 void LevelManager::notifyDeath(int32_t hurtboxIndex) {
     if (hurtboxIndex == player->getShapeIndex()) {
-        //Notify game finished
+        std::cout << "Game Finished !\n";
         return;
     }
     else if (enemies.contains(hurtboxIndex)) {
