@@ -62,11 +62,7 @@ protected:
 	int maxHp;
 	int hp;
 	bool renderDebugBoxes;
-    std::unique_ptr<TextureHandler> texture_handler;
-
-	float sprite_scale;
-  	float sprite_middle_x;
-  	float sprite_middle_y;
+  std::unique_ptr<TextureHandler> texture_handler;
 
 	int patternState;
 	LevelMediator* levelMediator;

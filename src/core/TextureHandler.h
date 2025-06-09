@@ -15,11 +15,12 @@ class TextureHandler {
   float scale;
   sf::Vector2i frame_pos;
   std::vector<float> animation_speeds;
+  float speed_mult;
   int current_animation;
   long last_frame_time;
  public:
 	//Constructor
-	TextureHandler(const sf::Texture& t, std::vector<int>, int tempo);
+	TextureHandler(const sf::Texture& t, std::vector<int>, float scale, int tempo, float speed_mult);
   
 	//Unused for now, will change the animation type later on
 	void changeAnimation(int animation_number);
@@ -31,10 +32,10 @@ class TextureHandler {
 	void update(long clock);
 
 	//GETTER: returns the texture's width
-  	int getSize_x() const;
+  int getSize_x() const;
 
 	//GETTER: returns the texture's height
-  	int getSize_y() const;
+  int getSize_y() const;
 	
 	//GETTER: returns the texture's scale
 	float getScale() const;
@@ -45,4 +46,7 @@ class TextureHandler {
 	//SETTER: sets the scale of the sprite
 	void setScale(float s);
 	//TODO-Replace with a render(sf::RenderWindow *window) method ?
+
+	// Draws the current state of the texture centered at (pos_x, pos_y)
+	void draw(sf::RenderWindow* window, float pos_x, float pos_y);
 };
