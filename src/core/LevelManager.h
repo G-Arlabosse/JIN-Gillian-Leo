@@ -4,12 +4,14 @@
 #include <vector>
 #include "box2d/types.h"
 #include <memory>
-#include "Enemy.h"
-#include "Player.h"
+
+#include "Enemy.h"	//MUST CHANGE ?
+#include "Player.h" //MUST CHANGE ?
 #include "Wall.h"
 #include <queue>
 #include <stack>
 #include "Graph.h"
+#include "LevelMediator.h"
 
 
 
@@ -20,41 +22,58 @@ const float timeStep = 1 / 60.0f;
 const int subStepCount = 8;
 
 //
-class LevelManager {
+class LevelManager: public LevelMediator {
 public:
+	//Constructor
 	explicit LevelManager();
 
-	//Graph related
-	std::vector<b2Vec2> reconstructPath(const std::map<int, int>& cameFrom, int current_id);
-	std::vector<b2Vec2> getPath(b2Vec2 &start, b2Vec2 &goal);
-	void loadLevel(b2WorldId& worldId, int levelId);
+	void notifyDamage(int32_t hurtboxId, int damage) override;
+	void notifyDeath(int32_t hurtboxId) override;
 
-	//Updates
+	// Loads the level with the given name inside worldId
+  void loadLevel(b2WorldId& worldId, const std::string& level_name);
+
+  // Loads the first level inside worldId
+  void loadFirstLevel(b2WorldId& worldId);
+
+	/*
+	Updates the level
+	Calculates if the beat hits
+	*/
 	void updateLevel(b2WorldId &worldId);
 
+	//Updates all elements in the level each frame
 	void updateAll(long clock);
+
+	//Updates all elements when the beat hits
 	void updateTempo(long clock);
+
+	//Updates the player, should be moved in player.cpp ?
 	void updatePlayer(b2WorldId& worldId);
 
+	//GETTER: returns true if in the beat hit window
 	bool isInTempo();
 
-	//Render
+	//Renders all elements of the level
 	void renderEntities(sf::RenderWindow* window);
 
-	//Creation
+	//Adds a wall in the level, usually called by loadLevel
 	void createWall(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox);
+
+	//Adds the player in the level, usually called by loadLevel
 	void createPlayer(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox);
+
+	//Adds an enemy in the level, usually called by loadLevel
 	void createEnemy(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox);
 
+	//GETTER: returns the player's position
 	b2Vec2 getPlayerPosition();
 	
 private:
 	std::unique_ptr<Graph> levelGraph;
-	//std::map<int, struct level> levels;
-	void renderPath(std::vector<b2Vec2> path);
 	sf::VertexArray path_render;
 
-	std::vector<std::unique_ptr<Enemy>> enemies;
+	std::map<int32_t,std::unique_ptr<Enemy>> enemies;
 	std::unique_ptr<Player> player;
 	std::vector<std::unique_ptr<Wall>> walls;
 
