@@ -1,8 +1,9 @@
 @startuml
 
 abstract	Entity{
-{field} 
-{method}
+{field} 	- hp : int
+{field}		- levelMediator
+{method}	+ recieveDamage(damage)
 }
 
 class		Player{
@@ -46,8 +47,29 @@ class		GameManager{
 }
 
 class		LevelManager{
-{field} 
-{method}
+{field} 	- enemies: map<int32_t, enemy>
+{field}		- walls: vector<Wall>
+{field}		- player: Player
+{method}	+ notify(sender, event)
+{method}	+ hitOnEntity(shapeId, damage)
+{method}	+ deathOf(shapeId)
+}
+
+interface 	LevelMediator{
+{method}	+ notifyDamage(int32_t, damage)
+{method}	+ notifyDeath(int32_t)
+}
+
+class		UpdateNotifier{
+{field}		- UpdateListeners: vector<tempoListener*>
+{method}	+ addUpdateListener(tempoListener*)
+{method}	+ notifyTempoUpdate()
+{method}	+ notifyUpdate()
+}
+
+interface	UpdateListener{
+{method}	+ update()
+{method}	+ updateTempo()
 }
 
 class		Graph{
@@ -56,8 +78,8 @@ class		Graph{
 }
 
 class		Hitbox{
-{field} 
-{method}
+{field} 	- levelMediador
+{method}	+ notifyHit(shapeId)
 }
 
 class		Hurtbox{
@@ -71,32 +93,39 @@ class		Projectile{
 }
 
 class		TextureHandler{
-{field}		textures: map<string, Texture>
-{method}	getTexture(string name)
+{field}		- texture
+{method}	+ update(clock)
 }
+
 
 Player ..|> Entity
 Enemy ..|> Entity
 Corn ..|> Enemy
 Milk ..|> Enemy
 Carrot ..|> Enemy
+
+GameManager *-- WorldManager
 WorldManager*-- LevelManager
 LevelManager *-- Graph
 Entity --> Graph
-LevelManager *-- Entity
+
+LevelManager *-- Enemy
+LevelManager *-- Player
 LevelManager *-- Wall
-GameManager *-- WorldManager
-' vvv Modifications éventuelles vvv
+
+Hitbox --> LevelMediator
+Entity --> LevelMediator
+LevelManager ..|> LevelMediator
+
 Entity *-- Hitbox
-Entity *-- Hurtbox
-Hurtbox o-- Entity
-' vvv Implémenter Médiator ? vvv
-Hitbox <--> Hurtbox
 Projectile *-- Hitbox
-Wall *-- Hitbox
-Entity --> TextureHandler
-Wall --> TextureHandler
-Projectile --> TextureHandler
+Wall *-- Hurtbox
+Entity *-- Hurtbox
+
+Entity *-- TextureHandler
+Wall *--> TextureHandler
+Projectile *--> TextureHandler
+
 ' vvv Changer pour un Prototype pattern vvv
 Corn *-- Projectile
 
