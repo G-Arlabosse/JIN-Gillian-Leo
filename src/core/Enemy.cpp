@@ -15,7 +15,7 @@ Enemy::Enemy(const b2WorldId& worldId, float pos_x, float pos_y,
 	sf::Texture* texture, Graph* levelGraph,
 	LevelMediator* levelMediator, bool renderDebugBoxes) :
 	Entity(worldId, pos_x, pos_y, 3, enemyHitbox, texture,
-		entityType::ENEMY_HURTBOX, entityType::WALL | entityType::PLAYER_HITBOX | entityType::PLAYER_HURTBOX,
+		entityType::ENEMY_HURTBOX, entityType::WALL | entityType::PLAYER_HITBOX | entityType::PLAYER_HURTBOX | entityType::ENEMY_HURTBOX,
 		entityType::ENEMY_HITBOX, entityType::PLAYER_HURTBOX,
 		levelMediator, renderDebugBoxes),
 	levelGraph{ levelGraph },
