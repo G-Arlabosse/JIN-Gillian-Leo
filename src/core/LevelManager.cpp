@@ -18,13 +18,13 @@ LevelManager::LevelManager(sf::RenderWindow *window):
     }
 }
 
-void LevelManager::notifyDamage(int32_t hurtboxIndex, int damage) {
+void LevelManager::notifyDamage(int32_t hurtboxIndex, int damage, b2BodyId& hitboxId) {
     if (hurtboxIndex == player->getShapeIndex()) {
-        player->updateDamage(damage);
+        player->updateDamage(damage, hitboxId);
         return;
     }
     else if (enemies.contains(hurtboxIndex)) {
-        enemies[hurtboxIndex]->updateDamage(damage);
+        enemies[hurtboxIndex]->updateDamage(damage, hitboxId);
         return;
     }
     else {
@@ -73,32 +73,34 @@ void LevelManager::updateAll(long clock) {
     for (const auto& [index, enemy] : enemies) {
         enemy->update(clock);
     }
-    player->updateInput(window);
-    player->update(clock);
+    player->update(clock, window, inTempo);
 }
 
-
+//               #####-=============-#####
+//-|-------------|----|------|------|----|-------------------------------------------------------
+// 0            T-D  T-D'    T     T+D' T+D
 void LevelManager::updateTempo(long clock) {
-
-    if (clock >= (tempoTimePlayer - delta2) && clock <= (tempoTimePlayer + delta2)) {
+    if (clock > tempoTimePlayer + delta) {
+        tempoTimePlayer += tempoMS;
+        inTempo = false; 
+        player->notifyEndTempo();
+    }
+    else if (clock > (tempoTimePlayer - delta2) && clock < (tempoTimePlayer + delta2)) {
         inTempo = true;
         beatIndicator.setFillColor(sf::Color::Green);
     }
-    else if (clock >= (tempoTimePlayer - delta) && clock <= (tempoTimePlayer + delta)) {
+    else if (clock > (tempoTimePlayer - delta) && clock > (tempoTimePlayer + delta2)) {
         inTempo = true;
         beatIndicator.setFillColor(sf::Color::Red);
     }
     else {
-        if (clock > (tempoTimePlayer - delta)) {
-            tempoTimePlayer += tempoMS;
-        }
-        beatIndicator.setFillColor(sf::Color::Red);
         inTempo = false;
     }
 
+
     if (clock > tempoTimeEntities) {
         tempoTimeEntities += tempoMS;
-        for (auto& [index, enemy] : enemies) {
+        for (const auto& [index, enemy] : enemies) {
             enemy->updateTempo(getPlayerPosition(), tempoMS);
         }
     }

@@ -8,13 +8,15 @@ public:
 		sf::Texture* texture, LevelMediator *levelMediator, bool renderDebugBoxes);
 	void move(b2Vec2& target);
 	void attack(b2Vec2 direction, float damage);
-	void updateTempo() override;
-	void update(long clock);
-	void updateInput(const sf::RenderWindow *window);
+	void update(long clock, const sf::RenderWindow* window, bool inPlayerTempoWindow);
+	bool updateInput(const sf::RenderWindow *window);
+	void notifyEndTempo();
 private:
 	bool lockAction();
 	void unlockAction();
 
 	bool actionLocked;
 	long actionLockClock;
+	int tempoStreak;
+	bool hasMovedTempo;
 };

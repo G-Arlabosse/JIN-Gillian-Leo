@@ -36,28 +36,39 @@ class		Wall{
 {method}
 }
 
-class		WorldManager{
-{field} 
+class 		Door{
+{field}		
 {method}
 }
 
+class		WorldManager{
+{field} 	- level: std::unique_ptr<LevelManager>
+{method}	+ notifyTransition(enum direction)
+}
+LevelManager *-- Door
+Door --> WorldMediator
+WorldManager ..|> WorldMediator
+
 class		GameManager{
-{field} 
-{method}
+{field} 	
+{method}	
 }
 
 class		LevelManager{
 {field} 	- enemies: map<int32_t, enemy>
 {field}		- walls: vector<Wall>
 {field}		- player: Player
-{method}	+ notify(sender, event)
-{method}	+ hitOnEntity(shapeId, damage)
-{method}	+ deathOf(shapeId)
+{method}	+ notifyDamage(int32_t, damage)
+{method}	+ notifyDeath(int32_t)
 }
 
 interface 	LevelMediator{
 {method}	+ notifyDamage(int32_t, damage)
 {method}	+ notifyDeath(int32_t)
+}
+
+interface	WorldMediator{
+{method}	+ notifyTransition(enum direction)
 }
 
 class		UpdateNotifier{

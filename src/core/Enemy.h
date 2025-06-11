@@ -18,8 +18,6 @@ public:
 	//Centralize later in Entity ?
 	void move(b2Vec2& target, float tempoMS);
 
-	void updateTempo() override;
-
 	/*Another updateTempo to get the playerPosition
 	Should try to do it in another way ?*/
 	void updateTempo(b2Vec2 playerPos, float tempoMS);

@@ -15,9 +15,9 @@
 
 
 
-const int tempoMS = 600;
-const int delta = 50;
-const int delta2 = 30;
+const int tempoMS = 500;
+const int delta = 100;
+const int delta2 = 50;
 const float timeStep = 1 / 60.0f;
 const int subStepCount = 8;
 
@@ -27,7 +27,7 @@ public:
 	//Constructor
 	explicit LevelManager(sf::RenderWindow* window);
 
-	void notifyDamage(int32_t hurtboxId, int damage) override;
+	void notifyDamage(int32_t hurtboxId, int damage, b2BodyId& hitboxId) override;
 	void notifyDeath(int32_t hurtboxId) override;
 
 	//Loads the level with the given id inside worldId

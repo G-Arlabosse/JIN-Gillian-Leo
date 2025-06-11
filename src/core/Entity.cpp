@@ -89,7 +89,7 @@ b2Vec2 Entity::getPosition() {
 	return hurtbox->getPosition();
 }
 
-void Entity::updateDamage(int damage) {
+void Entity::updateDamage(int damage, b2BodyId& hitboxId) {
 	if (shieldUp) { 
 		std::cout << "PARRY !\n";
 		return; 

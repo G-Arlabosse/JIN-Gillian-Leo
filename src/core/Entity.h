@@ -40,13 +40,13 @@ public:
 	int32_t getShapeIndex();
 
 	//Updates the entity when the beat hits, called by LevelManager
-	virtual void updateTempo() = 0;
+	virtual void updateTempo();
 
 	//Updates the entity each frame, called by LevelManager
 	void update(long clock);
 
 	//Updates the entity hit points, called by LevelManager
-	void updateDamage(int damage);
+	void updateDamage(int damage, b2BodyId& hitboxId);
 
 	
 

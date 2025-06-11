@@ -9,15 +9,14 @@ Player::Player(const b2WorldId& worldId, float pos_x, float pos_y, sf::Texture* 
 		entityType::PLAYER_HURTBOX, entityType::WALL | entityType::ENEMY_HITBOX | entityType::ENEMY_HURTBOX | entityType::ENEMY_RAYCAST,
 		entityType::PLAYER_HITBOX, entityType::ENEMY_HURTBOX,
 		levelMediator, renderDebugBoxes),
-	actionLocked{ false }
+	actionLocked{ false },
+	tempoStreak{ 0 }
 {
-	hurtbox->setLinearDamping(50);
+	//hurtbox->setLinearDamping(50);
 }
 
 void Player::attack(b2Vec2 direction, float damage) {
-	if (lockAction()) {
-		Entity::attack(direction, damage);
-	}
+	Entity::attack(direction, damage);
 }
 
 void Player::move(b2Vec2& target) {
@@ -26,11 +25,15 @@ void Player::move(b2Vec2& target) {
 	}
 }
 
-void Player::updateTempo() {
-	return;
-}
-
-void Player::update(long clock) {
+void Player::update(long clock, const sf::RenderWindow* window, bool inPlayerTempoWindow) {
+	if (updateInput(window)) {
+		if (inPlayerTempoWindow) { 
+			tempoStreak++;
+			hasMovedTempo = true;
+		}
+		else { tempoStreak = 0; }
+		std::cout << tempoStreak << std::endl;
+	}
 	Entity::update(clock);
 	if (actionLocked && clock > actionLockClock + 300) {
 		unlockAction();
@@ -44,17 +47,21 @@ b2Vec2 getMousePosition(const sf::RenderWindow* window) {
 	return b2Vec2(posMouse.x - viewSize.x / 2 + posCamera.x, posMouse.y - viewSize.y / 2 + posCamera.y);
 }
 
-void Player::updateInput(const sf::RenderWindow *window) {
+bool Player::updateInput(const sf::RenderWindow *window) {
 	b2Vec2 offset = b2Vec2_zero;
 	bool movement = false;
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-		auto mousePos = getMousePosition(window);
-		auto direction = b2Normalize(b2Sub(mousePos, getPosition()));
-		attack(direction, 1);
+		if (lockAction()) {
+			auto mousePos = getMousePosition(window);
+			auto direction = b2Normalize(b2Sub(mousePos, getPosition()));
+			attack(direction, 0);
+			return true;
+		}
 	}
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
 		if (lockAction()) {
 			shield();
+			return true;
 		}
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) {
@@ -76,8 +83,19 @@ void Player::updateInput(const sf::RenderWindow *window) {
 	if (movement && !actionLocked) {
 		auto target = b2Normalize(offset) * sizeMultiplier;
 		move(target);
+		tempoStreak = 0;
+		return false;
 	}
+	return false;
+}
 
+void Player::notifyEndTempo()
+{
+	if (!hasMovedTempo && tempoStreak > 0) {
+		tempoStreak = 0;
+		std::cout << "Lost streak !\n";
+	}
+	hasMovedTempo = false;
 }
 
 bool Player::lockAction() {

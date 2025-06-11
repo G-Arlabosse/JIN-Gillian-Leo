@@ -35,8 +35,6 @@ void Enemy::move(b2Vec2& target, float tempoMS) {
 	b2Body_SetLinearVelocity(bodyId, direction * v);
 }
 
-void Enemy::updateTempo() {}
-
 rayCastResult Enemy::getActionType(b2Vec2& playerPos) {
 	auto worldId = hurtbox->getWorldId();
 	auto origin = hurtbox->getPosition();
