@@ -12,6 +12,7 @@ Hurtbox::Hurtbox(const b2WorldId &worldId, float pos_x, float pos_y, const b2Vec
 
     shapeDef = std::make_unique<b2ShapeDef>(b2DefaultShapeDef());
     shapeDef->filter.categoryBits = categoryBits;
+    shapeDef->material.friction = 0;
     shapeDef->filter.maskBits = maskBits;
     shapeDef->enableSensorEvents = true;
 
@@ -61,4 +62,8 @@ b2WorldId Hurtbox::getWorldId() {
 
 b2ShapeId Hurtbox::getShapeId() {
     return *shapeId;
+}
+
+b2BodyId Hurtbox::getBodyId() {
+    return *id;
 }

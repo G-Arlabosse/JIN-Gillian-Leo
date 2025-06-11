@@ -2,11 +2,12 @@
 #include <iostream>
 #include <fstream>
 
-LevelManager::LevelManager(WorldNotifier *wn):
+LevelManager::LevelManager(WorldNotifier *wn, sf::RenderWindow *window):
 
     levelGraph{std::make_unique<Graph>()},
     world_notifier{wn},
-    tempoTimePlayer{ std::clock() }
+    tempoTimePlayer{ std::clock() },
+    window{ window }    
 {
     tempoTimeEntities = tempoTimePlayer;
 
@@ -19,24 +20,23 @@ LevelManager::LevelManager(WorldNotifier *wn):
     }
 }
 
-void LevelManager::notifyDamage(int32_t hurtboxIndex, int damage) {
+void LevelManager::notifyDamage(int32_t hurtboxIndex, int damage, b2BodyId& hitboxId) {
     if (hurtboxIndex == player->getShapeIndex()) {
-        player->updateDamage(damage);
+        player->updateDamage(damage, hitboxId);
         return;
     }
     else if (enemies.contains(hurtboxIndex)) {
-        enemies[hurtboxIndex]->updateDamage(damage);
-        std::cout << "touched entity n" << hurtboxIndex << std::endl;
+        enemies[hurtboxIndex]->updateDamage(damage, hitboxId);
         return;
     }
     else {
-        //terminate();
+        terminate();
     }
 }
 
 void LevelManager::notifyDeath(int32_t hurtboxIndex) {
     if (hurtboxIndex == player->getShapeIndex()) {
-        //Notify game finished
+        std::cout << "Game Finished !\n";
         return;
     }
     else if (enemies.contains(hurtboxIndex)) {
@@ -70,52 +70,49 @@ void LevelManager::createTransition(b2WorldId& worldId, float pos_x, float pos_y
 void LevelManager::updateLevel(b2WorldId& worldId) {
     long clock = std::clock();
 
-    updatePlayer(worldId);
     b2World_Step(worldId, timeStep, subStepCount);
     updateAll(clock);
     updateTempo(clock);
 }
 
 void LevelManager::updateAll(long clock) {
-    for (const auto& [index, enemy] : enemies) {
-        enemy->update(clock);
+  for (const auto& [index, enemy] : enemies) {
+    enemy->update(clock);
+  }
+  for (const auto& transition : level_transitions) {
+    if (transition->checkCollision()) {
+      world_notifier->notifyTransition(transition->getDirection());
     }
-    for (const auto& transition : level_transitions) {
-      if (transition->checkCollision()) {
-        world_notifier->notifyTransition(transition->getDirection());
-      }
-    }
-    player->update(clock);
+  }
+  player->update(clock, window, inTempo);
 }
 
-
-
-void LevelManager::updatePlayer(b2WorldId& worldId) {
-    
-}
-
+//               #####-=============-#####
+//-|-------------|----|------|------|----|-------------------------------------------------------
+// 0            T-D  T-D'    T     T+D' T+D
 void LevelManager::updateTempo(long clock) {
-
-    if (clock >= (tempoTimePlayer - delta2) && clock <= (tempoTimePlayer + delta2)) {
+    if (clock > tempoTimePlayer + delta) {
+        tempoTimePlayer += tempoMS;
+        inTempo = false; 
+        player->notifyEndTempo();
+    }
+    else if (clock > (tempoTimePlayer - delta2) && clock < (tempoTimePlayer + delta2)) {
         inTempo = true;
         beatIndicator.setFillColor(sf::Color::Green);
     }
-    else if (clock >= (tempoTimePlayer - delta) && clock <= (tempoTimePlayer + delta)) {
+    else if (clock > (tempoTimePlayer - delta) && clock > (tempoTimePlayer + delta2)) {
         inTempo = true;
         beatIndicator.setFillColor(sf::Color::Red);
     }
     else {
-        if (clock > (tempoTimePlayer - delta)) {
-            tempoTimePlayer += tempoMS;
-        }
-        beatIndicator.setFillColor(sf::Color::Red);
         inTempo = false;
     }
 
+
     if (clock > tempoTimeEntities) {
         tempoTimeEntities += tempoMS;
-        for (auto& [index, enemy] : enemies) {
-            enemy->updateTempo(getPlayerPosition());
+        for (const auto& [index, enemy] : enemies) {
+            enemy->updateTempo(getPlayerPosition(), tempoMS);
         }
     }
 }

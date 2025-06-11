@@ -28,13 +28,9 @@ public:
 	Attacks in the given direction
 	Wakes the hitbox
 	*/
-	void attack(b2Vec2 direction, float damage); //Should remove worldId
+	void attack(b2Vec2 direction, float damage);
 
-	/*
-	-Entity ACTION lock must be free
-	Moves in the given direction
-	*/
-	virtual void move(float x, float y) = 0;
+	void shield();
 
 	//GETTER: returns the position
 	b2Vec2 getPosition();
@@ -43,13 +39,13 @@ public:
 	int32_t getShapeIndex();
 
 	//Updates the entity when the beat hits, called by LevelManager
-	virtual void updateTempo() = 0;
+	virtual void updateTempo();
 
 	//Updates the entity each frame, called by LevelManager
 	void update(long clock);
 
 	//Updates the entity hit points, called by LevelManager
-	void updateDamage(int damage);
+	void updateDamage(int damage, b2BodyId& hitboxId);
 
 	
 
@@ -65,4 +61,9 @@ protected:
 
 	int patternState;
 	LevelMediator* levelMediator;
+
+	bool shieldUp;
+	long shieldClock;
+
+	sf::Color hurtboxColor = sf::Color::Red;
 };

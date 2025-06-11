@@ -11,7 +11,8 @@ Hitbox::Hitbox(const b2WorldId& worldId, std::pair<float, float> pos,
   lifespan{lifespan},
   levelMediator{levelMediator}, 
   damage{damage},
-  texture_handler{std::make_unique<TextureHandler>(*texture, std::vector<int>{8}, 2, 600, 1.f)}
+  texture_handler{std::make_unique<TextureHandler>(*texture, std::vector<int>{8}, 2, 600, 1.f)},
+  activeHitbox{ false }
 {
     bodyDef = std::make_unique<b2BodyDef>(b2DefaultBodyDef());
     bodyDef->position = b2Vec2{ pos.first, pos.second };
@@ -41,7 +42,7 @@ bool Hitbox::entityTouched() {
     for (const auto& overlap : overlaps) {
         auto overlapIndex = overlap.index1;
         if (overlapIndex != 0 && b2Shape_IsValid(overlap)) {
-            levelMediator->notifyDamage(overlapIndex, damage);
+            levelMediator->notifyDamage(overlapIndex, damage, *id);
             touched = true;
         }
     }
@@ -116,4 +117,3 @@ bool Hitbox::updateHitbox(long clock) {
 bool Hitbox::isActive() {
   return activeHitbox;
 }
-

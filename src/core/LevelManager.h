@@ -17,9 +17,9 @@
 
 
 
-const int tempoMS = 600;
-const int delta = 50;
-const int delta2 = 30;
+const int tempoMS = 500;
+const int delta = 100;
+const int delta2 = 50;
 const float timeStep = 1 / 60.0f;
 const int subStepCount = 8;
 
@@ -27,9 +27,9 @@ const int subStepCount = 8;
 class LevelManager: public LevelMediator {
 public:
 	//Constructor
-	explicit LevelManager(WorldNotifier* wn);
+	explicit LevelManager(WorldNotifier* wn, sf::RenderWindow* window);
 
-	void notifyDamage(int32_t hurtboxId, int damage) override;
+	void notifyDamage(int32_t hurtboxId, int damage, b2BodyId& hitboxId) override;
 	void notifyDeath(int32_t hurtboxId) override;
 
 	// Turns a file to a playable map
@@ -55,7 +55,7 @@ public:
 	void updateTempo(long clock);
 
 	//Updates the player, should be moved in player.cpp ?
-	void updatePlayer(b2WorldId& worldId);
+	//void updatePlayer(b2WorldId& worldId);
 
 	//GETTER: returns true if in the beat hit window
 	bool isInTempo();

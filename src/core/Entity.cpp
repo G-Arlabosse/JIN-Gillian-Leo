@@ -30,20 +30,20 @@ void Entity::attack(b2Vec2 direction, float damage) {
 	hitbox->wake(position, rot);
 }
 
-
+void Entity::shield() {
+	shieldUp = true;
+	shieldClock = std::clock();
+	hurtboxColor = sf::Color::Blue;
+}
 
 void Entity::renderEntity(sf::RenderWindow *window) {  
 	b2Vec2 pos = hurtbox->getPosition();
 	texture_handler->draw(window, pos.x, pos.y);
 
 	if (renderDebugBoxes) {
-		hurtbox->draw(window, sf::Color::Red);
+		hurtbox->draw(window, hurtboxColor);
 		hitbox->draw(window, sf::Color::Yellow);
 	}
-}
-
-void Entity::move(float x, float y) {
-	//hitbox.move(x, y);
 }
 
 void Entity::updateTempo() {
@@ -55,6 +55,11 @@ void Entity::updateTempo() {
 }
 
 void Entity::update(long clock) {
+	if (clock > shieldClock + 200) {
+		shieldUp = false;
+		hurtboxColor = sf::Color::Red;
+	}
+
 	//Update its hitbox
 	hitbox->updateHitbox(clock);
 
@@ -70,7 +75,11 @@ b2Vec2 Entity::getPosition() {
 	return hurtbox->getPosition();
 }
 
-void Entity::updateDamage(int damage) {
+void Entity::updateDamage(int damage, b2BodyId& hitboxId) {
+	if (shieldUp) { 
+		std::cout << "PARRY !\n";
+		return; 
+	}
 	hp -= damage;
 	if (hp <= 0) {
 		levelMediator->notifyDeath(getShapeIndex());

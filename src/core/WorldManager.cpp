@@ -7,7 +7,6 @@ using namespace std::literals;
 WorldManager::WorldManager() :
     worldDef{ b2DefaultWorldDef() },
     worldId{ b2CreateWorld(&worldDef) },
-    levelManager{ std::make_unique<LevelManager>(this) },
     window{ std::make_unique<sf::RenderWindow>(sf::VideoMode({ 1000, 700 }), "JinProject") },
     camera { std::make_unique<sf::View>() }
 {
@@ -19,6 +18,7 @@ WorldManager::WorldManager() :
     map = makeMap();
     level_x = 1;
     level_y = 0;
+    levelManager = std::make_unique<LevelManager>(this, window.get());
 }
 
 void WorldManager::renderWorld() {

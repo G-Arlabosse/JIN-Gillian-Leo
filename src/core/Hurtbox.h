@@ -31,7 +31,7 @@ public:
 
 	//GETTER: returns the worldId in which the hurbox lives
 	b2WorldId getWorldId();
-
+	b2BodyId getBodyId();
 	b2ShapeId getShapeId();
 
 private:
