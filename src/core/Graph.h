@@ -52,5 +52,11 @@ public:
 	const void setWidth(int new_width);
 
 	//Inits the graph's height
-	const void setHeight(int new_height);
+  const void setHeight(int new_height);
+
+  // Returns the graph's width
+  const int getWidth();
+
+  // Returns the graph's height
+  const int getHeight();
 };

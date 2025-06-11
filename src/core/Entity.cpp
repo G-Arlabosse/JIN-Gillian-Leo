@@ -76,8 +76,3 @@ void Entity::updateDamage(int damage) {
 		levelMediator->notifyDeath(getShapeIndex());
 	}
 }
-
-void Entity::destroy() {
-	hitbox->destroy();
-	hurtbox->destroy();
-}

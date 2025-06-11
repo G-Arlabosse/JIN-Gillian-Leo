@@ -16,6 +16,10 @@ const void Graph::setHeight(int new_height) {
     height = new_height;
 }
 
+const int Graph::getWidth() { return width; }
+
+const int Graph::getHeight() { return height; }
+
 const void Graph::addNode(int x, int y) {
     int id = y * width + x;
     struct node node{id, x, y};

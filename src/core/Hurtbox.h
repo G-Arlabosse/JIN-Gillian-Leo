@@ -7,8 +7,8 @@ class Hurtbox {
 public:
 	//Constructor
 	Hurtbox(const b2WorldId &worldId, float pos_x, float pos_y, const b2Vec2 &hitboxSize, uint64_t categoryBits, uint64_t maskBits);
-	
-	void destroy();
+
+  ~Hurtbox() { b2DestroyBody(*id); };
 
 	//Draws the hitbox on the window if debugDraw was activated
 	void draw(sf::RenderWindow *window, sf::Color color) const;

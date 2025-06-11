@@ -6,9 +6,10 @@
 #include "Hitbox.h"
 #include "Player.h"
 #include "LevelManager.h"
+#include "WorldNotifier.h"
 #include <memory>
 
-class WorldManager {
+class WorldManager : public WorldNotifier {
 public:
 	explicit WorldManager();
 	void destroy();
@@ -16,7 +17,9 @@ public:
 	void updateWorld();
 	void startGame();
   std::vector<std::vector<std::string>> makeMap();
-  void changeLevel(std::string_view direction);
+  void changeLevel(direction dir);
+
+	void notifyTransition(direction dir) override;
 
 private:
 	//box2d World

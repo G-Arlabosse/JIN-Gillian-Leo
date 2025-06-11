@@ -19,7 +19,6 @@ public:
 	
 	//Destructor
 	virtual ~Entity() = default;
-	void destroy();
 
 	//Render the entity with its Texture Handler
 	void renderEntity(sf::RenderWindow *window);

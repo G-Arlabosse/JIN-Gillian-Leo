@@ -62,7 +62,3 @@ b2WorldId Hurtbox::getWorldId() {
 b2ShapeId Hurtbox::getShapeId() {
     return *shapeId;
 }
-
-void Hurtbox::destroy() {
-    b2Body_Disable(*id);
-}

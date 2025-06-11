@@ -7,7 +7,7 @@ using namespace std::literals;
 WorldManager::WorldManager() :
     worldDef{ b2DefaultWorldDef() },
     worldId{ b2CreateWorld(&worldDef) },
-    levelManager{ std::make_unique<LevelManager>() },
+    levelManager{ std::make_unique<LevelManager>(this) },
     window{ std::make_unique<sf::RenderWindow>(sf::VideoMode({ 1000, 700 }), "JinProject") },
     camera { std::make_unique<sf::View>() }
 {
@@ -17,7 +17,7 @@ WorldManager::WorldManager() :
     window->setView(*camera);
     b2World_SetGravity(worldId, b2Vec2{ 0, 0 });
     map = makeMap();
-    level_x = 0;
+    level_x = 1;
     level_y = 0;
 }
 
@@ -34,25 +34,24 @@ void WorldManager::updateWorld() {
 
 
 void WorldManager::startGame() {
-    levelManager->loadFirstLevel(worldId);
+  map = makeMap();
+  levelManager->loadFirstLevel(worldId);
 
-    while (window->isOpen()) {
-        while (const auto event = window->pollEvent()) {
-
-            if (event->is<sf::Event::Closed>()) {
-                window->close();
-                destroy();
-                return;
-            }
-        }
-
-
-        window->clear();
-        updateWorld();
-        renderWorld();
-        window->display();
+  while (window->isOpen()) {
+    while (const auto event = window->pollEvent()) {
+      if (event->is<sf::Event::Closed>()) {
+          window->close();
+          destroy();
+          return;
+      }
     }
-    destroy();
+
+    window->clear();
+    updateWorld();
+    renderWorld();
+    window->display();
+  }
+  destroy();
 }
 
 void WorldManager::destroy() {
@@ -60,18 +59,29 @@ void WorldManager::destroy() {
 }
 
 vector<vector<string>> WorldManager::makeMap() {
-  vector<vector<string>> map{{"TestStartRoom", "TestRoom1", "TestRoom2"}};
-  return map;
+  vector<vector<string>> test_map{
+      {"TestRoom1_big", "TestStartRoom", "TestRoom1", "TestRoom2"}};
+  return test_map;
 }
 
-void WorldManager::changeLevel(string_view direction) {
-  if (direction == "Up"sv) {
-    level_y--;
-  } else if (direction == "Down"sv) {
-    level_y++;
-  } else if (direction == "Left"sv) {
-    level_x--;
-  } else if (direction == "Right"sv) {
-    level_x++;
-  } 
+void WorldManager::changeLevel(direction dir) {
+  switch (dir) { 
+    case direction::UP:
+      level_y--;
+      break;
+    case direction::DOWN:
+      level_y++;
+      break;
+    case direction::LEFT:
+      level_x--;
+      break;
+    case direction::RIGHT:
+      level_x++;
+      break;
+    case direction::NONE:
+      break;
+  }
+  levelManager->loadLevel(worldId ,map[level_y][level_x], dir);
 }
+
+void WorldManager::notifyTransition(direction dir) { changeLevel(dir); }

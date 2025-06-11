@@ -11,8 +11,7 @@ public:
  Hitbox(const b2WorldId& worldId, std::pair<float, float> pos, std::pair<float, float> speed, const b2Vec2& hitboxSize,
 	 float damage, long lifespan, sf::Texture* texture, uint64_t categoryBits, uint64_t maskBits,
 		LevelMediator* levelMediator);
-	
-	void destroy();
+ ~Hitbox() { b2DestroyBody(*id); };
 	
 	//Draws the hitbox on the window if debugDraw was activated
 	void draw(sf::RenderWindow* window, sf::Color color);

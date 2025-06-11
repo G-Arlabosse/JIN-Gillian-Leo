@@ -12,6 +12,8 @@
 #include <stack>
 #include "Graph.h"
 #include "LevelMediator.h"
+#include "LevelTransition.h"
+#include "WorldNotifier.h"
 
 
 
@@ -25,13 +27,17 @@ const int subStepCount = 8;
 class LevelManager: public LevelMediator {
 public:
 	//Constructor
-	explicit LevelManager();
+	explicit LevelManager(WorldNotifier* wn);
 
 	void notifyDamage(int32_t hurtboxId, int damage) override;
 	void notifyDeath(int32_t hurtboxId) override;
 
+	// Turns a file to a playable map
+  void fileToMap(b2WorldId& worldId, const std::string& name);
+
+	void unloadLevel();
 	// Loads the level with the given name inside worldId
-  void loadLevel(b2WorldId& worldId, const std::string& level_name);
+  void loadLevel(b2WorldId& worldId, const std::string& level_name, direction dir);
 
   // Loads the first level inside worldId
   void loadFirstLevel(b2WorldId& worldId);
@@ -58,7 +64,10 @@ public:
 	void renderEntities(sf::RenderWindow* window);
 
 	//Adds a wall in the level, usually called by loadLevel
-	void createWall(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox);
+  void createWall(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox);
+
+  // Adds a level transition in the level, usually called by loadLevel
+  void createTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir);
 
 	//Adds the player in the level, usually called by loadLevel
 	void createPlayer(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox);
@@ -75,7 +84,10 @@ private:
 
 	std::map<int32_t,std::unique_ptr<Enemy>> enemies;
 	std::unique_ptr<Player> player;
-	std::vector<std::unique_ptr<Wall>> walls;
+  std::vector<std::unique_ptr<Wall>> walls;
+  std::vector<std::unique_ptr<LevelTransition>> level_transitions;
+
+	WorldNotifier* world_notifier;
 
 	//Texture related param
 	sf::RenderWindow* window;

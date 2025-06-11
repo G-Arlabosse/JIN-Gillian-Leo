@@ -117,6 +117,3 @@ bool Hitbox::isActive() {
   return activeHitbox;
 }
 
-void Hitbox::destroy() {
-  b2Body_Disable(*id);
-}

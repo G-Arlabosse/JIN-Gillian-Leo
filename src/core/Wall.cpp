@@ -1,8 +1,6 @@
 #include "Wall.h"
 #include "Constants.h"
 
-const b2Vec2 hitboxSize{ 20, 20 };
-
 Wall::Wall(const b2WorldId& worldId, float pos_x, float pos_y, bool renderDebugBoxes) :
 	hurtbox{ Hurtbox(worldId, pos_x, pos_y, hitboxSize, 
 		entityType::WALL, 
