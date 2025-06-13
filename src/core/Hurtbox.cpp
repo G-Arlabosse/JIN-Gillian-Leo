@@ -56,6 +56,10 @@ b2Vec2 Hurtbox::getPosition() {
     return b2Body_GetPosition(*id);
 }
 
+b2Vec2 Hurtbox::getSize() {
+  return b2Abs(b2Sub(polygon->vertices[0], polygon->vertices[2]));
+}
+
 b2WorldId Hurtbox::getWorldId() {
     return b2Body_GetWorld(*id);
 }

@@ -12,7 +12,7 @@ class Enemy : public Entity {
 public:
 	//Constructor
 	Enemy(const b2WorldId& worldId, float pos_x, float pos_y, 
-		sf::Texture* texture, Graph* levelGraph,
+		textureName textureName, TextureManager* textureManager, Graph* levelGraph,
 		LevelMediator* levelMediator, bool renderDebugBoxes);
 	
 	//Centralize later in Entity ?

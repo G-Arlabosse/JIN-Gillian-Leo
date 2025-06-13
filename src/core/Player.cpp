@@ -4,8 +4,8 @@
 
 b2Vec2 playerHitbox{ 13, 13 };
 
-Player::Player(const b2WorldId& worldId, float pos_x, float pos_y, sf::Texture* texture, LevelMediator* levelMediator, bool renderDebugBoxes) :
-	Entity(worldId, pos_x, pos_y, 3, playerHitbox, texture, 
+Player::Player(const b2WorldId& worldId, float pos_x, float pos_y, TextureManager* textureManager, LevelMediator* levelMediator, bool renderDebugBoxes) :
+	Entity(worldId, pos_x, pos_y, 20, playerHitbox, textureName::STRAWBERRY, textureManager,
 		entityType::PLAYER_HURTBOX, entityType::WALL | entityType::ENEMY_HITBOX | entityType::ENEMY_HURTBOX | entityType::ENEMY_RAYCAST | entityType::LEVEL_TRANSITION,
 		entityType::PLAYER_HITBOX, entityType::ENEMY_HURTBOX,
 		levelMediator, renderDebugBoxes),

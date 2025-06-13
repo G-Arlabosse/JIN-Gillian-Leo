@@ -1,12 +1,14 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
+#include "TextureManager.h"
+#include "Constants.h"
 #include <vector>
 #include <memory>
 
 class TextureHandler {
  private:
-  sf::Texture texture;
+	TextureManager* textureManager;
   std::unique_ptr<sf::Sprite> sprite;
   int lines;
   std::vector<int> animation_columns;
@@ -20,7 +22,7 @@ class TextureHandler {
   long last_frame_time;
  public:
 	//Constructor
-	TextureHandler(const sf::Texture& t, std::vector<int>, float scale, int tempo, float speed_mult);
+	TextureHandler(enum textureName textureName, TextureManager* textureManager, std::vector<int>, float scale, int tempo, float speed_mult);
   
 	//Unused for now, will change the animation type later on
 	void changeAnimation(int animation_number);

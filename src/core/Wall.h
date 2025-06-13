@@ -4,9 +4,11 @@
 #include <SFML/Graphics.hpp>
 #include "Hurtbox.h"
 
+class TextureManager;
+
 class Wall {
 public:
-	Wall(const b2WorldId& worldId, float pos_x, float pos_y, bool renderDebugBoxes);
+	Wall(const b2WorldId& worldId, float pos_x, float pos_y, TextureManager* textureManager, bool renderDebugBoxes);
 	void renderWall(sf::RenderWindow* window) const;
 
 private:

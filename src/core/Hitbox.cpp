@@ -3,7 +3,7 @@
 
 Hitbox::Hitbox(const b2WorldId& worldId, std::pair<float, float> pos,
                std::pair<float, float> speed, const b2Vec2& hitboxSize,
-               float damage, long lifespan, sf::Texture* texture,
+               float damage, long lifespan, textureName textureName, TextureManager* textureManager,
                uint64_t categoryBits, uint64_t maskBits,
                LevelMediator* levelMediator)
     : 
@@ -11,7 +11,7 @@ Hitbox::Hitbox(const b2WorldId& worldId, std::pair<float, float> pos,
   lifespan{lifespan},
   levelMediator{levelMediator}, 
   damage{damage},
-  texture_handler{std::make_unique<TextureHandler>(*texture, std::vector<int>{8}, 2, 600, 1.f)},
+  texture_handler{std::make_unique<TextureHandler>(textureName, textureManager, std::vector<int>{8}, 2, 600, 1.f)},
   activeHitbox{ false }
 {
     bodyDef = std::make_unique<b2BodyDef>(b2DefaultBodyDef());
@@ -42,9 +42,12 @@ bool Hitbox::entityTouched() {
     for (const auto& overlap : overlaps) {
         auto overlapIndex = overlap.index1;
         if (overlapIndex != 0 && b2Shape_IsValid(overlap)) {
-            levelMediator->notifyDamage(overlapIndex, damage, *id);
+            levelMediator->notifyDamage(overlapIndex, damage);
             touched = true;
         }
+    }
+    if (touched) {
+      sleep();
     }
     return touched;
 }
@@ -85,7 +88,7 @@ void Hitbox::move(float x, float y) {
   b2Body_SetLinearVelocity(*id, b2Vec2{x, y});
 }
 void Hitbox::move(b2Vec2 mov) {
-    b2Body_SetLinearVelocity(*id, mov); 
+  b2Body_SetLinearVelocity(*id, mov); 
 }
 void Hitbox::move() { 
   b2Body_SetLinearVelocity(*id, speed);
@@ -99,15 +102,19 @@ b2Vec2 Hitbox::getSpeed() { return speed; }
 
 void Hitbox::setSpeed(float speed_x, float speed_y) { speed = b2Vec2{speed_x, speed_y}; }
 
+void Hitbox::sleep() {
+  b2Body_SetAwake(*id, false);
+  activeHitbox = false;
+}
+
 /*
 Updates the hitbox
 Returns true if the hitbox must be detroyed
 */
 bool Hitbox::updateHitbox(long clock) {
-  if (clock > clockTimeInit + lifespan) {
-      b2Body_SetAwake(*id, false);
-      activeHitbox = false;
-      return true;
+  if (clock > clockTimeInit + lifespan + 20) {
+    sleep();
+    return true;
   }
   move();
   texture_handler->update(clock);

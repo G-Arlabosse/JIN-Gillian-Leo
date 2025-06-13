@@ -3,8 +3,6 @@
 //A global multiplier used to fit the textures size
 const int sizeMultiplier = 40;
 
-const b2Vec2 hitboxSize{20, 20};
-
 // Directions for level transitions
 enum class direction { UP, DOWN, LEFT, RIGHT, NONE };
 
@@ -17,4 +15,11 @@ const enum entityType {
   WALL = 0x0010,
   ENEMY_RAYCAST = 0x0020,
   LEVEL_TRANSITION = 0x0040,
+};
+
+const enum textureName {
+  HEALTH_BAR,
+  CARROT,
+  STRAWBERRY,
+  NB_TEXTURES,
 };

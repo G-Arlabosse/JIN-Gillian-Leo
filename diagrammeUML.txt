@@ -108,6 +108,23 @@ class		TextureHandler{
 {method}	+ update(clock)
 }
 
+class 		TextureManager{
+{field}		- textures : vector<textures>
+{method}	+ getTexture(textureName)
+{method}	- loadTexture(textureName)
+}
+
+abstract 	Health {
+{field}		- hp
+{field}		- maxHp
+{field}		- shapeIndex
+{field}		- shield
+{method}	+ renderHealthBar(window)
+{method}	+ setPosition(position)
+{method} 	+ update()
+{method}	+ updateDamage(damage)
+}
+
 
 Player ..|> Entity
 Enemy ..|> Entity
@@ -125,17 +142,20 @@ LevelManager *-- Player
 LevelManager *-- Wall
 
 Hitbox --> LevelMediator
-Entity --> LevelMediator
+Health --> LevelMediator
 LevelManager ..|> LevelMediator
 
 Entity *-- Hitbox
 Projectile *-- Hitbox
 Wall *-- Hurtbox
 Entity *-- Hurtbox
+Entity *-- Health
 
 Entity *-- TextureHandler
 Wall *--> TextureHandler
 Projectile *--> TextureHandler
+
+WorldManager *-- TextureManager
 
 ' vvv Changer pour un Prototype pattern vvv
 Corn *-- Projectile

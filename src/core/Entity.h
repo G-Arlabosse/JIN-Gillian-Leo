@@ -8,11 +8,13 @@
 #include <memory>
 #include "Constants.h"
 #include "LevelMediator.h"
+#include "Health.h"
 
 class Entity {
 public:
 	//Constructor
-	Entity(const b2WorldId &worldId, float pos_x, float pos_y, int hp, b2Vec2& hitboxSize, sf::Texture *texture, 
+	Entity(const b2WorldId &worldId, float pos_x, float pos_y, int hp, b2Vec2& hitboxSize, 
+		textureName textureName, TextureManager* textureManager,
 		uint64_t categoryBitsHurtbox, uint64_t maskBitsHurtbox,
 		uint64_t categoryBitsHitbox, uint64_t maskBitsHitbox,
 		LevelMediator* levelMediator, bool renderDebugBoxes);
@@ -45,24 +47,21 @@ public:
 	void update(long clock);
 
 	//Updates the entity hit points, called by LevelManager
-	void updateDamage(int damage, b2BodyId& hitboxId);
+	void updateDamage(int damage);
 
 	
 
 protected:
 	std::unique_ptr<Hurtbox> hurtbox;
 	std::unique_ptr<Hitbox> hitbox;
+	std::unique_ptr<Health> health;
 	float pos_x;
 	float pos_y;
-	int maxHp;
-	int hp;
 	bool renderDebugBoxes;
   std::unique_ptr<TextureHandler> texture_handler;
 
 	int patternState;
-	LevelMediator* levelMediator;
 
-	bool shieldUp;
 	long shieldClock;
 
 	sf::Color hurtboxColor = sf::Color::Red;

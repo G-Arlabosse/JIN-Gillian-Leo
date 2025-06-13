@@ -12,9 +12,9 @@ const enum patternTypes {
 const std::vector<patternTypes> movementPattern = { WAIT, ACTION };
 
 Enemy::Enemy(const b2WorldId& worldId, float pos_x, float pos_y,
-	sf::Texture* texture, Graph* levelGraph,
+	textureName textureName, TextureManager* textureManager, Graph* levelGraph,
 	LevelMediator* levelMediator, bool renderDebugBoxes) :
-	Entity(worldId, pos_x, pos_y, 3, enemyHitbox, texture,
+	Entity(worldId, pos_x, pos_y, 3, enemyHitbox, textureName, textureManager,
 		entityType::ENEMY_HURTBOX, entityType::WALL | entityType::PLAYER_HITBOX | entityType::PLAYER_HURTBOX | entityType::ENEMY_HURTBOX,
 		entityType::ENEMY_HITBOX, entityType::PLAYER_HURTBOX,
 		levelMediator, renderDebugBoxes),
