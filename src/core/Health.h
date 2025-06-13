@@ -23,6 +23,5 @@ private:
   int shapeIndex;
   bool shieldUp;
   LevelMediator* levelMediator;
-  sf::Texture* texture;
   std::unique_ptr<sf::Sprite> sprite;
 };

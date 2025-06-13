@@ -5,13 +5,14 @@
 TextureHandler::TextureHandler(enum textureName textureName, TextureManager* textureManager,
   std::vector<int> animation_columns, float scale,
   int tempo, float speed_mult) :
-  texture{ textureManager->getTexture(textureName) },
   lines{ (int)animation_columns.size() },
   animation_columns{ animation_columns },
   frame_pos{ sf::Vector2i{0, 0} },
   speed_mult{ speed_mult },
   current_animation{ 0 }
 {
+  auto texture = textureManager->getTexture(textureName);
+
   size_x = (int)texture->getSize().x / *std::max_element(animation_columns.begin(), animation_columns.end());
   size_y = (int)texture->getSize().y / (int)animation_columns.size();
 

@@ -15,10 +15,6 @@ LevelManager::LevelManager(WorldNotifier *wn, sf::RenderWindow *window, TextureM
     int r = 25;
     beatIndicator.setRadius(r);
     beatIndicator.setPosition(sf::Vector2f(500 - r, 400 - r));
-
-    if (!texture.loadFromFile("resources/textures/fraise_animated.png")) {
-        std::cerr << "Echec du chargement de la texture de test\n";
-    }
 }
 
 void LevelManager::notifyDamage(int32_t hurtboxIndex, int damage) {

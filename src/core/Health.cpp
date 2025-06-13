@@ -8,7 +8,7 @@ Health::Health(int hp, int shapeIndex, LevelMediator* levelMediator, TextureMana
 	shieldUp{ false },
 	levelMediator{ levelMediator }
 {
-	texture = textureManager->getTexture(textureName::HEALTH_BAR);
+	auto texture = textureManager->getTexture(textureName::HEALTH_BAR);
 	auto tsize = texture->getSize();
 	sprite = std::make_unique<sf::Sprite>(*texture);
 	sprite->setScale({ 1.4, 1.4 });

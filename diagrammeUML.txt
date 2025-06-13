@@ -156,8 +156,6 @@ Wall *--> TextureHandler
 Projectile *--> TextureHandler
 
 WorldManager *-- TextureManager
-TextureHandler --> TextureManager
-Health --> TextureManager
 
 ' vvv Changer pour un Prototype pattern vvv
 Corn *-- Projectile

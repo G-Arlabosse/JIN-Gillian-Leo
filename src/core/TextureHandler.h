@@ -9,7 +9,6 @@
 class TextureHandler {
  private:
 	TextureManager* textureManager;
-  sf::Texture* texture;
   std::unique_ptr<sf::Sprite> sprite;
   int lines;
   std::vector<int> animation_columns;
