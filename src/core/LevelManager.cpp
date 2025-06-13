@@ -152,16 +152,19 @@ void LevelManager::fileToMap(b2WorldId& worldId, const std::string& name) {
           createWall(worldId, x * sizeMultiplier, y * sizeMultiplier, showHitboxes);
           goto noNode;
         case 'U':
-          createTransition(worldId, x * sizeMultiplier, y * sizeMultiplier,  direction::UP);
+          createTransition(worldId, (x + 1.f / 2.f) * sizeMultiplier,
+                           (y - 1.f / 4.f) * sizeMultiplier, direction::UP);
           goto noNode;
         case 'D':
-          createTransition(worldId, x * sizeMultiplier, y * sizeMultiplier, direction::DOWN);
+          createTransition(worldId, (x + 1.f / 2.f) * sizeMultiplier,
+                           (y + 1.f / 4.f) * sizeMultiplier, direction::DOWN);
           goto noNode;
         case 'L':
-          createTransition(worldId, x * sizeMultiplier, y * sizeMultiplier,  direction::LEFT);
+          createTransition(worldId, (x-1.f/4.f) * sizeMultiplier, (y+1.f/2.f) * sizeMultiplier,  direction::LEFT);
           goto noNode;
         case 'R':
-          createTransition(worldId, x * sizeMultiplier, y * sizeMultiplier, direction::RIGHT);
+          createTransition(worldId, (x + 1.f / 4.f) * sizeMultiplier,
+                           (y + 1.f / 2.f) * sizeMultiplier, direction::RIGHT);
           goto noNode;
         case 'p':
           createPlayer(worldId, x * sizeMultiplier, y * sizeMultiplier, showHitboxes);

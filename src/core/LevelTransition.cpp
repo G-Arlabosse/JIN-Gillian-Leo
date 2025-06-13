@@ -11,8 +11,21 @@ LevelTransition::LevelTransition(const b2WorldId& worldId, float pos_x,
   bodyDef.linearVelocity = b2Vec2_zero;
   bodyDef.type = b2_staticBody;
   id = b2CreateBody(worldId, &bodyDef);
-
-  polygon = b2MakeBox(hitboxSize.x, hitboxSize.y);
+  switch (dir) { 
+    case direction::UP:
+      polygon = b2MakeBox(hitboxSize.x*2, hitboxSize.y/2);
+      break;
+    case direction::DOWN:
+      polygon = b2MakeBox(hitboxSize.x*2, hitboxSize.y/2);
+      break;
+    case direction::LEFT:
+      polygon = b2MakeBox(hitboxSize.x/2, hitboxSize.y*2);
+      break;
+    case direction::RIGHT:
+      polygon = b2MakeBox(hitboxSize.x/2, hitboxSize.y*2);
+      break;
+  }
+  
 
   shapeDef = b2DefaultShapeDef();
   shapeDef.isSensor = true;
