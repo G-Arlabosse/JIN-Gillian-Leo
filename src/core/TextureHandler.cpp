@@ -2,19 +2,20 @@
 #include <algorithm>
 
 //Passer un vector<int> en argument du constructeur ?
-TextureHandler::TextureHandler(const sf::Texture& t,
-                               std::vector<int> animation_columns, float scale,
-                               int tempo, float speed_mult)
-    : texture{t},
-      lines{(int)animation_columns.size()},
-      animation_columns{animation_columns},
-      size_x{(int)t.getSize().x / *std::max_element(animation_columns.begin(), animation_columns.end())},
-      size_y{(int)t.getSize().y / (int)animation_columns.size()},
-      frame_pos{sf::Vector2i{0, 0}},
-      speed_mult {speed_mult},
-      current_animation{0} 
+TextureHandler::TextureHandler(enum textureName textureName, TextureManager* textureManager,
+  std::vector<int> animation_columns, float scale,
+  int tempo, float speed_mult) :
+  texture{ textureManager->getTexture(textureName) },
+  lines{ (int)animation_columns.size() },
+  animation_columns{ animation_columns },
+  frame_pos{ sf::Vector2i{0, 0} },
+  speed_mult{ speed_mult },
+  current_animation{ 0 }
 {
-  sprite = std::make_unique<sf::Sprite>(t);
+  size_x = (int)texture->getSize().x / *std::max_element(animation_columns.begin(), animation_columns.end());
+  size_y = (int)texture->getSize().y / (int)animation_columns.size();
+
+  sprite = std::make_unique<sf::Sprite>(*texture);
   sprite->setTextureRect(sf::IntRect(frame_pos, {size_x, size_y}));
   setScale(scale);
   animation_speeds = std::vector<float>(lines);

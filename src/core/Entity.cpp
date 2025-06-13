@@ -1,25 +1,23 @@
 #include "Entity.h"
 #include <iostream>
 
-Entity::Entity(const b2WorldId& worldId, float pos_x, float pos_y, int hp,
-               b2Vec2& hurtboxSize, sf::Texture* texture,
-               uint64_t categoryBitsHurtbox, uint64_t maskBitsHurtbox,
-               uint64_t categoryBitsHitbox, uint64_t maskBitsHitbox,
-               LevelMediator* levelMediator, bool renderDebugBoxes = false)
-    : hurtbox{std::make_unique<Hurtbox>(worldId, pos_x, pos_y, hurtboxSize,
+Entity::Entity(const b2WorldId& worldId, float pos_x, float pos_y, int hp, b2Vec2& hurtboxSize, 
+	textureName textureName, TextureManager* textureManager,
+	uint64_t categoryBitsHurtbox, uint64_t maskBitsHurtbox,
+	uint64_t categoryBitsHitbox, uint64_t maskBitsHitbox,
+	LevelMediator* levelMediator, bool renderDebugBoxes = false): 
+	hurtbox{std::make_unique<Hurtbox>(worldId, pos_x, pos_y, hurtboxSize,
                                         categoryBitsHurtbox, maskBitsHurtbox)},
-      pos_x{pos_x},
-      pos_y{pos_y},
-      maxHp{hp},
-      hp{hp},
-      renderDebugBoxes{renderDebugBoxes},
-      texture_handler{
-          std::make_unique<TextureHandler>(*texture, std::vector<int>{8}, 3, 600, 1.f)},
-      levelMediator{levelMediator} 
+  pos_x{pos_x},
+  pos_y{pos_y},
+  renderDebugBoxes{renderDebugBoxes},
+  texture_handler{
+		std::make_unique<TextureHandler>(textureName, textureManager, std::vector<int>{8}, 3, 600, 1.f)}
 {
   hitbox = std::make_unique<Hitbox>(worldId, std::pair<float, float>{pos_x, pos_y},
-      std::pair<float, float>{0, 0}, b2Vec2{hurtboxSize.x / 2, hurtboxSize.y * 4 / 3}, 1, 0,
-      texture, categoryBitsHitbox, maskBitsHitbox, levelMediator);
+    std::pair<float, float>{0, 0}, b2Vec2{hurtboxSize.x / 2, hurtboxSize.y * 4 / 3}, 1, 0,
+		textureName, textureManager, categoryBitsHitbox, maskBitsHitbox, levelMediator);
+	health = std::make_unique<Health>(hp, hurtbox->getShapeId().index1, levelMediator, textureManager);
   hurtbox->setType(b2_dynamicBody);
   hurtbox->setLinearDamping(3);
 }
@@ -31,7 +29,7 @@ void Entity::attack(b2Vec2 direction, float damage) {
 }
 
 void Entity::shield() {
-	shieldUp = true;
+	health->setShieldUp(true);
 	shieldClock = std::clock();
 	hurtboxColor = sf::Color::Blue;
 }
@@ -39,6 +37,7 @@ void Entity::shield() {
 void Entity::renderEntity(sf::RenderWindow *window) {  
 	b2Vec2 pos = hurtbox->getPosition();
 	texture_handler->draw(window, pos.x, pos.y);
+	health->renderHealthBar(window);
 
 	if (renderDebugBoxes) {
 		hurtbox->draw(window, hurtboxColor);
@@ -56,9 +55,14 @@ void Entity::updateTempo() {
 
 void Entity::update(long clock) {
 	if (clock > shieldClock + 200) {
-		shieldUp = false;
+		health->setShieldUp(false);
 		hurtboxColor = sf::Color::Red;
 	}
+
+	auto hurtboxPos = hurtbox->getPosition();
+	auto hurtboxSize = hurtbox->getSize();
+	auto healthPos = b2Sub(hurtboxPos, b2Vec2{ 0, hurtboxSize.y/2 + sizeMultiplier/4 });
+	health->setHealthBarPosition(healthPos);
 
 	//Update its hitbox
 	hitbox->updateHitbox(clock);
@@ -75,13 +79,6 @@ b2Vec2 Entity::getPosition() {
 	return hurtbox->getPosition();
 }
 
-void Entity::updateDamage(int damage, b2BodyId& hitboxId) {
-	if (shieldUp) { 
-		std::cout << "PARRY !\n";
-		return; 
-	}
-	hp -= damage;
-	if (hp <= 0) {
-		levelMediator->notifyDeath(getShapeIndex());
-	}
+void Entity::updateDamage(int damage) {
+	health->updateDamage(damage);
 }

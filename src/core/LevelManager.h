@@ -27,9 +27,9 @@ const int subStepCount = 8;
 class LevelManager: public LevelMediator {
 public:
 	//Constructor
-	explicit LevelManager(WorldNotifier* wn, sf::RenderWindow* window);
+	explicit LevelManager(WorldNotifier* wn, sf::RenderWindow* window, TextureManager* textureManager);
 
-	void notifyDamage(int32_t hurtboxId, int damage, b2BodyId& hitboxId) override;
+	void notifyDamage(int32_t hurtboxId, int damage) override;
 	void notifyDeath(int32_t hurtboxId) override;
 
 	// Turns a file to a playable map
@@ -90,6 +90,7 @@ private:
 	WorldNotifier* world_notifier;
 
 	//Texture related param
+	TextureManager* textureManager;
 	sf::RenderWindow* window;
 	sf::Texture texture;
 

@@ -2,12 +2,13 @@
 #include <iostream>
 #include <fstream>
 
-LevelManager::LevelManager(WorldNotifier *wn, sf::RenderWindow *window):
+LevelManager::LevelManager(WorldNotifier *wn, sf::RenderWindow *window, TextureManager* textureManager):
 
-    levelGraph{std::make_unique<Graph>()},
-    world_notifier{wn},
-    tempoTimePlayer{ std::clock() },
-    window{ window }    
+  levelGraph{std::make_unique<Graph>()},
+  world_notifier{wn},
+  tempoTimePlayer{ std::clock() },
+  window{ window },
+  textureManager{ textureManager }
 {
     tempoTimeEntities = tempoTimePlayer;
 
@@ -15,18 +16,18 @@ LevelManager::LevelManager(WorldNotifier *wn, sf::RenderWindow *window):
     beatIndicator.setRadius(r);
     beatIndicator.setPosition(sf::Vector2f(500 - r, 400 - r));
 
-    if (!texture.loadFromFile("resources/sprites/fraise_animated.png")) {
+    if (!texture.loadFromFile("resources/textures/fraise_animated.png")) {
         std::cerr << "Echec du chargement de la texture de test\n";
     }
 }
 
-void LevelManager::notifyDamage(int32_t hurtboxIndex, int damage, b2BodyId& hitboxId) {
+void LevelManager::notifyDamage(int32_t hurtboxIndex, int damage) {
     if (hurtboxIndex == player->getShapeIndex()) {
-        player->updateDamage(damage, hitboxId);
+        player->updateDamage(damage);
         return;
     }
     else if (enemies.contains(hurtboxIndex)) {
-        enemies[hurtboxIndex]->updateDamage(damage, hitboxId);
+        enemies[hurtboxIndex]->updateDamage(damage);
         return;
     }
     else {
@@ -49,21 +50,21 @@ void LevelManager::notifyDeath(int32_t hurtboxIndex) {
 }
 
 void LevelManager::createPlayer(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
-    player = std::make_unique<Player>(worldId, pos_x, pos_y, &texture, this, showHitbox);
+    player = std::make_unique<Player>(worldId, pos_x, pos_y, textureManager, this, showHitbox);
 }
 
 void LevelManager::createEnemy(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
-    auto enemy = std::make_unique<Enemy>(worldId, pos_x, pos_y, &texture, levelGraph.get(), this, showHitbox);
+    auto enemy = std::make_unique<Enemy>(worldId, pos_x, pos_y, textureName::STRAWBERRY, textureManager, levelGraph.get(), this, showHitbox);
     enemies[enemy->getShapeIndex()] = std::move(enemy);
 }
 
-void LevelManager::createWall(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox) {
-    auto wall = std::make_unique<Wall>(worldId, pos_x, pos_y, showHitbox);
+void LevelManager::createWall(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
+    auto wall = std::make_unique<Wall>(worldId, pos_x, pos_y, textureManager, showHitbox);
     walls.push_back(std::move(wall));
 }
 
 void LevelManager::createTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir) {
-  auto transition = std::make_unique<LevelTransition>(worldId, pos_x, pos_y, dir);
+  auto transition = std::make_unique<LevelTransition>(worldId, pos_x, pos_y, dir, textureManager);
   level_transitions.push_back(std::move(transition));
 }
 
@@ -202,33 +203,30 @@ void LevelManager::loadLevel(b2WorldId& worldId, const std::string& name, direct
   unloadLevel();
   std::string filename = (std::string)"resources/rooms/" + name +".txt";
   fileToMap(worldId, filename);
+  float pos_x, pos_y;
   switch (dir) { 
     case direction::NONE:
-      createPlayer(worldId,
-                   (float)levelGraph->getWidth() / 2.f * sizeMultiplier,
-                   (float)levelGraph->getHeight() / 2.f * sizeMultiplier, true);
+      pos_x = (float)levelGraph->getWidth() / 2.f * sizeMultiplier;
+      pos_y = (float)levelGraph->getHeight() / 2.f * sizeMultiplier;
       break;
     case direction::UP:
-      createPlayer(worldId,
-                   (float)levelGraph->getWidth() / 2.f * sizeMultiplier,
-          (float)(levelGraph->getHeight() - 2) * (float)sizeMultiplier, true);
+      pos_x = (float)levelGraph->getWidth() / 2.f * sizeMultiplier;
+      pos_y = (float)(levelGraph->getHeight() - 2) * (float)sizeMultiplier;
       break;
     case direction::DOWN:
-      createPlayer(worldId,
-                   (float)levelGraph->getWidth() / 2.f * sizeMultiplier,
-                   2 * sizeMultiplier, true);
+      pos_x = (float)levelGraph->getWidth() / 2.f * sizeMultiplier;
+      pos_y = 2 * sizeMultiplier;
       break;
     case direction::LEFT:
-      createPlayer(worldId,
-                   (float)(levelGraph->getWidth() - 2) * (float)sizeMultiplier,
-                   (float)levelGraph->getHeight() / 2.f * sizeMultiplier, true);
+      pos_x = (float)(levelGraph->getWidth() - 2) * (float)sizeMultiplier;
+      pos_y = (float)levelGraph->getHeight() / 2.f * sizeMultiplier;
       break;
     case direction::RIGHT:
-      createPlayer(worldId,
-                   2 * sizeMultiplier,
-                   (float)levelGraph->getHeight() / 2.f * sizeMultiplier, true);
+      pos_x = 2 * sizeMultiplier;
+      pos_y = (float)levelGraph->getHeight() / 2.f * sizeMultiplier;
       break;
   }
+  createPlayer(worldId, pos_x, pos_y, true);
 }
 
 void LevelManager::loadFirstLevel(b2WorldId& worldId) {

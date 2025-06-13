@@ -33,6 +33,7 @@ public:
 	b2WorldId getWorldId();
 	b2BodyId getBodyId();
 	b2ShapeId getShapeId();
+	b2Vec2 getSize();
 
 private:
 	std::unique_ptr<b2BodyDef> bodyDef;

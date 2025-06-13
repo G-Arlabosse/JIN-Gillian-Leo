@@ -5,10 +5,11 @@ using namespace std;
 using namespace std::literals;
 
 WorldManager::WorldManager() :
-    worldDef{ b2DefaultWorldDef() },
-    worldId{ b2CreateWorld(&worldDef) },
-    window{ std::make_unique<sf::RenderWindow>(sf::VideoMode({ 1000, 700 }), "JinProject") },
-    camera { std::make_unique<sf::View>() }
+  worldDef{ b2DefaultWorldDef() },
+  worldId{ b2CreateWorld(&worldDef) },
+  window{ std::make_unique<sf::RenderWindow>(sf::VideoMode({ 1000, 700 }), "JinProject") },
+  camera { std::make_unique<sf::View>() },
+  textureManager{ std::make_unique<TextureManager>() }
 {
     window->setFramerateLimit(60);
     camera->setCenter({0, 0});
@@ -18,7 +19,7 @@ WorldManager::WorldManager() :
     map = makeMap();
     level_x = 1;
     level_y = 0;
-    levelManager = std::make_unique<LevelManager>(this, window.get());
+    levelManager = std::make_unique<LevelManager>(this, window.get(), textureManager.get());
 }
 
 void WorldManager::renderWorld() {
@@ -55,7 +56,8 @@ void WorldManager::startGame() {
 }
 
 void WorldManager::destroy() {
-    b2DestroyWorld(worldId);
+  levelManager = nullptr;
+  b2DestroyWorld(worldId);
 }
 
 vector<vector<string>> WorldManager::makeMap() {

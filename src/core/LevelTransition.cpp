@@ -2,8 +2,10 @@
 
 #include "LevelTransition.h"
 
+const b2Vec2 hurtboxSize{ 20, 20 };
+
 LevelTransition::LevelTransition(const b2WorldId& worldId, float pos_x,
-                                 float pos_y, direction dir)
+                                 float pos_y, direction dir, TextureManager* textureManager)
     : dir{dir} {
   bodyDef = b2DefaultBodyDef();
   bodyDef.position = b2Vec2{pos_x, pos_y};
@@ -12,7 +14,7 @@ LevelTransition::LevelTransition(const b2WorldId& worldId, float pos_x,
   bodyDef.type = b2_staticBody;
   id = b2CreateBody(worldId, &bodyDef);
 
-  polygon = b2MakeBox(hitboxSize.x, hitboxSize.y);
+  polygon = b2MakeBox(hurtboxSize.x, hurtboxSize.y);
 
   shapeDef = b2DefaultShapeDef();
   shapeDef.isSensor = true;

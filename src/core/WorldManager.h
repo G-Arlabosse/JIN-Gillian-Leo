@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "LevelManager.h"
 #include "WorldNotifier.h"
+#include "TextureManager.h"
 #include <memory>
 
 class WorldManager : public WorldNotifier {
@@ -37,5 +38,7 @@ private:
   std::vector<std::vector<std::string>> map;
   int level_x;
   int level_y;
+
+	std::unique_ptr<TextureManager> textureManager;
 
 };

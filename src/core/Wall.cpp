@@ -1,8 +1,10 @@
 #include "Wall.h"
 #include "Constants.h"
 
-Wall::Wall(const b2WorldId& worldId, float pos_x, float pos_y, bool renderDebugBoxes) :
-	hurtbox{ Hurtbox(worldId, pos_x, pos_y, hitboxSize, 
+const b2Vec2 wallSize{ 20, 20 };
+
+Wall::Wall(const b2WorldId& worldId, float pos_x, float pos_y, TextureManager* textureManager, bool renderDebugBoxes) :
+	hurtbox{ Hurtbox(worldId, pos_x, pos_y, wallSize,
 		entityType::WALL, 
 		entityType::PLAYER_HURTBOX | entityType::ENEMY_HURTBOX | entityType::ENEMY_RAYCAST) },
 	renderDebugBoxes { renderDebugBoxes }
