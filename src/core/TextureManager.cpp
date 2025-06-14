@@ -9,7 +9,7 @@ TextureManager::TextureManager() {
 
 void TextureManager::loadTexture(enum textureName textureName) {
   sf::Texture texture;
-  auto path = commonPath + texturePath.at(textureName);
+  auto path = textureCommonPath + texturePath.at(textureName);
   if (!texture.loadFromFile(path)) {
     std::cerr << "Echec du chargement de la texture de test\n";
     terminate();

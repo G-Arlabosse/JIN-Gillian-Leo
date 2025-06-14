@@ -15,11 +15,6 @@
 #include "LevelTransition.h"
 #include "WorldNotifier.h"
 
-
-
-const int tempoMS = 500;
-const int delta = 100;
-const int delta2 = 50;
 const float timeStep = 1 / 60.0f;
 const int subStepCount = 8;
 
@@ -77,6 +72,9 @@ public:
 
 	//GETTER: returns the player's position
 	b2Vec2 getPlayerPosition();
+
+	void setTempo(int bpm);
+	void initTempo();
 	
 private:
 	std::unique_ptr<Graph> levelGraph;
@@ -99,5 +97,9 @@ private:
 	bool inTempo;
 	long tempoTimeEntities;
 	long tempoTimePlayer;
+
+  int tempoMS = 500;
+	int delta = 100;
+	int delta2 = 50;
 };
 

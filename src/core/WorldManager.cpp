@@ -9,7 +9,8 @@ WorldManager::WorldManager() :
   worldId{ b2CreateWorld(&worldDef) },
   window{ std::make_unique<sf::RenderWindow>(sf::VideoMode({ 1000, 700 }), "JinProject") },
   camera { std::make_unique<sf::View>() },
-  textureManager{ std::make_unique<TextureManager>() }
+  textureManager{ std::make_unique<TextureManager>() },
+  musicManager{ std::make_unique<MusicManager>() }
 {
     window->setFramerateLimit(60);
     camera->setCenter({0, 0});
@@ -36,7 +37,12 @@ void WorldManager::updateWorld() {
 
 void WorldManager::startGame() {
   map = makeMap();
+
   levelManager->loadFirstLevel(worldId);
+  musicManager->playMusic(musicName::DISCO_DESCENT);
+  levelManager->initTempo();
+  levelManager->setTempo(musicManager->getMusicBPM(DISCO_DESCENT));
+
 
   while (window->isOpen()) {
     while (const auto event = window->pollEvent()) {

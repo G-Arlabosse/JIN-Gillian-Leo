@@ -14,7 +14,7 @@ set (BUILD_SHARED_LIBS FALSE)
 FetchContent_Declare( sfml
   URL https://github.com/SFML/SFML/archive/refs/tags/3.0.1.tar.gz
 )
-option(SFML_BUILD_AUDIO "Build audio" OFF)
+option(SFML_BUILD_AUDIO "Build audio" ON)
 option(SFML_BUILD_NETWORK "Build network" OFF)
 FetchContent_MakeAvailable(sfml)
 

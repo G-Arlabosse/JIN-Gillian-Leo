@@ -10,9 +10,11 @@
 const std::map<enum textureName, std::string> texturePath = {
   {HEALTH_BAR, "health_bar.png"},
   {STRAWBERRY, "fraise_animated.png"},
+  {CARROT, "carrot.png"},
+  {CORN, "corn.png"}
 };
 
-const std::string commonPath = "resources/textures/";
+const std::string textureCommonPath = "resources/textures/";
 
 class TextureManager {
 public:

@@ -8,6 +8,7 @@
 #include "LevelManager.h"
 #include "WorldNotifier.h"
 #include "TextureManager.h"
+#include "MusicManager.h"
 #include <memory>
 
 class WorldManager : public WorldNotifier {
@@ -40,5 +41,6 @@ private:
   int level_y;
 
 	std::unique_ptr<TextureManager> textureManager;
+	std::unique_ptr<MusicManager> musicManager;
 
 };
