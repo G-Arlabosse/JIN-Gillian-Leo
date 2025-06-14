@@ -4,6 +4,8 @@
 #include <vector>
 #include "box2d/types.h"
 #include <memory>
+#include <tmxlite/Map.hpp>
+#include "SFMLOrthogonalLayer.hpp"
 
 #include "Enemy.h"	//MUST CHANGE ?
 #include "Player.h" //MUST CHANGE ?
@@ -80,6 +82,8 @@ private:
 	std::unique_ptr<Graph> levelGraph;
 	sf::VertexArray path_render;
 
+	tmx::Map map;
+  std::unique_ptr<MapLayer> layer;
 	std::map<int32_t,std::unique_ptr<Enemy>> enemies;
 	std::unique_ptr<Player> player;
   std::vector<std::unique_ptr<Wall>> walls;

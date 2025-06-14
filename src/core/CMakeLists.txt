@@ -17,6 +17,7 @@ add_library(lib_core
  "WorldNotifier.h"
  "Health.cpp" "Health.h"
  "TextureManager.h" "TextureManager.cpp" 
- "MusicManager.h" "MusicManager.cpp")
+ "MusicManager.h" "MusicManager.cpp"
+ "SFMLOrthogonalLayer.h")
 target_include_directories(lib_core PUBLIC ./)
-target_link_libraries(lib_core PUBLIC sfml-graphics sfml-audio box2d)
+target_link_libraries(lib_core PUBLIC sfml-graphics sfml-audio box2d tmxlite)
