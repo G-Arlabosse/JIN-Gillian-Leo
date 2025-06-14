@@ -18,6 +18,6 @@ add_library(lib_core
  "Health.cpp" "Health.h"
  "TextureManager.h" "TextureManager.cpp" 
  "MusicManager.h" "MusicManager.cpp"
- "SFMLOrthogonalLayer.h")
+ "SFMLOrthogonalLayer.hpp")
 target_include_directories(lib_core PUBLIC ./)
 target_link_libraries(lib_core PUBLIC sfml-graphics sfml-audio box2d tmxlite)

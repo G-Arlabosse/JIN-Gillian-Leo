@@ -1,5 +1,5 @@
 #pragma once
-
+#include "box2d/types.h"
 //A global multiplier used to fit the textures size
 const int sizeMultiplier = 48;
 
