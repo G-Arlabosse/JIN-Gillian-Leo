@@ -60,7 +60,8 @@ void WorldManager::destroy() {
 
 vector<vector<string>> WorldManager::makeMap() {
   vector<vector<string>> test_map{
-      {"TestRoom1_big", "TestStartRoom", "TestRoom1", "TestRoom2"}};
+      {"TestRoom1_big", "TestStartRoom", "TestRoom1", "TestRoom2"},
+      {"", "", "room_murs", "TestRoom2"}};
   return test_map;
 }
 

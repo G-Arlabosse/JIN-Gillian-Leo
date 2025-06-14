@@ -6,8 +6,8 @@ LevelManager::LevelManager(WorldNotifier *wn, sf::RenderWindow *window):
 
     levelGraph{std::make_unique<Graph>()},
     world_notifier{wn},
-    tempoTimePlayer{ std::clock() },
-    window{ window }    
+    window{window},
+    tempoTimePlayer{std::clock()}
 {
     tempoTimeEntities = tempoTimePlayer;
 
@@ -18,6 +18,10 @@ LevelManager::LevelManager(WorldNotifier *wn, sf::RenderWindow *window):
     if (!texture.loadFromFile("resources/sprites/fraise_animated.png")) {
         std::cerr << "Echec du chargement de la texture de test\n";
     }
+
+    map.load("resources/tilemaps/TestStartRoom.tmx");
+    layer = std::make_unique<MapLayer>(map, 0);
+
 }
 
 void LevelManager::notifyDamage(int32_t hurtboxIndex, int damage, b2BodyId& hitboxId) {
@@ -49,21 +53,27 @@ void LevelManager::notifyDeath(int32_t hurtboxIndex) {
 }
 
 void LevelManager::createPlayer(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
-    player = std::make_unique<Player>(worldId, pos_x, pos_y, &texture, this, showHitbox);
+  player = std::make_unique<Player>(worldId, pos_x + hitboxSize.x,
+                                    pos_y + hitboxSize.y, &texture, this,
+                                    showHitbox);
 }
 
 void LevelManager::createEnemy(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
-    auto enemy = std::make_unique<Enemy>(worldId, pos_x, pos_y, &texture, levelGraph.get(), this, showHitbox);
+  auto enemy = std::make_unique<Enemy>(worldId, pos_x + hitboxSize.x,
+                                       pos_y + hitboxSize.y, &texture,
+                              levelGraph.get(), this, showHitbox);
     enemies[enemy->getShapeIndex()] = std::move(enemy);
 }
 
 void LevelManager::createWall(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox) {
-    auto wall = std::make_unique<Wall>(worldId, pos_x, pos_y, showHitbox);
+  auto wall = std::make_unique<Wall>(worldId, pos_x + hitboxSize.x,
+                                     pos_y + hitboxSize.y, showHitbox);
     walls.push_back(std::move(wall));
 }
 
 void LevelManager::createTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir) {
-  auto transition = std::make_unique<LevelTransition>(worldId, pos_x, pos_y, dir);
+  auto transition = std::make_unique<LevelTransition>(
+      worldId, pos_x + hitboxSize.x, pos_y + hitboxSize.y, dir);
   level_transitions.push_back(std::move(transition));
 }
 
@@ -122,6 +132,7 @@ bool LevelManager::isInTempo() {
 }
 
 void LevelManager::renderEntities(sf::RenderWindow *window) {
+    window->draw(*layer);
     for (const auto& [index,enemy] : enemies) {
         enemy->renderEnemy(window);
     }
@@ -203,6 +214,8 @@ void LevelManager::unloadLevel() {
 
 void LevelManager::loadLevel(b2WorldId& worldId, const std::string& name, direction dir) {
   unloadLevel();
+  map.load((std::string) "resources/tilemaps/" + name + ".tmx");
+  layer = std::make_unique<MapLayer>(map, 0);
   std::string filename = (std::string)"resources/rooms/" + name +".txt";
   fileToMap(worldId, filename);
   switch (dir) { 

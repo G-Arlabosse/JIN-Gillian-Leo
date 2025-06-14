@@ -1,9 +1,9 @@
 #pragma once
 
 //A global multiplier used to fit the textures size
-const int sizeMultiplier = 40;
+const int sizeMultiplier = 48;
 
-const b2Vec2 hitboxSize{20, 20};
+const b2Vec2 hitboxSize{sizeMultiplier/2, sizeMultiplier/2};
 
 // Directions for level transitions
 enum class direction { UP, DOWN, LEFT, RIGHT, NONE };
