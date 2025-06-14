@@ -15,6 +15,10 @@ LevelManager::LevelManager(WorldNotifier *wn, sf::RenderWindow *window, TextureM
     int r = 25;
     beatIndicator.setRadius(r);
     beatIndicator.setPosition(sf::Vector2f(500 - r, 400 - r));
+
+    map.load("resources/tilemaps/TestStartRoom.tmx");
+    layer = std::make_unique<MapLayer>(map, 0);
+
 }
 
 void LevelManager::notifyDamage(int32_t hurtboxIndex, int damage) {
@@ -46,21 +50,21 @@ void LevelManager::notifyDeath(int32_t hurtboxIndex) {
 }
 
 void LevelManager::createPlayer(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
-    player = std::make_unique<Player>(worldId, pos_x, pos_y, textureManager, this, showHitbox);
+    player = std::make_unique<Player>(worldId, pos_x + hitboxSize.x, pos_y + hitboxSize.y, textureManager, this, showHitbox);
 }
 
 void LevelManager::createEnemy(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
-    auto enemy = std::make_unique<Enemy>(worldId, pos_x, pos_y, textureName::STRAWBERRY, textureManager, levelGraph.get(), this, showHitbox);
+    auto enemy = std::make_unique<Enemy>(worldId, pos_x + hitboxSize.x, pos_y + hitboxSize.y, textureName::STRAWBERRY, textureManager, levelGraph.get(), this, showHitbox);
     enemies[enemy->getShapeIndex()] = std::move(enemy);
 }
 
 void LevelManager::createWall(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
-    auto wall = std::make_unique<Wall>(worldId, pos_x, pos_y, textureManager, showHitbox);
+    auto wall = std::make_unique<Wall>(worldId, pos_x + hitboxSize.x, pos_y + hitboxSize.y, textureManager, showHitbox);
     walls.push_back(std::move(wall));
 }
 
 void LevelManager::createTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir) {
-  auto transition = std::make_unique<LevelTransition>(worldId, pos_x, pos_y, dir, textureManager);
+  auto transition = std::make_unique<LevelTransition>(worldId, pos_x + hitboxSize.x, pos_y + hitboxSize.y, dir, textureManager);
   level_transitions.push_back(std::move(transition));
 }
 
@@ -119,6 +123,7 @@ bool LevelManager::isInTempo() {
 }
 
 void LevelManager::renderEntities(sf::RenderWindow *window) {
+    window->draw(*layer);
     for (const auto& [index,enemy] : enemies) {
         enemy->renderEnemy(window);
     }
@@ -200,6 +205,8 @@ void LevelManager::unloadLevel() {
 
 void LevelManager::loadLevel(b2WorldId& worldId, const std::string& name, direction dir) {
   unloadLevel();
+  map.load((std::string) "resources/tilemaps/" + name + ".tmx");
+  layer = std::make_unique<MapLayer>(map, 0);
   std::string filename = (std::string)"resources/rooms/" + name +".txt";
   fileToMap(worldId, filename);
   float pos_x, pos_y;

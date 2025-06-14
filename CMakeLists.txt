@@ -29,6 +29,48 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(box2d)
 
+## Fetch and include tmxlite
+#FetchContent_Declare(
+#    tmxlite
+#    GIT_REPOSITORY https://github.com/fallahn/tmxlite.git
+#    GIT_TAG v1.4.4
+#)
+#FetchContent_MakeAvailable(tmxlite)
+
+#
+# Tmxlite : A simple FetchContent does not work We generate its library
+# in the same manner as GoogleTest
+#
+
+# Download and unpack tmxlite at configure time
+set (TMXLITE_STATIC_LIB TRUE)
+configure_file(CMakeLists_tmxlite.txt.in tmxlite-download/tmxlite/CMakeLists.txt)
+execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+  RESULT_VARIABLE result
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tmxlite-download/tmxlite )
+if(result)
+  message(FATAL_ERROR "CMake step for tmxlite failed: ${result}")
+endif()
+execute_process(COMMAND ${CMAKE_COMMAND} --build .
+  RESULT_VARIABLE result
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tmxlite-download/tmxlite )
+if(result)
+  message(FATAL_ERROR "Build step for tmxlite failed: ${result}")
+endif()
+
+# Prevent overriding the parent project's compiler/linker
+# settings on Windows
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+# Add tmxlite directly to our build. This defines tmxlite target
+add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/tmxlite-src/tmxlite
+                 ${CMAKE_CURRENT_BINARY_DIR}/tmxlite-build/tmxlite
+                 EXCLUDE_FROM_ALL)
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/tmxlite-src/tmxlite/include")
+
+
+
+
 add_subdirectory(src/core)
 add_subdirectory(src/main)
 

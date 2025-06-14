@@ -16,6 +16,7 @@ add_library(lib_core
  "LevelTransition.cpp" "LevelTransition.h"  
  "WorldNotifier.h"
  "Health.cpp" "Health.h"
- "TextureManager.h" "TextureManager.cpp")
+ "TextureManager.h" "TextureManager.cpp" 
+ "SFMLOrthogonalLayer.h")
 target_include_directories(lib_core PUBLIC ./)
-target_link_libraries(lib_core PUBLIC sfml-graphics box2d)
+target_link_libraries(lib_core PUBLIC sfml-graphics box2d tmxlite)

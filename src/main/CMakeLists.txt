@@ -4,7 +4,10 @@ add_executable(mainLauncher
 )
 
 # Link it to the lib_core library
-target_link_libraries(mainLauncher PUBLIC lib_core)
+target_link_libraries(mainLauncher PUBLIC lib_core tmxlite)
+
+# Ensure tmxlite include directories are available
+target_include_directories(mainLauncher PRIVATE ${tmxlite_SOURCE_DIR}/tmxlite/include)
 
 # Recursively glob all files in the resources directory and its subdirectories
 file(GLOB_RECURSE RESOURCE_FILES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/resources/*)
