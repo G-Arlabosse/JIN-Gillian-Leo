@@ -6,7 +6,7 @@
 #include <vector>
 #include <memory>
 
-class TextureHandler {
+class AnimationManager {
  private:
 	TextureManager* textureManager;
   std::unique_ptr<sf::Sprite> sprite;
@@ -22,7 +22,7 @@ class TextureHandler {
   long last_frame_time;
  public:
 	//Constructor
-	TextureHandler(enum textureName textureName, TextureManager* textureManager, std::vector<int>, float scale, int tempo, float speed_mult);
+	AnimationManager(enum textureName textureName, TextureManager* textureManager, std::vector<int>, float scale, int tempo, float speed_mult);
   
 	//Unused for now, will change the animation type later on
 	void changeAnimation(int animation_number);

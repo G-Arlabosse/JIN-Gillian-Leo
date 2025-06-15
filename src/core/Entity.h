@@ -3,7 +3,7 @@
 #include "SFML/Graphics.hpp"
 #include "Hurtbox.h"
 #include "Hitbox.h"
-#include "TextureHandler.h"
+#include "AnimationManager.h"
 #include <vector>
 #include <memory>
 #include "Constants.h"
@@ -58,7 +58,7 @@ protected:
 	float pos_x;
 	float pos_y;
 	bool renderDebugBoxes;
-  std::unique_ptr<TextureHandler> texture_handler;
+  std::unique_ptr<AnimationManager> animation_manager;
 
 	int patternState;
 

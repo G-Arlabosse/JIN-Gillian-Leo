@@ -11,8 +11,8 @@ Entity::Entity(const b2WorldId& worldId, float pos_x, float pos_y, int hp, b2Vec
   pos_x{pos_x},
   pos_y{pos_y},
   renderDebugBoxes{renderDebugBoxes},
-  texture_handler{
-		std::make_unique<TextureHandler>(textureName, textureManager, std::vector<int>{8}, 3, 600, 1.f)}
+  animation_manager{
+		std::make_unique<AnimationManager>(textureName, textureManager, std::vector<int>{8}, 3, 600, 1.f)}
 {
   hitbox = std::make_unique<Hitbox>(worldId, std::pair<float, float>{pos_x, pos_y},
     std::pair<float, float>{0, 0}, b2Vec2{hurtboxSize.x / 2, hurtboxSize.y * 4 / 3}, 1, 0,
@@ -36,7 +36,7 @@ void Entity::shield() {
 
 void Entity::renderEntity(sf::RenderWindow *window) {  
 	b2Vec2 pos = hurtbox->getPosition();
-	texture_handler->draw(window, pos.x, pos.y);
+	animation_manager->draw(window, pos.x, pos.y);
 	health->renderHealthBar(window);
 
 	if (renderDebugBoxes) {
@@ -50,7 +50,7 @@ void Entity::updateTempo() {
 	//TODO
 
 	//Send action to texture_handler
-	texture_handler->nextFrame();
+	animation_manager->nextFrame();
 }
 
 void Entity::update(long clock) {
@@ -68,7 +68,7 @@ void Entity::update(long clock) {
 	hitbox->updateHitbox(clock);
 
 	//Update the texture
-	texture_handler->update(clock);
+	animation_manager->update(clock);
 }
 
 int32_t Entity::getShapeIndex() {

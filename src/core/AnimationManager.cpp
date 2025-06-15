@@ -1,8 +1,8 @@
-#include "TextureHandler.h"
+#include "AnimationManager.h"
 #include <algorithm>
 
 //Passer un vector<int> en argument du constructeur ?
-TextureHandler::TextureHandler(enum textureName textureName, TextureManager* textureManager,
+AnimationManager::AnimationManager(enum textureName textureName, TextureManager* textureManager,
   std::vector<int> animation_columns, float scale,
   int tempo, float speed_mult) :
   lines{ (int)animation_columns.size() },
@@ -27,30 +27,30 @@ TextureHandler::TextureHandler(enum textureName textureName, TextureManager* tex
   last_frame_time = std::clock();
 }
 
-void TextureHandler::changeAnimation(int animation_number) {
+void AnimationManager::changeAnimation(int animation_number) {
   frame_pos = {0, size_y*animation_number};
   current_animation = animation_number;
 }
 
-void TextureHandler::nextFrame() {
+void AnimationManager::nextFrame() {
   frame_pos.x = (frame_pos.x + size_x) % (size_x * animation_columns[current_animation]);
   sprite->setTextureRect(sf::IntRect(frame_pos, { size_x, size_y }));
 }
 
-sf::Sprite TextureHandler::getSprite() const { return *sprite; }
+sf::Sprite AnimationManager::getSprite() const { return *sprite; }
 
-int TextureHandler::getSize_x() const { return size_x; }
+int AnimationManager::getSize_x() const { return size_x; }
 
-int TextureHandler::getSize_y() const { return size_y; }
+int AnimationManager::getSize_y() const { return size_y; }
 
-float TextureHandler::getScale() const { return scale; }
+float AnimationManager::getScale() const { return scale; }
 
-void TextureHandler::setScale(float s) { 
+void AnimationManager::setScale(float s) { 
   scale = s;
   sprite->setScale({s, s});
 }
 
-void TextureHandler::update(long clock) {
+void AnimationManager::update(long clock) {
   if ((double)clock >
       (double)last_frame_time + (double)animation_speeds[current_animation]/speed_mult) {
     last_frame_time = clock;
@@ -58,7 +58,7 @@ void TextureHandler::update(long clock) {
   }
 }
 
-void TextureHandler::draw(sf::RenderWindow* window, float pos_x, float pos_y) {
+void AnimationManager::draw(sf::RenderWindow* window, float pos_x, float pos_y) {
   sprite->setOrigin({(float)size_x / 2.f, (float)size_y / 2.f});
   sprite->setPosition(sf::Vector2f(pos_x, pos_y));
 
