@@ -2,8 +2,6 @@
 
 #include "LevelTransition.h"
 
-const b2Vec2 hurtboxSize{ 20, 20 };
-
 LevelTransition::LevelTransition(const b2WorldId& worldId, float pos_x,
                                  float pos_y, direction dir, TextureManager* textureManager)
     : dir{dir} {
@@ -13,21 +11,47 @@ LevelTransition::LevelTransition(const b2WorldId& worldId, float pos_x,
   bodyDef.linearVelocity = b2Vec2_zero;
   bodyDef.type = b2_staticBody;
   id = b2CreateBody(worldId, &bodyDef);
+
+  texture = textureManager->getTexture(textureName::ROOM_TRANSITION);
   switch (dir) { 
     case direction::UP:
-      polygon = b2MakeBox(hurtboxSize.x*2, hurtboxSize.y/2);
+      polygon = b2MakeBox(hitboxSize.x*2, hitboxSize.y/2);
+      sprite = std::make_unique<sf::Sprite>(*texture, sf::IntRect({96, 0}, {96, 48}));
+      sprite->setPosition(
+          {pos_x - hitboxSize.x * 2, pos_y - hitboxSize.y / 2.f});
+      wall = std::make_unique<Wall>( worldId, pos_x, pos_y + hitboxSize.y,
+          b2Vec2{hitboxSize.x * 2, hitboxSize.y / 2.f}, textureManager, true);
       break;
     case direction::DOWN:
-      polygon = b2MakeBox(hurtboxSize.x*2, hurtboxSize.y/2);
+      polygon = b2MakeBox(hitboxSize.x * 2, hitboxSize.y / 2);
+      sprite =
+          std::make_unique<sf::Sprite>(*texture, sf::IntRect({0, 0}, {96, 48}));
+      sprite->setPosition(
+          {pos_x - hitboxSize.x * 2, pos_y - hitboxSize.y * 3.f / 2.f});
+      wall = std::make_unique<Wall>(worldId, pos_x, pos_y - hitboxSize.y,
+          b2Vec2{hitboxSize.x * 2, hitboxSize.y / 2.f}, textureManager, true);
       break;
     case direction::LEFT:
-      polygon = b2MakeBox(hurtboxSize.x/2, hurtboxSize.y*2);
+      polygon = b2MakeBox(hitboxSize.x / 2, hitboxSize.y * 2);
+      sprite = std::make_unique<sf::Sprite>(*texture,
+                                            sf::IntRect({288, 0}, {48, 96}));
+      sprite->setPosition(
+          {pos_x - hitboxSize.x / 2.f, pos_y - hitboxSize.y * 2});
+      wall = std::make_unique<Wall>(worldId, pos_x + hitboxSize.x, pos_y,
+          b2Vec2{hitboxSize.x / 2.f, hitboxSize.y * 2}, textureManager, true);
       break;
     case direction::RIGHT:
-      polygon = b2MakeBox(hurtboxSize.x/2, hurtboxSize.y*2);
+      polygon = b2MakeBox(hitboxSize.x / 2, hitboxSize.y * 2);
+      sprite = std::make_unique<sf::Sprite>(*texture,
+                                            sf::IntRect({192, 0}, {48, 96}));
+      sprite->setPosition(
+          {pos_x - hitboxSize.x * 3.f / 2.f, pos_y - hitboxSize.y * 2});
+      wall = std::make_unique<Wall>(worldId, pos_x - hitboxSize.x, pos_y,
+          b2Vec2{hitboxSize.x / 2.f, hitboxSize.y * 2}, textureManager, true);
+      break;
+    case direction::NONE:
       break;
   }
-  
 
   shapeDef = b2DefaultShapeDef();
   shapeDef.isSensor = true;
@@ -36,6 +60,8 @@ LevelTransition::LevelTransition(const b2WorldId& worldId, float pos_x,
 
   shapeDef.enableSensorEvents = true;
   shapeId = b2CreatePolygonShape(id, &shapeDef, &polygon);
+
+  deactivated = false;
 }
 
 bool LevelTransition::checkCollision() const {
@@ -48,6 +74,13 @@ bool LevelTransition::checkCollision() const {
     return true;
   }
   return false;
+}
+
+void LevelTransition::deactivate() { 
+  if (!deactivated) {
+    wall = nullptr;
+    deactivated = true;
+  }
 }
 
 void LevelTransition::draw(sf::RenderWindow* window) const {
@@ -64,6 +97,8 @@ void LevelTransition::draw(sf::RenderWindow* window) const {
   lines[polygon.count].color = sf::Color(255, 0, 0);
 
   window->draw(lines);
+  if (!deactivated)
+    window->draw(*sprite);
 }
 
 direction LevelTransition::getDirection() { return dir; }

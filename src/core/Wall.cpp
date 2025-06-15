@@ -1,19 +1,19 @@
 #include "Wall.h"
 #include "Constants.h"
 
-const b2Vec2 wallSize{ 20, 20 };
-
-Wall::Wall(const b2WorldId& worldId, float pos_x, float pos_y, TextureManager* textureManager, bool renderDebugBoxes) :
-	hurtbox{ Hurtbox(worldId, pos_x, pos_y, wallSize,
+Wall::Wall(const b2WorldId& worldId, float pos_x, float pos_y, b2Vec2 size,
+           TextureManager* textureManager, bool renderDebugBoxes)
+    :
+	hurtbox{ std::make_unique<Hurtbox>(worldId, pos_x, pos_y, size,
 		entityType::WALL, 
 		entityType::PLAYER_HURTBOX | entityType::ENEMY_HURTBOX | entityType::ENEMY_RAYCAST) },
 	renderDebugBoxes { renderDebugBoxes }
 {
-	hurtbox.setType(b2_staticBody);
+	hurtbox->setType(b2_staticBody);
 }
 
 void Wall::renderWall(sf::RenderWindow* window) const {
 	if (renderDebugBoxes) {
-		hurtbox.draw(window, sf::Color::Magenta);
+		hurtbox->draw(window, sf::Color::Magenta);
 	}	
 }

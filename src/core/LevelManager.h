@@ -30,11 +30,12 @@ public:
 	void notifyDeath(int32_t hurtboxId) override;
 
 	// Turns a file to a playable map
-  void fileToMap(b2WorldId& worldId, const std::string& name);
+        void fileToMap(b2WorldId& worldId, const std::string& name,
+                       bool cleared);
 
 	void unloadLevel();
 	// Loads the level with the given name inside worldId
-  void loadLevel(b2WorldId& worldId, const std::string& level_name, direction dir);
+  void loadLevel(b2WorldId& worldId, const std::string& level_name, direction dir, bool cleared);
 
   // Loads the first level inside worldId
   void loadFirstLevel(b2WorldId& worldId);

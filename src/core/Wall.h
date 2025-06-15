@@ -8,10 +8,11 @@ class TextureManager;
 
 class Wall {
 public:
-	Wall(const b2WorldId& worldId, float pos_x, float pos_y, TextureManager* textureManager, bool renderDebugBoxes);
+	Wall(const b2WorldId& worldId, float pos_x, float pos_y, b2Vec2 size, TextureManager* textureManager, bool renderDebugBoxes);
+	~Wall() = default;
 	void renderWall(sf::RenderWindow* window) const;
 
 private:
-	Hurtbox hurtbox;
+	std::unique_ptr<Hurtbox> hurtbox;
 	bool renderDebugBoxes;
 };

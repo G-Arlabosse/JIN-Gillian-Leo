@@ -37,6 +37,7 @@ private:
 
 	//Map made of multiple levels
   std::vector<std::vector<std::string>> map;
+  std::vector<std::vector<bool>> clear_state_map;
   int level_x;
   int level_y;
 
