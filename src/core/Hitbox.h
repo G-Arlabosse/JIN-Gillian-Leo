@@ -3,7 +3,7 @@
 #include <box2d/box2d.h>
 #include <SFML/Graphics.hpp>
 #include "LevelMediator.h"
-#include "TextureHandler.h"
+#include "AnimationManager.h"
 
 class Hitbox {
 public:
@@ -58,5 +58,5 @@ private:
 	LevelMediator* levelMediator;
 	float damage;
 
-	std::unique_ptr<TextureHandler> texture_handler;
+	std::unique_ptr<AnimationManager> texture_handler;
 };

@@ -103,7 +103,7 @@ class		Projectile{
 {method}
 }
 
-class		TextureHandler{
+class		AnimationManager{
 {field}		- texture
 {method}	+ update(clock)
 }
@@ -151,9 +151,9 @@ Wall *-- Hurtbox
 Entity *-- Hurtbox
 Entity *-- Health
 
-Entity *-- TextureHandler
-Wall *--> TextureHandler
-Projectile *--> TextureHandler
+Entity *-- AnimationManager
+Wall *--> AnimationManager
+Projectile *--> AnimationManager
 
 WorldManager *-- TextureManager
 

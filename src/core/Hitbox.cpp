@@ -11,7 +11,7 @@ Hitbox::Hitbox(const b2WorldId& worldId, std::pair<float, float> pos,
   lifespan{lifespan},
   levelMediator{levelMediator}, 
   damage{damage},
-  texture_handler{std::make_unique<TextureHandler>(textureName, textureManager, std::vector<int>{8}, 2, 600, 1.f)},
+  texture_handler{std::make_unique<AnimationManager>(textureName, textureManager, std::vector<int>{8}, 2, 600, 1.f)},
   activeHitbox{ false }
 {
     bodyDef = std::make_unique<b2BodyDef>(b2DefaultBodyDef());
