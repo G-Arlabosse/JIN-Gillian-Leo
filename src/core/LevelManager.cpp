@@ -88,6 +88,7 @@ void LevelManager::updateAll(long clock) {
       transition->deactivate();
     if (transition->checkCollision()) {
       world_notifier->notifyTransition(transition->getDirection());
+      break;
     }
   }
   player->update(clock, window, inTempo);

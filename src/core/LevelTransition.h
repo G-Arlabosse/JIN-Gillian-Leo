@@ -9,6 +9,7 @@ class LevelTransition {
  public:
   LevelTransition(const b2WorldId& worldId, float pos_x, float pos_y,
                   direction dir, TextureManager* textureManager);
+  ~LevelTransition();
   bool checkCollision() const;
   void deactivate();
   void draw(sf::RenderWindow* window) const;

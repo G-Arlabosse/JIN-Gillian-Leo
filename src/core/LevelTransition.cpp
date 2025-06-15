@@ -64,6 +64,8 @@ LevelTransition::LevelTransition(const b2WorldId& worldId, float pos_x,
   deactivated = false;
 }
 
+LevelTransition::~LevelTransition() { b2DestroyBody(id); }
+
 bool LevelTransition::checkCollision() const {
   b2ShapeId overlaps[1]{0};
   int shapeSensorCount = b2Shape_GetSensorOverlaps(shapeId, overlaps, 1);
