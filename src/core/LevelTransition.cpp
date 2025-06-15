@@ -11,18 +11,27 @@ LevelTransition::LevelTransition(const b2WorldId& worldId, float pos_x,
   bodyDef.linearVelocity = b2Vec2_zero;
   bodyDef.type = b2_staticBody;
   id = b2CreateBody(worldId, &bodyDef);
+
+  texture = textureManager->getTexture(textureName::ROOM_TRANSITION);
   switch (dir) { 
     case direction::UP:
       polygon = b2MakeBox(hitboxSize.x*2, hitboxSize.y/2);
+      sprite = std::make_unique<sf::Sprite>(*texture, sf::IntRect({96, 0}, {96, 48}));
       break;
     case direction::DOWN:
-      polygon = b2MakeBox(hitboxSize.x*2, hitboxSize.y/2);
+      polygon = b2MakeBox(hitboxSize.x * 2, hitboxSize.y / 2);
+      sprite = std::make_unique<sf::Sprite>(*texture,
+                                            sf::IntRect({0, 0}, {96, 48}));
       break;
     case direction::LEFT:
-      polygon = b2MakeBox(hitboxSize.x/2, hitboxSize.y*2);
+      polygon = b2MakeBox(hitboxSize.x / 2, hitboxSize.y * 2);
+      sprite = std::make_unique<sf::Sprite>(*texture,
+                                            sf::IntRect({288, 0}, {48, 96}));
       break;
     case direction::RIGHT:
-      polygon = b2MakeBox(hitboxSize.x/2, hitboxSize.y*2);
+      polygon = b2MakeBox(hitboxSize.x / 2, hitboxSize.y * 2);
+      sprite = std::make_unique<sf::Sprite>(*texture,
+                                            sf::IntRect({192, 0}, {48, 96}));
       break;
   }
   
@@ -62,6 +71,7 @@ void LevelTransition::draw(sf::RenderWindow* window) const {
   lines[polygon.count].color = sf::Color(255, 0, 0);
 
   window->draw(lines);
+  window->draw(*sprite);
 }
 
 direction LevelTransition::getDirection() { return dir; }

@@ -18,3 +18,18 @@ const enum entityType {
   ENEMY_RAYCAST = 0x0020,
   LEVEL_TRANSITION = 0x0040,
 };
+
+//All names of textures
+const enum textureName {
+  HEALTH_BAR,
+  CARROT,
+  STRAWBERRY,
+  CORN,
+  ROOM_TRANSITION,
+  NB_TEXTURES,
+};
+
+//All names of music
+const enum musicName {
+  DISCO_DESCENT
+};

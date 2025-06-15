@@ -19,4 +19,7 @@ class LevelTransition {
   b2ShapeDef shapeDef;
   b2ShapeId shapeId;
   direction dir;
+
+  sf::Texture* texture;
+  std::unique_ptr<sf::Sprite> sprite;
 };
