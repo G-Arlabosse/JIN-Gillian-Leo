@@ -62,7 +62,7 @@ void LevelManager::createEnemy(b2WorldId& worldId, float pos_x, float pos_y, boo
 }
 
 void LevelManager::createWall(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
-    auto wall = std::make_unique<Wall>(worldId, pos_x + hitboxSize.x, pos_y + hitboxSize.y, textureManager, showHitbox);
+    auto wall = std::make_unique<Wall>(worldId, pos_x + hitboxSize.x, pos_y + hitboxSize.y, hitboxSize, textureManager, showHitbox);
     walls.push_back(std::move(wall));
 }
 
@@ -84,6 +84,8 @@ void LevelManager::updateAll(long clock) {
     enemy->update(clock);
   }
   for (const auto& transition : level_transitions) {
+    if (enemies.size() == 0)
+      transition->deactivate();
     if (transition->checkCollision()) {
       world_notifier->notifyTransition(transition->getDirection());
     }
@@ -148,7 +150,8 @@ void LevelManager::renderEntities(sf::RenderWindow *window) {
     window->draw(path_render);
 }
 
-void LevelManager::fileToMap(b2WorldId& worldId, const std::string& name) {
+void LevelManager::fileToMap(b2WorldId& worldId, const std::string& name,
+                             bool cleared) {
   std::string levelLine;
   std::ifstream levelFile(name);
 
@@ -182,7 +185,8 @@ void LevelManager::fileToMap(b2WorldId& worldId, const std::string& name) {
           createPlayer(worldId, x * sizeMultiplier, y * sizeMultiplier, showHitboxes);
           break;
         case 'e':
-          createEnemy(worldId, x * sizeMultiplier, y * sizeMultiplier, showHitboxes);
+          if (!cleared)
+            createEnemy(worldId, x * sizeMultiplier, y * sizeMultiplier, showHitboxes);
           break;
         case '-':
           break;
@@ -214,12 +218,12 @@ void LevelManager::unloadLevel() {
   levelGraph->clearGraph();
 }
 
-void LevelManager::loadLevel(b2WorldId& worldId, const std::string& name, direction dir) {
+void LevelManager::loadLevel(b2WorldId& worldId, const std::string& name, direction dir, bool cleared) {
   unloadLevel();
   map.load((std::string) "resources/tilemaps/" + name + ".tmx");
   layer = std::make_unique<MapLayer>(map, 0);
   std::string filename = (std::string)"resources/rooms/" + name +".txt";
-  fileToMap(worldId, filename);
+  fileToMap(worldId, filename, cleared);
   float pos_x, pos_y;
   switch (dir) { 
     case direction::NONE:
@@ -248,7 +252,7 @@ void LevelManager::loadLevel(b2WorldId& worldId, const std::string& name, direct
 
 void LevelManager::loadFirstLevel(b2WorldId& worldId) {
   std::string levelLine;
-  loadLevel(worldId, "TestStartRoom", direction::NONE);
+  loadLevel(worldId, "TestStartRoom", direction::NONE, true);
 }
 
 b2Vec2 LevelManager::getPlayerPosition() {

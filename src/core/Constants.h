@@ -25,6 +25,7 @@ const enum textureName {
   CARROT,
   STRAWBERRY,
   CORN,
+  ROOM_TRANSITION,
   NB_TEXTURES,
 };
 

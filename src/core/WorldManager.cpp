@@ -18,6 +18,8 @@ WorldManager::WorldManager() :
     window->setView(*camera);
     b2World_SetGravity(worldId, b2Vec2{ 0, 0 });
     map = makeMap();
+    clear_state_map = std::vector<std::vector<bool>>(
+        map.size(), std::vector<bool>(map[0].size(), false));
     level_x = 1;
     level_y = 0;
     levelManager = std::make_unique<LevelManager>(this, window.get(), textureManager.get());
@@ -90,7 +92,11 @@ void WorldManager::changeLevel(direction dir) {
     case direction::NONE:
       break;
   }
-  levelManager->loadLevel(worldId ,map[level_y][level_x], dir);
+  levelManager->loadLevel(worldId, map[level_y][level_x], dir,
+                          clear_state_map[level_y][level_x]);
 }
 
-void WorldManager::notifyTransition(direction dir) { changeLevel(dir); }
+void WorldManager::notifyTransition(direction dir) { 
+  clear_state_map[level_y][level_x] = true;
+  changeLevel(dir);
+}
