@@ -96,7 +96,7 @@ b2Vec2 Enemy::getMoveCoords(b2Vec2& playerPos, rayCastResult result) {
 				pathLimit = path.size() / 2;
 			}
 			pathAdvancement++;
-			return path[pathAdvancement] * sizeMultiplier;
+			return path[pathAdvancement];
 			
 	}
 	else if (result == ATTACK) {

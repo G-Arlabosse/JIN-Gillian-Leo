@@ -92,20 +92,22 @@ const int Graph::getCoordsId(b2Vec2 coords) {
 
 std::vector<b2Vec2> Graph::reconstructPath(const std::map<int, int>& cameFrom, int current_id) {
     std::vector<b2Vec2> path;
-    path.push_back(nodes[current_id]->coords);
+    auto coords = (nodes[current_id]->coords + b2Vec2{ 0.5f, 0.5 })*sizeMultiplier;
+    path.push_back(coords);
     while (cameFrom.find(current_id) != cameFrom.end()) {
         current_id = cameFrom.at(current_id);
-        path.push_back(nodes[current_id]->coords);
+        coords = (nodes[current_id]->coords + b2Vec2{0.5f, 0.5})* sizeMultiplier;
+        path.push_back( coords );
     }
     std::reverse(path.begin(), path.end());
     return path;
 }
 
 std::vector<b2Vec2> Graph::getPath(b2Vec2& start, b2Vec2& goal) {
-    int start_x = (int)((start.x + sizeMultiplier / 2) / sizeMultiplier);
-    int start_y = (int)((start.y + sizeMultiplier / 2) / sizeMultiplier);
-    int goal_x = (int)((goal.x + sizeMultiplier / 2) / sizeMultiplier);
-    int goal_y = (int)((goal.y + sizeMultiplier / 2) / sizeMultiplier);
+    int start_x = (int)((start.x) / sizeMultiplier);
+    int start_y = (int)((start.y) / sizeMultiplier);
+    int goal_x = (int)((goal.x) / sizeMultiplier);
+    int goal_y = (int)((goal.y) / sizeMultiplier);
 
     b2Vec2 unscaled_start = { start_x,  start_y };
     b2Vec2 unscaled_goal = { goal_x, goal_y };
@@ -175,8 +177,16 @@ std::vector<b2Vec2> Graph::getPath(b2Vec2& start, b2Vec2& goal) {
 sf::VertexArray Graph::getPathRender(std::vector<b2Vec2>& path) {
     auto path_render = sf::VertexArray(sf::PrimitiveType::LineStrip, path.size());
     for (int i = 0; i < path.size(); i++) {
-        path_render[i].position = sf::Vector2(path[i].x * sizeMultiplier, path[i].y * sizeMultiplier);
-        path_render[i].color = sf::Color::Cyan;
+      float x = (path[i].x);
+      float y = (path[i].y);
+      path_render[i].position = sf::Vector2f(x, y);
+      path_render[i].color = sf::Color::Cyan;
     }
     return path_render;
+}
+
+void Graph::clearGraph() {
+  width = 0;
+  height = 0;
+  nodes.clear();
 }

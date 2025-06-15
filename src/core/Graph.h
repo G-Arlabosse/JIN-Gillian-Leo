@@ -59,4 +59,6 @@ public:
 
   // Returns the graph's height
   const int getHeight();
+
+	void clearGraph();
 };

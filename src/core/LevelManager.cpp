@@ -57,7 +57,7 @@ void LevelManager::createPlayer(b2WorldId& worldId, float pos_x, float pos_y, bo
 void LevelManager::createEnemy(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
   float x = pos_x + hitboxSize.x;
   float y = pos_y + hitboxSize.y;
-  auto enemy = std::make_unique<Enemy>(worldId, x, y, textureName::CARROT, textureManager, levelGraph.get(), this, showHitbox);
+  auto enemy = std::make_unique<Enemy>(worldId, x, y, textureName::STRAWBERRY, textureManager, levelGraph.get(), this, showHitbox);
   enemies[enemy->getShapeIndex()] = std::move(enemy);
 }
 
@@ -93,6 +93,7 @@ void LevelManager::updateAll(long clock) {
 
 void LevelManager::initTempo() {
   tempoTimePlayer = std::clock();
+  std::cout << "Tempo init at " << tempoTimePlayer << std::endl;
   tempoTimeEntities = tempoTimePlayer;
 }
 
@@ -119,6 +120,7 @@ void LevelManager::updateTempo(long clock) {
 
 
     if (clock > tempoTimeEntities) {
+        std::cout << "Tempo entities at " << tempoTimeEntities << std::endl;
         tempoTimeEntities += tempoMS;
         for (const auto& [index, enemy] : enemies) {
             enemy->updateTempo(getPlayerPosition(), tempoMS);
@@ -209,6 +211,7 @@ void LevelManager::unloadLevel() {
   enemies.clear();
   level_transitions.clear();
   player = nullptr;
+  levelGraph->clearGraph();
 }
 
 void LevelManager::loadLevel(b2WorldId& worldId, const std::string& name, direction dir) {
@@ -253,5 +256,5 @@ b2Vec2 LevelManager::getPlayerPosition() {
 }
 
 void LevelManager::setTempo(int bpm) {
-  tempoMS = 1000 * 60.f / (float)bpm;
+  tempoMS = 1000.f * 60.f / bpm;
 }

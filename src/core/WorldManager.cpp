@@ -39,11 +39,11 @@ void WorldManager::startGame() {
   map = makeMap();
 
   levelManager->loadFirstLevel(worldId);
-  musicManager->playMusic(musicName::DISCO_DESCENT);
-  levelManager->initTempo();
+
   levelManager->setTempo(musicManager->getMusicBPM(DISCO_DESCENT));
-
-
+  levelManager->initTempo();
+  musicManager->playMusic(musicName::DISCO_DESCENT);
+  
   while (window->isOpen()) {
     while (const auto event = window->pollEvent()) {
       if (event->is<sf::Event::Closed>()) {

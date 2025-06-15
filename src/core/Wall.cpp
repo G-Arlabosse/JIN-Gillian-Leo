@@ -1,7 +1,7 @@
 #include "Wall.h"
 #include "Constants.h"
 
-const b2Vec2 wallSize{ 20, 20 };
+const b2Vec2 wallSize = b2Vec2{ 1, 1 }*(sizeMultiplier/2);
 
 Wall::Wall(const b2WorldId& worldId, float pos_x, float pos_y, TextureManager* textureManager, bool renderDebugBoxes) :
 	hurtbox{ Hurtbox(worldId, pos_x, pos_y, wallSize,
