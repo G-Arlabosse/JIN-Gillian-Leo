@@ -11,7 +11,7 @@ add_library(lib_core
  "Enemy.cpp" "Enemy.h" 
  "LevelManager.cpp" "LevelManager.h" 
  "Graph.cpp" "Graph.h"
- "AnimationManager.cpp" "TextureHandler.h" 
+ "AnimationManager.cpp" "AnimationManager.h" 
  "LevelMediator.h" 
  "LevelTransition.cpp" "LevelTransition.h"  
  "WorldNotifier.h"
