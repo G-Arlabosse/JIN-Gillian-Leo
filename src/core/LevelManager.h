@@ -100,11 +100,11 @@ private:
 	//Tempo related param
 	sf::CircleShape beatIndicator;
 	bool inTempo;
-	long tempoTimeEntities;
-	long tempoTimePlayer;
+	float tempoTimeEntities;
+	float tempoTimePlayer;
 
-  int tempoMS = 500;
-	int delta = 100;
-	int delta2 = 50;
+  float tempoMS = 500;
+	float delta = 150;
+	float delta2 = 50;
 };
 
