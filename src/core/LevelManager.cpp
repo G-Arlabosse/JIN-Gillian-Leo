@@ -122,11 +122,11 @@ void LevelManager::updateTempo(long clock) {
 
 
     if (clock > tempoTimeEntities) {
-        std::cout << "Tempo entities at " << tempoTimeEntities << std::endl;
-        tempoTimeEntities += tempoMS;
-        for (const auto& [index, enemy] : enemies) {
-            enemy->updateTempo(getPlayerPosition(), tempoMS);
-        }
+      printf("Tempo entities at %f\n", tempoTimeEntities);
+      tempoTimeEntities += tempoMS;
+      for (const auto& [index, enemy] : enemies) {
+        enemy->updateTempo(getPlayerPosition(), tempoMS);
+      }
     }
 }
 
