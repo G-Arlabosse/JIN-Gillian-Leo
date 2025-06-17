@@ -18,9 +18,14 @@ Les contrôles ?
 
 ![Lobby](/doc/screenShotLobby.png)
 
+Vous voici à l'entrée de la première ville que vous devez nettoyer.  
+En bas de l'écran est affiché l'indicateur rythmique. Essayez de coordonner vos actions lorsque cet indicateur passe vert pour entrer en mode *super allegricole* ! [TODO] (pas encore d'amélioration de dégat grâce au compteur)  
+Marchez vers la route où est affiché "Start game" pour entrer dans la ville...  
+
 ![Enemies](/doc/screenShotRoom.png)
 
-Si possible, une ou plusieurs copies d’écran, voire un lien vers une vidéo Youtube d’une session de jeu.
+Certains quartiers sont effet infestés d'*agrythmecultures*. Ces dernières feront tout pour t'éliminer ! Fais dont bien attention à ta barre de vie.  
+Une fois que tu as complètement nettoyé un quartier, tu pourras passer au suivant.    
 
 ## Lancer le jeu
 
