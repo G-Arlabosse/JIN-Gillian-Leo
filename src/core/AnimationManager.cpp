@@ -43,8 +43,9 @@ void AnimationManager::nextFrame() {
         can_play = false;
       frames_played = 0;
       frame_pos.x = 0;
-    }     
-    sprite->setTextureRect(sf::IntRect(frame_pos, {size_x, size_y}));
+    }
+    if (can_play)
+      sprite->setTextureRect(sf::IntRect(frame_pos, {size_x, size_y}));
   }
 }
 
@@ -83,4 +84,5 @@ void AnimationManager::draw(sf::RenderWindow* window, float pos_x, float pos_y) 
 void AnimationManager::reactivate() { 
   can_play = true;
   frames_played = 0;
+  frame_pos.x = -size_x;
 }
