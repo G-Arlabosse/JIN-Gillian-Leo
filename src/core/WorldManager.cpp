@@ -17,11 +17,9 @@ WorldManager::WorldManager() :
     camera->setSize({ 1000, 700 });
     window->setView(*camera);
     b2World_SetGravity(worldId, b2Vec2{ 0, 0 });
-    map = makeMap();
-    clear_state_map = std::vector<std::vector<bool>>(
-        map.size(), std::vector<bool>(map[0].size(), false));
     level_x = 1;
     level_y = 0;
+    floor = 0;
     levelManager = std::make_unique<LevelManager>(this, window.get(), textureManager.get());
 }
 
@@ -36,15 +34,8 @@ void WorldManager::updateWorld() {
     window->setView(*camera);
 }
 
-
 void WorldManager::startGame() {
-  map = makeMap();
-
-  levelManager->loadFirstLevel(worldId);
-
-  levelManager->setTempo(musicManager->getMusicBPM(DISCO_DESCENT));
-  levelManager->initTempo();
-  musicManager->playMusic(musicName::DISCO_DESCENT);
+  loadLobby();
   
   while (window->isOpen()) {
     while (const auto event = window->pollEvent()) {
@@ -68,11 +59,47 @@ void WorldManager::destroy() {
   b2DestroyWorld(worldId);
 }
 
-vector<vector<string>> WorldManager::makeMap() {
-  vector<vector<string>> test_map{
-      {"TestRoom1_big", "TestStartRoom", "TestRoom1", "TestRoom2"},
-      {"", "", "room_murs", "TestRoom2"}};
-  return test_map;
+void WorldManager::makeMap() {
+  worldMap = std::make_unique<struct worldMap>();
+
+  struct floor floor;
+
+  floor.first_room_x = 0;
+  floor.first_room_y = 0;
+  floor.music = RYTHMORTIS;
+  floor.rooms = {
+    {{"Lobby"}}
+  };
+  worldMap->floors.push_back(floor);
+
+  floor.first_room_x = 1;
+  floor.first_room_y = 0;
+  floor.music = DISCO_DESCENT;
+  floor.rooms = {
+      {{"TestRoom1_big"}, {"TestStartRoom"}, {"TestRoom1"}, {"TestRoom2"} },
+      {{""}, {""}, {"room_murs"}, {"TestRoom2"} }
+  };
+  worldMap->floors.push_back(floor);
+}
+
+void WorldManager::changeFloor(direction dir) {
+  switch (dir) {
+    case direction::STAGE_DOWN:
+      floor++;
+      break;
+    case direction::STAGE_UP:
+      floor--;
+      break;
+  }
+  auto new_floor = worldMap->floors[floor];
+  level_x = new_floor.first_room_x;
+  level_y = new_floor.first_room_y;
+
+  auto new_room = new_floor.rooms[level_y][level_x];
+  levelManager->loadLevel(worldId, new_room.name, dir, new_room.cleared);
+  levelManager->setTempo(musicManager->getMusicBPM(new_floor.music));
+  levelManager->initTempo();
+  musicManager->playMusic(new_floor.music);
 }
 
 void WorldManager::changeLevel(direction dir) {
@@ -92,11 +119,32 @@ void WorldManager::changeLevel(direction dir) {
     case direction::NONE:
       break;
   }
-  levelManager->loadLevel(worldId, map[level_y][level_x], dir,
-                          clear_state_map[level_y][level_x]);
+  auto room = worldMap->floors[floor].rooms[level_y][level_x];
+  levelManager->loadLevel(worldId, room.name, dir, room.cleared);
+}
+
+void WorldManager::loadLobby() {
+  makeMap();
+
+  floor = 0;
+  auto lobby_floor = worldMap->floors[floor];
+  level_x = lobby_floor.first_room_x;
+  level_y = lobby_floor.first_room_y;
+
+  auto lobby_room = lobby_floor.rooms[level_y][level_x].name;
+  levelManager->loadLevel(worldId, lobby_room, direction::NONE, true);
+  levelManager->setTempo(musicManager->getMusicBPM(lobby_floor.music));
+  levelManager->initTempo();
+  musicManager->playMusic(lobby_floor.music);
 }
 
 void WorldManager::notifyTransition(direction dir) { 
-  clear_state_map[level_y][level_x] = true;
-  changeLevel(dir);
+  worldMap->floors[floor].rooms[level_y][level_x].cleared = true;
+  
+  if (dir == direction::STAGE_UP || dir == direction::STAGE_DOWN) {
+    changeFloor(dir);
+  }
+  else {
+    changeLevel(dir);
+  }
 }

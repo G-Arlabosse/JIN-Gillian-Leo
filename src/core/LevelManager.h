@@ -15,10 +15,17 @@
 #include "Graph.h"
 #include "LevelMediator.h"
 #include "LevelTransition.h"
+#include "WorldTransition.h"
 #include "WorldNotifier.h"
 
 const float timeStep = 1 / 60.0f;
 const int subStepCount = 8;
+
+const struct callLoadLevel {
+	bool isCalled = false;
+	bool goBackToLobby = false;
+	enum direction dir = direction::NONE;
+};
 
 //
 class LevelManager: public LevelMediator {
@@ -65,7 +72,9 @@ public:
   void createWall(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox);
 
   // Adds a level transition in the level, usually called by loadLevel
-  void createTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir);
+  void createRoomTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir);
+
+	void createFloorTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir);
 
 	//Adds the player in the level, usually called by loadLevel
 	void createPlayer(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox);
@@ -89,8 +98,10 @@ private:
 	std::unique_ptr<Player> player;
   std::vector<std::unique_ptr<Wall>> walls;
   std::vector<std::unique_ptr<LevelTransition>> level_transitions;
+	std::vector<std::unique_ptr<WorldTransition>> world_transitions;
 
 	WorldNotifier* world_notifier;
+	struct callLoadLevel callLoadLevel;
 
 	//Texture related param
 	TextureManager* textureManager;

@@ -4,7 +4,7 @@ MusicManager::MusicManager() {}
 
 void MusicManager::playMusic(enum musicName name) {
   auto path = musicCommonPath + musicMap.at(name).path;
-  if (!music.openFromFile("resources/music/disco_descent.mp3")) {
+  if (!music.openFromFile(path)) {
     terminate();
   }
   music.play();

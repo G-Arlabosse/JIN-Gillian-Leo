@@ -8,6 +8,7 @@ public:
         TextureManager* textureManager, float tempo,
         LevelMediator* levelMediator, bool renderDebugBoxes);
 	void move(b2Vec2& target);
+	void teleport(b2Vec2& pos);
 	void attack(b2Vec2 direction, float damage);
 	void update(long clock, const sf::RenderWindow* window, bool inPlayerTempoWindow);
 	bool updateInput(const sf::RenderWindow *window);

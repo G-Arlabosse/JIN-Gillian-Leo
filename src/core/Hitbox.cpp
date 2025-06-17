@@ -103,6 +103,8 @@ b2Vec2 Hitbox::getSpeed() { return speed; }
 void Hitbox::setSpeed(float speed_x, float speed_y) { speed = b2Vec2{speed_x, speed_y}; }
 
 void Hitbox::sleep() {
+  auto rot = b2Body_GetRotation(*id);
+  b2Body_SetTransform(*id, {-1000, -1000}, rot); //To change !
   b2Body_SetAwake(*id, false);
   activeHitbox = false;
 }
