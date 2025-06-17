@@ -3,16 +3,16 @@
 
 Hitbox::Hitbox(const b2WorldId& worldId, std::pair<float, float> pos,
                std::pair<float, float> speed, const b2Vec2& hitboxSize,
-               float damage, long lifespan, textureName textureName, TextureManager* textureManager,
+               float damage, long lifespan, std::unique_ptr<AnimationManager> animation_manager,
                uint64_t categoryBits, uint64_t maskBits,
                LevelMediator* levelMediator)
     : 
   speed{b2Vec2{speed.first, speed.second}},
   lifespan{lifespan},
+  activeHitbox{false},
   levelMediator{levelMediator}, 
   damage{damage},
-  texture_handler{std::make_unique<AnimationManager>(textureName, textureManager, std::vector<int>{8}, 2, 600, 1.f)},
-  activeHitbox{ false }
+  animation_manager{std::move(animation_manager)}
 {
     bodyDef = std::make_unique<b2BodyDef>(b2DefaultBodyDef());
     bodyDef->position = b2Vec2{ pos.first, pos.second };
@@ -72,7 +72,7 @@ void Hitbox::draw(sf::RenderWindow* window, sf::Color color) {
     lines[polygon->count].color = color;
 
     auto pos = b2Body_GetPosition(*id);
-    texture_handler->draw(window, pos.x, pos.y);
+    animation_manager->draw(window, pos.x, pos.y);
 
     window->draw(lines);
 }
@@ -117,10 +117,12 @@ bool Hitbox::updateHitbox(long clock) {
     return true;
   }
   move();
-  texture_handler->update(clock);
+  animation_manager->update(clock);
   return false;
 }
 
 bool Hitbox::isActive() {
   return activeHitbox;
 }
+
+void Hitbox::reactivateAnimation() { animation_manager->reactivate(); }

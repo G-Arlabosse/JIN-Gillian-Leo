@@ -1,16 +1,19 @@
 #include "AnimationManager.h"
 #include <algorithm>
+#include <iostream>
 
 //Passer un vector<int> en argument du constructeur ?
 AnimationManager::AnimationManager(enum textureName textureName, TextureManager* textureManager,
   std::vector<int> animation_columns, float scale,
-  int tempo, float speed_mult) :
+  int tempo, float speed_mult, bool animation_loops) :
   lines{ (int)animation_columns.size() },
   animation_columns{ animation_columns },
   frame_pos{ sf::Vector2i{0, 0} },
   speed_mult{ speed_mult },
-  current_animation{ 0 }
-{
+  current_animation{ 0 },
+  animation_loops{animation_loops},
+  can_play{animation_loops},
+      frames_played{0} {
   auto texture = textureManager->getTexture(textureName);
 
   size_x = (int)texture->getSize().x / *std::max_element(animation_columns.begin(), animation_columns.end());
@@ -33,8 +36,17 @@ void AnimationManager::changeAnimation(int animation_number) {
 }
 
 void AnimationManager::nextFrame() {
-  frame_pos.x = (frame_pos.x + size_x) % (size_x * animation_columns[current_animation]);
-  sprite->setTextureRect(sf::IntRect(frame_pos, { size_x, size_y }));
+  if (can_play) {
+    frame_pos.x += size_x;
+    frames_played++;
+    if (frames_played == animation_columns[current_animation]) {
+      if (!animation_loops) 
+        can_play = false;
+      frames_played = 0;
+      frame_pos.x = 0;
+    }     
+    sprite->setTextureRect(sf::IntRect(frame_pos, {size_x, size_y}));
+  }
 }
 
 sf::Sprite AnimationManager::getSprite() const { return *sprite; }
@@ -63,4 +75,9 @@ void AnimationManager::draw(sf::RenderWindow* window, float pos_x, float pos_y) 
   sprite->setPosition(sf::Vector2f(pos_x, pos_y));
 
   window->draw(*sprite);
+}
+
+void AnimationManager::reactivate() { 
+  can_play = true;
+  frames_played = 0;
 }

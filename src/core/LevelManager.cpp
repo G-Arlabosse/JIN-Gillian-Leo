@@ -51,13 +51,13 @@ void LevelManager::notifyDeath(int32_t hurtboxIndex) {
 }
 
 void LevelManager::createPlayer(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
-    player = std::make_unique<Player>(worldId, pos_x + hitboxSize.x, pos_y + hitboxSize.y, textureManager, this, showHitbox);
+    player = std::make_unique<Player>(worldId, pos_x + hitboxSize.x, pos_y + hitboxSize.y, textureManager, tempoMS, this, showHitbox);
 }
 
 void LevelManager::createEnemy(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
   float x = pos_x + hitboxSize.x;
   float y = pos_y + hitboxSize.y;
-  auto enemy = std::make_unique<Enemy>(worldId, x, y, textureName::STRAWBERRY, textureManager, levelGraph.get(), this, showHitbox);
+  auto enemy = std::make_unique<Enemy>(worldId, x, y, textureName::CARROT, textureManager, tempoMS, levelGraph.get(), this, showHitbox);
   enemies[enemy->getShapeIndex()] = std::move(enemy);
 }
 
@@ -138,7 +138,7 @@ bool LevelManager::isInTempo() {
 void LevelManager::renderEntities(sf::RenderWindow *window) {
     window->draw(*layer);
     for (const auto& [index,enemy] : enemies) {
-        enemy->renderEnemy(window);
+        enemy->renderEntity(window);
     }
     player->renderEntity(window);
     for (const auto& wall : walls) {
@@ -225,7 +225,8 @@ void LevelManager::loadLevel(b2WorldId& worldId, const std::string& name, direct
   layer = std::make_unique<MapLayer>(map, 0);
   std::string filename = (std::string)"resources/rooms/" + name +".txt";
   fileToMap(worldId, filename, cleared);
-  float pos_x, pos_y;
+  float pos_x = 0;
+  float pos_y = 0;
   switch (dir) { 
     case direction::NONE:
       pos_x = (float)levelGraph->getWidth() / 2.f * sizeMultiplier;

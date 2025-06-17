@@ -14,7 +14,7 @@ class Entity {
 public:
 	//Constructor
 	Entity(const b2WorldId &worldId, float pos_x, float pos_y, int hp, b2Vec2& hitboxSize, 
-		textureName textureName, TextureManager* textureManager,
+		textureName textureName, TextureManager* textureManager, float tempo,
 		uint64_t categoryBitsHurtbox, uint64_t maskBitsHurtbox,
 		uint64_t categoryBitsHitbox, uint64_t maskBitsHitbox,
 		LevelMediator* levelMediator, bool renderDebugBoxes);
@@ -59,6 +59,7 @@ protected:
 	float pos_y;
 	bool renderDebugBoxes;
   std::unique_ptr<AnimationManager> animation_manager;
+  std::unique_ptr<AnimationManager> attack_animation_manager;
 
 	int patternState;
 

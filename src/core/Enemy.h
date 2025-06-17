@@ -12,7 +12,8 @@ class Enemy : public Entity {
 public:
 	//Constructor
 	Enemy(const b2WorldId& worldId, float pos_x, float pos_y, 
-		textureName textureName, TextureManager* textureManager, Graph* levelGraph,
+		textureName textureName, TextureManager* textureManager, float tempo,
+       Graph* levelGraph,
 		LevelMediator* levelMediator, bool renderDebugBoxes);
 	
 	//Centralize later in Entity ?

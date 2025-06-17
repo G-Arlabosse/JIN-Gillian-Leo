@@ -20,9 +20,13 @@ class AnimationManager {
   float speed_mult;
   int current_animation;
   long last_frame_time;
+
+  bool animation_loops;
+  bool can_play;
+  int frames_played;
  public:
 	//Constructor
-	AnimationManager(enum textureName textureName, TextureManager* textureManager, std::vector<int>, float scale, int tempo, float speed_mult);
+	AnimationManager(enum textureName textureName, TextureManager* textureManager, std::vector<int>, float scale, int tempo, float speed_mult, bool animation_loops);
   
 	//Unused for now, will change the animation type later on
 	void changeAnimation(int animation_number);
@@ -51,4 +55,7 @@ class AnimationManager {
 
 	// Draws the current state of the texture centered at (pos_x, pos_y)
 	void draw(sf::RenderWindow* window, float pos_x, float pos_y);
+
+	// Allows a non-looping animation to be played again
+	void reactivate();
 };

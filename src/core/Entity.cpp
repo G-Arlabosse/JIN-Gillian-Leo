@@ -2,7 +2,7 @@
 #include <iostream>
 
 Entity::Entity(const b2WorldId& worldId, float pos_x, float pos_y, int hp, b2Vec2& hurtboxSize, 
-	textureName textureName, TextureManager* textureManager,
+	textureName textureName, TextureManager* textureManager, float tempo,
 	uint64_t categoryBitsHurtbox, uint64_t maskBitsHurtbox,
 	uint64_t categoryBitsHitbox, uint64_t maskBitsHitbox,
 	LevelMediator* levelMediator, bool renderDebugBoxes = false): 
@@ -12,11 +12,12 @@ Entity::Entity(const b2WorldId& worldId, float pos_x, float pos_y, int hp, b2Vec
   pos_y{pos_y},
   renderDebugBoxes{renderDebugBoxes},
   animation_manager{
-		std::make_unique<AnimationManager>(textureName, textureManager, std::vector<int>{8}, 3, 600, 1.f)}
-{
+		std::make_unique<AnimationManager>(textureName, textureManager, std::vector<int>{8}, 3, tempo, 1.f, true)} {
+  attack_animation_manager = std::make_unique<AnimationManager>(
+      textureName::SLASH, textureManager, std::vector<int>{9}, 1, tempo, 2, false);
   hitbox = std::make_unique<Hitbox>(worldId, std::pair<float, float>{pos_x, pos_y},
-    std::pair<float, float>{0, 0}, b2Vec2{hurtboxSize.x / 2, hurtboxSize.y * 4 / 3}, 1, 0,
-		textureName, textureManager, categoryBitsHitbox, maskBitsHitbox, levelMediator);
+    std::pair<float, float>{0, 0}, b2Vec2{hurtboxSize.x / 2, hurtboxSize.y * 4 / 3}, 1, tempo/2.f,
+		std::move(attack_animation_manager), categoryBitsHitbox, maskBitsHitbox, levelMediator);
 	health = std::make_unique<Health>(hp, hurtbox->getShapeId().index1, levelMediator, textureManager);
   hurtbox->setType(b2_dynamicBody);
   hurtbox->setLinearDamping(3);
@@ -26,6 +27,7 @@ void Entity::attack(b2Vec2 direction, float damage) {
 	b2Rot rot = b2ComputeRotationBetweenUnitVectors({1,0}, direction);
 	b2Vec2 position = hurtbox->getPosition() + direction * sizeMultiplier;
 	hitbox->wake(position, rot);
+  hitbox->reactivateAnimation();
 }
 
 void Entity::shield() {

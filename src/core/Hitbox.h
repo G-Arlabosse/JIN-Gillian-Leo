@@ -8,8 +8,10 @@
 class Hitbox {
 public:
 	//Constructor
- Hitbox(const b2WorldId& worldId, std::pair<float, float> pos, std::pair<float, float> speed, const b2Vec2& hitboxSize,
-	 float damage, long lifespan, textureName textureName, TextureManager* textureManager, uint64_t categoryBits, uint64_t maskBits,
+ Hitbox(const b2WorldId& worldId, std::pair<float, float> pos, std::pair<float, float> speed, const b2Vec2& hitboxSize, float damage,
+        long lifespan, std::unique_ptr<AnimationManager> animation_manager,
+        uint64_t categoryBits,
+        uint64_t maskBits,
 		LevelMediator* levelMediator);
  ~Hitbox() { b2DestroyBody(*id); };
 	
@@ -45,6 +47,8 @@ public:
 
 	bool entityTouched();
 
+	void reactivateAnimation();
+
 private:
 	std::unique_ptr<b2BodyDef> bodyDef;
 	std::unique_ptr<b2BodyId> id;
@@ -58,5 +62,5 @@ private:
 	LevelMediator* levelMediator;
 	float damage;
 
-	std::unique_ptr<AnimationManager> texture_handler;
+	std::unique_ptr<AnimationManager> animation_manager;
 };
