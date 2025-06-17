@@ -114,6 +114,13 @@ class 		TextureManager{
 {method}	- loadTexture(textureName)
 }
 
+class		LevelTransition {
+{field}		wall : Wall
+}
+class 		WorldTransition {
+
+}
+
 abstract 	Health {
 {field}		- hp
 {field}		- maxHp
@@ -140,6 +147,8 @@ Entity --> Graph
 LevelManager *-- Enemy
 LevelManager *-- Player
 LevelManager *-- Wall
+LevelManager *-- LevelTransition
+LevelManager *-- WorldTransition
 
 Hitbox --> LevelMediator
 Health --> LevelMediator
@@ -150,6 +159,7 @@ Projectile *-- Hitbox
 Wall *-- Hurtbox
 Entity *-- Hurtbox
 Entity *-- Health
+LevelTransition *-- Wall
 
 Entity *-- AnimationManager
 Wall *--> AnimationManager

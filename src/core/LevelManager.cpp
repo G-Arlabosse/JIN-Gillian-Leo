@@ -13,13 +13,12 @@ LevelManager::LevelManager(WorldNotifier *wn, sf::RenderWindow *window, TextureM
 {
     //tempoTimeEntities = tempoTimePlayer;
 
-    int r = 25;
+    float r = 25;
     beatIndicator.setRadius(r);
-    beatIndicator.setPosition(sf::Vector2f(500 - r, 400 - r));
+    beatIndicator.setOrigin(sf::Vector2f{ r, r });
 
     map.load("resources/tilemaps/TestStartRoom.tmx");
     layer = std::make_unique<MapLayer>(map, 0);
-
 }
 
 void LevelManager::notifyDamage(int32_t hurtboxIndex, int damage) {
@@ -135,11 +134,11 @@ void LevelManager::updateTempo(long clock) {
     }
     else if (clock > (tempoTimePlayer - delta2) && clock < (tempoTimePlayer + delta2)) {
         inTempo = true;
-        beatIndicator.setFillColor(sf::Color::Green);
+        beatIndicator.setFillColor(sf::Color(0, 255, 0, 200));
     }
     else if (clock > (tempoTimePlayer - delta) && clock > (tempoTimePlayer + delta2)) {
         inTempo = true;
-        beatIndicator.setFillColor(sf::Color::Red);
+        beatIndicator.setFillColor(sf::Color(255, 0, 0, 200));
     }
     else {
         inTempo = false;
@@ -152,6 +151,10 @@ void LevelManager::updateTempo(long clock) {
         enemy->updateTempo(getPlayerPosition(), tempoMS);
       }
     }
+
+    auto p = player->getPosition();
+    sf::Vector2f beatIndicatiorPos = { p.x, p.y + window->getSize().y/3 };
+    beatIndicator.setPosition(beatIndicatiorPos);
 }
 
 bool LevelManager::isInTempo() {

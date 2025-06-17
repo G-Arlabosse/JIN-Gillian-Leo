@@ -48,7 +48,9 @@ b2Vec2 getMousePosition(const sf::RenderWindow* window) {
 	auto posMouse = sf::Mouse::getPosition(*window);
 	auto viewSize = window->getView().getSize();
 	auto posCamera = window->getView().getCenter();
-	return b2Vec2(posMouse.x - viewSize.x / 2 + posCamera.x, posMouse.y - viewSize.y / 2 + posCamera.y);
+	float mouseX = posMouse.x - viewSize.x / 2 + posCamera.x;
+	float mouseY = posMouse.y - viewSize.y / 2 + posCamera.y;
+	return b2Vec2{ mouseX, mouseY };
 }
 
 bool Player::updateInput(const sf::RenderWindow *window) {
