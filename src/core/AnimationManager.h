@@ -49,6 +49,8 @@ class AnimationManager {
 	//GETTER: returns the sprite adapted to the texture
 	sf::Sprite getSprite() const;
   
+	void setRotation(float angle);
+
 	//SETTER: sets the scale of the sprite
 	void setScale(float s);
 	//TODO-Replace with a render(sf::RenderWindow *window) method ?

@@ -16,7 +16,7 @@ Entity::Entity(const b2WorldId& worldId, float pos_x, float pos_y, int hp, b2Vec
   attack_animation_manager = std::make_unique<AnimationManager>(
       textureName::SLASH, textureManager, 1, tempo, 2, false);
   hitbox = std::make_unique<Hitbox>(worldId, std::pair<float, float>{pos_x, pos_y},
-    std::pair<float, float>{0, 0}, b2Vec2{hurtboxSize.x / 2, hurtboxSize.y * 4 / 3}, 1, tempo/2.f,
+    std::pair<float, float>{0, 0}, b2Vec2{hurtboxSize.x, hurtboxSize.y * 4 / 3}, 1, tempo/2.f,
 		std::move(attack_animation_manager), categoryBitsHitbox, maskBitsHitbox, levelMediator);
 	health = std::make_unique<Health>(hp, hurtbox->getShapeId().index1, levelMediator, textureManager);
   hurtbox->setType(b2_dynamicBody);

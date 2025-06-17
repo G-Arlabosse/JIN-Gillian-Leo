@@ -56,6 +56,10 @@ int AnimationManager::getSize_y() const { return size_y; }
 
 float AnimationManager::getScale() const { return scale; }
 
+void AnimationManager::setRotation(float angle) {
+  sprite->setRotation(sf::radians(angle));
+}
+
 void AnimationManager::setScale(float s) { 
   scale = s;
   sprite->setScale({s, s});
