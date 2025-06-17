@@ -64,7 +64,7 @@ bool WorldTransition::checkCollision() const {
 }
 
 void WorldTransition::draw(sf::RenderWindow* window) const {
-  b2Vec2 position = b2Body_GetPosition(id);
+  /* b2Vec2 position = b2Body_GetPosition(id);
   b2Rot rotation = b2Body_GetRotation(id);
 
   sf::VertexArray lines(sf::PrimitiveType::LineStrip, polygon.count + 1);
@@ -76,7 +76,7 @@ void WorldTransition::draw(sf::RenderWindow* window) const {
   lines[polygon.count].position = lines[0].position;
   lines[polygon.count].color = sf::Color(255, 0, 0);
 
-  window->draw(lines);
+  window->draw(lines);*/
   window->draw(*text);
   window->draw(*sprite);
 }

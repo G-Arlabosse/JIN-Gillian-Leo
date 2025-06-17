@@ -10,7 +10,9 @@ WorldManager::WorldManager() :
   window{ std::make_unique<sf::RenderWindow>(sf::VideoMode({ 1000, 700 }), "JinProject") },
   camera { std::make_unique<sf::View>() },
   textureManager{ std::make_unique<TextureManager>() },
-  musicManager{ std::make_unique<MusicManager>() }
+  musicManager{ std::make_unique<MusicManager>() },
+  rooms_cleared{0},
+  rooms_needed{std::vector<int>({5,5})} 
 {
     window->setFramerateLimit(60);
     camera->setCenter({0, 0});
@@ -46,6 +48,7 @@ void WorldManager::startGame() {
       }
     }
 
+    //window->clear(sf::Color(58, 58, 58));
     window->clear();
     updateWorld();
     renderWorld();
@@ -91,6 +94,8 @@ void WorldManager::changeFloor(direction dir) {
       floor--;
       break;
   }
+  rooms_cleared = 0;
+
   auto new_floor = worldMap->floors[floor];
   level_x = new_floor.first_room_x;
   level_y = new_floor.first_room_y;
@@ -139,7 +144,14 @@ void WorldManager::loadLobby() {
 }
 
 void WorldManager::notifyTransition(direction dir) { 
-  worldMap->floors[floor].rooms[level_y][level_x].cleared = true;
+  if (!worldMap->floors[floor].rooms[level_y][level_x].cleared) {
+    worldMap->floors[floor].rooms[level_y][level_x].cleared = true;
+    rooms_cleared++;
+  }
+  if (rooms_cleared >= rooms_needed[floor]) {
+    loadLobby();
+    return;
+  }
   
   if (dir == direction::STAGE_UP || dir == direction::STAGE_DOWN) {
     changeFloor(dir);

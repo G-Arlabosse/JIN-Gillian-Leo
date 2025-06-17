@@ -28,6 +28,7 @@ const enum textureName {
   ROOM_TRANSITION,
   SLASH,
   WORLD_TRANSITION,
+  PLAYER,
   NB_TEXTURES
 };
 

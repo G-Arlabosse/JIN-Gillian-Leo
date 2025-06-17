@@ -56,7 +56,10 @@ bool Hitbox::entityTouched() {
 void Hitbox::draw(sf::RenderWindow* window, sf::Color color) {
     if (!activeAnimation) { return; }
 
-    if (entityTouched()) {
+    auto pos = b2Body_GetPosition(*id);
+    animation_manager->draw(window, pos.x, pos.y);
+
+    /*if (entityTouched()) {
         color = sf::Color(0, 255, 0);
     }
 
@@ -72,10 +75,7 @@ void Hitbox::draw(sf::RenderWindow* window, sf::Color color) {
     lines[polygon->count].position = lines[0].position;
     lines[polygon->count].color = color;
 
-    auto pos = b2Body_GetPosition(*id);
-    animation_manager->draw(window, pos.x, pos.y);
-
-    window->draw(lines);
+    window->draw(lines);*/
 }
 
 void Hitbox::wake(b2Vec2 &position, b2Rot &rotation) {
@@ -127,6 +127,7 @@ bool Hitbox::updateHitbox(long clock) {
     return true;
   }
   move();
+  entityTouched();
   animation_manager->update(clock);
   return false;
 }

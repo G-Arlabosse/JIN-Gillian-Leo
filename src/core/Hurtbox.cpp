@@ -28,7 +28,7 @@ void Hurtbox::setLinearDamping(float value) {
 }
 
 void Hurtbox::draw(sf::RenderWindow *window, sf::Color color) const {
-    b2Vec2 position = b2Body_GetPosition(*id);
+    /*b2Vec2 position = b2Body_GetPosition(*id);
 
     sf::VertexArray lines(sf::PrimitiveType::LineStrip, polygon->count+1);
     for (int i = 1; i < polygon->count; i++) {
@@ -42,7 +42,7 @@ void Hurtbox::draw(sf::RenderWindow *window, sf::Color color) const {
     lines[polygon->count].position = sf::Vector2f(point.x, point.y);
     lines[polygon->count].color = color;
 
-    window->draw(lines);
+    window->draw(lines);*/
 }
 
 void Hurtbox::move(float x, float y) {

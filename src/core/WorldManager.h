@@ -61,6 +61,9 @@ private:
   int level_y;
 	int floor;
 
+  int rooms_cleared;
+  std::vector<int> rooms_needed;
+
 	std::unique_ptr<TextureManager> textureManager;
 	std::unique_ptr<MusicManager> musicManager;
 
