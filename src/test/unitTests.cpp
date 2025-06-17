@@ -1,79 +1,54 @@
 #include <gtest/gtest.h>
-/*#include "myMain.h"
-#include "pugixml.hpp"
-#include "Circle.h"
+
+#include "Graph.h"
+
 #include <iostream>
+
 using namespace std;
-TEST(TestReadXML, TestCircle) {
-  string c_dump_ref =
-      R"(Circle "testCircle", x: 0, y: 1, r: 2, color: "Black"
+TEST(Graphs, TestPath) {
+  /*
+  ---
+  ##-
+  ---
+  ##-*/
+  auto cons_dump = 
+R"(Node 0 (0, 0) is empty and has 1 empty adjacent tiles : 
+(0, 0) 
+Node 1 (1, 0) is empty and has 2 empty adjacent tiles : 
+(1, 0) (1, 0) 
+Node 2 (2, 0) is empty and has 2 empty adjacent tiles : 
+(2, 0) (2, 0) 
+Node 5 (2, 1) is empty and has 3 empty adjacent tiles : 
+(2, 1) (2, 1) (2, 1) 
+Node 6 (0, 2) is empty and has 1 empty adjacent tiles : 
+(0, 2) 
+Node 7 (1, 2) is empty and has 2 empty adjacent tiles : 
+(1, 2) (1, 2) 
+Node 8 (2, 2) is empty and has 3 empty adjacent tiles : 
+(2, 2) (2, 2) (2, 2) 
+Node 11 (2, 3) is empty and has 1 empty adjacent tiles : 
+(2, 3) 
 )";
 
-  string sc1 = R"(<?xml version = "1.0"?>
-                            <Circle label="testCircle" x="0" y="1" r="2" color="Black" />)";
-  pugi::xml_document doc1;
-  if (pugi::xml_parse_result result1 = doc1.load_string(sc1.c_str());
-      !result1) {
-    std::cerr << result1.description();
-    exit(1);
-  }
-  Circle c(doc1.child("Circle"), nullptr);
-  cout << c.dump("");
+  Graph graph = Graph();
+  graph.setWidth(3);
+  graph.setHeight(4);
+  graph.addNode(0, 0);
+  graph.addNode(1, 0);
+  graph.addNode(2, 0);
+  graph.addNode(2, 1);
+  graph.addNode(2, 2);
+  graph.addNode(2, 3);
+  graph.addNode(1, 2);
+  graph.addNode(0, 2);
+  graph.initGraphTransitions();
 
-  EXPECT_EQ(c.dump(""), c_dump_ref);
+  auto dump = graph.dumpGraph();
+  std::cout << dump;
+
+  b2Vec2 start = { 0,0 };
+  b2Vec2 goal = { 1,2 };
+  auto path = graph.getPath(start, goal);
+  EXPECT_EQ(dump, cons_dump);
+  EXPECT_EQ(path.size(), 6);
 }
-
-TEST(TestAnalyseXML, TestGroup) {
-  string c_dump_ref =
-      R"(Group "testGroup", x: 0, y: 1, children: [
-| Circle "testCircle1", x: 2, y: 3, r: 4, color: "Black"
-| Circle "testCircle2", x: 5, y: 6, r: 7, color: "Black"
-]
-)";
-
-  string sc2 = R"(<?xml version = "1.0"?>
-        <Group label="testGroup" x="0" y="1">
-          <Circle label="testCircle1" x="2" y="3" r="4" color="Black"/>
-          <Circle label="testCircle2" x="5" y="6" r="7" color="Black"/>
-        </Group>)";
-  pugi::xml_document doc2;
-  if (pugi::xml_parse_result result2 = doc2.load_string(sc2.c_str());
-      !result2) {
-    std::cerr << result2.description();
-    exit(1);
-  }
-  Group g(doc2.child("Group"), nullptr);
-
-  EXPECT_EQ(g.dump(""), c_dump_ref);
-}
-
-TEST(TestReadXML, TestGroupHybrid) {
-  string c_dump_ref =
-      R"(Group "testGroupHybrid", x: 0, y: 1, children: [
-| Circle "testCircle1", x: 2, y: 3, r: 4, color: "Black"
-| Group "testGroup", x: 5, y: 6, children: [
-| | Circle "testCircle2", x: 7, y: 8, r: 9, color: "Black"
-| ]
-| Circle "testCircle3", x: 10, y: 11, r: 12, color: "Black"
-]
-)";
-
-  string sc2 = R"(<?xml version = "1.0"?>
-                  <Group label="testGroupHybrid" x="0" y="1">
-                    <Circle label="testCircle1" x="2" y="3" r="4" color="Black"/>
-                    <Group label="testGroup" x="5" y="6">
-                      <Circle label="testCircle2" x="7" y="8" r="9" color="Black"/>
-                    </Group>
-                    <Circle label="testCircle3" x="10" y="11" r="12" color="Black"/>
-                  </Group>)";
-  pugi::xml_document doc2;
-  if (pugi::xml_parse_result result2 = doc2.load_string(sc2.c_str());
-      !result2) {
-    std::cerr << result2.description();
-    exit(1);
-  }
-  Group g(doc2.child("Group"), nullptr);
-
-  EXPECT_EQ(g.dump(""), c_dump_ref);
-}*/
-

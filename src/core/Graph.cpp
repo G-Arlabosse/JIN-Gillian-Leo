@@ -1,5 +1,6 @@
 #include "Graph.h"
 #include <iostream>
+#include <sstream>
 
 
 Graph::Graph():
@@ -70,14 +71,16 @@ const void Graph::initGraphTransitions() {
     }
 }
 
-const void Graph::dumpGraph() {
-    /*for (const auto& [id, node] : nodes) {
-        std::cout << "Node " << id << " (" << node->coords.x << ", " << node->coords.y << ") is empty and has " << node->transitions.size() << " empty adjacent tiles : \n";
-        for (const auto& neighbour_id : node->transitions) {
-            std::cout << "(" << nodes[neighbour_id]->coords.x << "," << nodes[neighbour_id]->coords.y << ") ";
-        }
-        std::cout << std::endl;
-    }*/
+const std::string Graph::dumpGraph() {
+  std::ostringstream oss;
+  for (const auto& [id, node] : nodes) {
+      oss << "Node " << id << " (" << node->coords.x << ", " << node->coords.y << ") is empty and has " << node->transitions.size() << " empty adjacent tiles : \n";
+      for (const auto& neighbour_id : node->transitions) {
+          oss << "(" << node->coords.x << ", " << node->coords.y << ") ";
+      }
+      oss << std::endl;
+  }
+  return oss.str();
 }
 
 struct NodeComparator {
@@ -103,75 +106,84 @@ std::vector<b2Vec2> Graph::reconstructPath(const std::map<int, int>& cameFrom, i
     return path;
 }
 
-std::vector<b2Vec2> Graph::getPath(b2Vec2& start, b2Vec2& goal) {
-    int start_x = (int)((start.x) / sizeMultiplier);
-    int start_y = (int)((start.y) / sizeMultiplier);
-    int goal_x = (int)((goal.x) / sizeMultiplier);
-    int goal_y = (int)((goal.y) / sizeMultiplier);
+std::vector<b2Vec2> Graph::getPath_unscaledCoords(b2Vec2& start, b2Vec2& goal) {
+  int start_x = (int)((start.x) / sizeMultiplier);
+  int start_y = (int)((start.y) / sizeMultiplier);
+  int goal_x = (int)((goal.x) / sizeMultiplier);
+  int goal_y = (int)((goal.y) / sizeMultiplier);
 
-    b2Vec2 unscaled_start = { start_x,  start_y };
-    b2Vec2 unscaled_goal = { goal_x, goal_y };
+  b2Vec2 unscaled_start = { start_x,  start_y };
+  b2Vec2 unscaled_goal = { goal_x, goal_y };
 
-    int start_id = getCoordsId(unscaled_start);
-    int goal_id = getCoordsId(unscaled_goal);
+  
 
-    // Checks if the given nodes exist
-    if (!nodes.count(start_id) || !nodes.count(goal_id)) {
-        std::cout << "Either Node Start or Goal doesnt exist\n";
-        return {};
-    }
+  return getPath(unscaled_start, unscaled_goal);
+}
 
-    // Priority Queue for nodes to explore
-    std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, NodeComparator> openSet;
-    std::set<int> openSetTracker; // To quickly check if a node is in openSet
+std::vector<b2Vec2> Graph::getPath(b2Vec2& start_coords, b2Vec2& goal_coords) {
+  int start_id = getCoordsId(start_coords);
+  int goal_id = getCoordsId(goal_coords);
+  // Checks if the given nodes exist
+  if (!nodes.contains(start_id) || !nodes.contains(goal_id)) {
+      std::cout << "Either Node Start or Goal doesnt exist\n";
+      return {};
+  }
 
-    std::map<int, int> cameFrom; // Used later to reconstruct the path
+  // Priority Queue for nodes to explore
+  std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, NodeComparator> openSet;
+  std::set<int> openSetTracker; // To quickly check if a node is in openSet
 
-    std::map<int, int> gScore; //G score, the weight of the path
-    std::map<int, int> fScore; //F score, the heuristic of the path
-    for (const auto& pair : nodes) {
-        gScore[pair.first] = std::numeric_limits<int>::max();
-        fScore[pair.first] = std::numeric_limits<int>::max();
-    }
-    gScore[start_id] = 0;
-    fScore[start_id] = 10 * b2Distance(unscaled_start, unscaled_goal);
+  std::map<int, int> cameFrom; // Used later to reconstruct the path
 
-    openSet.push({ start_id, fScore[start_id] });
-    openSetTracker.insert(start_id);
+  std::map<int, int> gScore; //G score, the weight of the path
+  std::map<int, int> fScore; //F score, the heuristic of the path
+  for (const auto& pair : nodes) {
+      gScore[pair.first] = std::numeric_limits<int>::max();
+      fScore[pair.first] = std::numeric_limits<int>::max();
+  }
 
-    while (!openSet.empty()) {
-        auto current_pair = openSet.top();
-        int current_id = current_pair.first;
-        openSet.pop();
-        openSetTracker.erase(current_id);
+  auto startCoords = nodes[start_id]->coords;
+  auto goalCoords = nodes[goal_id]->coords;
 
-        // Arrived to the goal
-        if (current_id == goal_id) {
-            return reconstructPath(cameFrom, current_id);
-        }
+  gScore[start_id] = 0;
+  fScore[start_id] = 10 * b2Distance(startCoords, goalCoords);
 
-        struct node* current_node = nodes[current_id].get();
+  openSet.push({ start_id, fScore[start_id] });
+  openSetTracker.insert(start_id);
 
-        // Explore neighbors
-        for (auto transition : current_node->transitions) {
-            int neighbor_id = transition.neighbor_id;
-            struct node* neighbor_node = nodes[neighbor_id].get();
-            int tentative_gScore = gScore[current_id] + transition.weight;
+  while (!openSet.empty()) {
+      auto current_pair = openSet.top();
+      int current_id = current_pair.first;
+      openSet.pop();
+      openSetTracker.erase(current_id);
 
-            if (tentative_gScore < gScore[neighbor_id]) {
-                cameFrom[neighbor_id] = current_id;
-                gScore[neighbor_id] = tentative_gScore;
-                fScore[neighbor_id] = tentative_gScore + 10 * b2Distance(neighbor_node->coords, goal);
+      // Arrived to the goal
+      if (current_id == goal_id) {
+          return reconstructPath(cameFrom, current_id);
+      }
 
-                if (openSetTracker.find(neighbor_id) == openSetTracker.end()) {
-                    openSet.push({ neighbor_id, fScore[neighbor_id] });
-                    openSetTracker.insert(neighbor_id);
-                }
-            }
-        }
-    }
+      struct node* current_node = nodes[current_id].get();
 
-    return {}; // No path found
+      // Explore neighbors
+      for (auto transition : current_node->transitions) {
+          int neighbor_id = transition.neighbor_id;
+          struct node* neighbor_node = nodes[neighbor_id].get();
+          int tentative_gScore = gScore[current_id] + transition.weight;
+
+          if (tentative_gScore < gScore[neighbor_id]) {
+              cameFrom[neighbor_id] = current_id;
+              gScore[neighbor_id] = tentative_gScore;
+              fScore[neighbor_id] = tentative_gScore + 10 * b2Distance(neighbor_node->coords, goalCoords);
+
+              if (openSetTracker.find(neighbor_id) == openSetTracker.end()) {
+                  openSet.push({ neighbor_id, fScore[neighbor_id] });
+                  openSetTracker.insert(neighbor_id);
+              }
+          }
+      }
+  }
+
+  return {}; // No path found
 }
 
 sf::VertexArray Graph::getPathRender(std::vector<b2Vec2>& path) {
