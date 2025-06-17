@@ -19,6 +19,7 @@ add_library(lib_core
  "TextureManager.h" "TextureManager.cpp" 
  "MusicManager.h" "MusicManager.cpp"
  "SFMLOrthogonalLayer.hpp" 
- "Carrot.cpp" "Carrot.h")
+ "Carrot.cpp" "Carrot.h"
+ "WorldTransition.cpp")
 target_include_directories(lib_core PUBLIC ./)
 target_link_libraries(lib_core PUBLIC sfml-graphics sfml-audio box2d tmxlite)

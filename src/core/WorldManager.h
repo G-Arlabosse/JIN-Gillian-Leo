@@ -11,6 +11,24 @@
 #include "MusicManager.h"
 #include <memory>
 
+const int nb_floor = 2;
+
+const struct room {
+	std::string name;
+	bool cleared = false;
+};
+
+const struct floor {
+	int first_room_x;
+	int first_room_y;
+	std::vector<std::vector<struct room>> rooms;
+	enum musicName music;
+};
+
+const struct worldMap {
+	std::vector<struct floor> floors;
+};
+
 class WorldManager : public WorldNotifier {
 public:
 	explicit WorldManager();
@@ -18,10 +36,12 @@ public:
 	void renderWorld();
 	void updateWorld();
 	void startGame();
-  std::vector<std::vector<std::string>> makeMap();
+  void makeMap();
   void changeLevel(direction dir);
+	void changeFloor(direction dir);
 
 	void notifyTransition(direction dir) override;
+	void loadLobby() override;
 
 private:
 	//box2d World
@@ -36,10 +56,10 @@ private:
 	std::unique_ptr<sf::View> camera;
 
 	//Map made of multiple levels
-  std::vector<std::vector<std::string>> map;
-  std::vector<std::vector<bool>> clear_state_map;
+	std::unique_ptr<struct worldMap> worldMap;
   int level_x;
   int level_y;
+	int floor;
 
 	std::unique_ptr<TextureManager> textureManager;
 	std::unique_ptr<MusicManager> musicManager;

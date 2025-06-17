@@ -13,12 +13,14 @@ struct textureInfo {
 };
 
 const std::map<enum textureName, textureInfo> textureInfos = {
-    {HEALTH_BAR, {"health_bar.png", {0}}},
-     {STRAWBERRY, {"fraise_animated.png", {8}}},
-      {CARROT, {"carrot.png", {6,6,6}}},
-       {CORN, {"corn.png", {6,6,6}}}, 
+  {HEALTH_BAR, {"health_bar.png", {0}}},
+  {STRAWBERRY, {"fraise_animated.png", {8}}},
+  {CARROT, {"carrot.png", {6,6,6}}},
+  {CORN, {"corn.png", {6,6,6}}}, 
   {ROOM_TRANSITION, {"room_block.png", {0}}},
-    {SLASH, {"slash_v3.png", {9}}}};
+  {SLASH, {"slash_v3.png", {9}}},
+  {WORLD_TRANSITION, {"stair.png", {0}}},
+};
 
 const std::string textureCommonPath = "resources/textures/";
 

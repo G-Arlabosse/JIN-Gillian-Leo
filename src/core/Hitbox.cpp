@@ -112,6 +112,8 @@ void Hitbox::stopCollision() {
 
 void Hitbox::deactivate() {
   stopCollision();
+  auto rot = b2Body_GetRotation(*id);
+  b2Body_SetTransform(*id, {-1000, -1000}, rot); //To change !
   activeAnimation = false;
 }
 
