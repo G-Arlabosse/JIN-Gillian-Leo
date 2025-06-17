@@ -4,12 +4,13 @@
 TextureManager::TextureManager() {
   for (int i = 0; i < textureName::NB_TEXTURES; i++) {
     textures.push_back(nullptr);
+    texture_anim_columns.emplace_back(std::vector<int>{});
   }
 }
 
 void TextureManager::loadTexture(enum textureName textureName) {
   sf::Texture texture;
-  auto path = textureCommonPath + texturePath.at(textureName);
+  auto path = textureCommonPath + textureInfos.at(textureName).path;
   if (!texture.loadFromFile(path)) {
     std::cerr << "Echec du chargement de la texture de test\n";
     terminate();
@@ -22,4 +23,12 @@ sf::Texture* TextureManager::getTexture(enum textureName textureName) {
     loadTexture(textureName);
   }
   return textures[textureName].get();
+}
+
+std::vector<int> TextureManager::getAnimationColumns(enum textureName textureName) {
+  if (texture_anim_columns[textureName] == std::vector<int>{}) {
+    texture_anim_columns[textureName] =
+        textureInfos.at(textureName).anim_columns;
+  }
+  return texture_anim_columns[textureName];
 }

@@ -26,7 +26,7 @@ class AnimationManager {
   int frames_played;
  public:
 	//Constructor
-	AnimationManager(enum textureName textureName, TextureManager* textureManager, std::vector<int>, float scale, int tempo, float speed_mult, bool animation_loops);
+	AnimationManager(enum textureName textureName, TextureManager* textureManager, float scale, int tempo, float speed_mult, bool animation_loops);
   
 	//Unused for now, will change the animation type later on
 	void changeAnimation(int animation_number);

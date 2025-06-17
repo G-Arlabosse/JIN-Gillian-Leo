@@ -3,11 +3,8 @@
 #include <iostream>
 
 //Passer un vector<int> en argument du constructeur ?
-AnimationManager::AnimationManager(enum textureName textureName, TextureManager* textureManager,
-  std::vector<int> animation_columns, float scale,
+AnimationManager::AnimationManager(enum textureName textureName, TextureManager* textureManager, float scale,
   int tempo, float speed_mult, bool animation_loops) :
-  lines{ (int)animation_columns.size() },
-  animation_columns{ animation_columns },
   frame_pos{ sf::Vector2i{0, 0} },
   speed_mult{ speed_mult },
   current_animation{ 0 },
@@ -15,6 +12,8 @@ AnimationManager::AnimationManager(enum textureName textureName, TextureManager*
   can_play{animation_loops},
       frames_played{0} {
   auto texture = textureManager->getTexture(textureName);
+  animation_columns = textureManager->getAnimationColumns(textureName);
+  lines = (int)animation_columns.size();
 
   size_x = (int)texture->getSize().x / *std::max_element(animation_columns.begin(), animation_columns.end());
   size_y = (int)texture->getSize().y / (int)animation_columns.size();
