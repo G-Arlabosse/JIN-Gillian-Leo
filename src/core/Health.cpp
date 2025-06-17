@@ -33,9 +33,7 @@ void Health::setHealthBarPosition(b2Vec2 position) {
 }
 
 void Health::updateDamage(int damage) {
-	std::cout << "Damage !\n";
 	if (shieldUp) {
-		std::cout << "PARRY !\n";
 		return;
 	}
 	hp -= damage;
