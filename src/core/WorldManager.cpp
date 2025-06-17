@@ -76,8 +76,8 @@ void WorldManager::makeMap() {
   floor.first_room_y = 0;
   floor.music = DISCO_DESCENT;
   floor.rooms = {
-      {{"TestRoom1_big"}, {"TestStartRoom"}, {"TestRoom1"}, {"TestRoom2"} },
-      {{""}, {""}, {"room_murs"}, {"TestRoom2"} }
+      {{"DR_1"}, {"StartRoom"}, {"L_1"} },
+      {{"UR_1"}, {"UL_1"}, {""} }
   };
   worldMap->floors.push_back(floor);
 }

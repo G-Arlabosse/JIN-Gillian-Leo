@@ -43,8 +43,9 @@ void AnimationManager::nextFrame() {
         can_play = false;
       frames_played = 0;
       frame_pos.x = 0;
-    }     
-    sprite->setTextureRect(sf::IntRect(frame_pos, {size_x, size_y}));
+    }
+    if (can_play)
+      sprite->setTextureRect(sf::IntRect(frame_pos, {size_x, size_y}));
   }
 }
 
@@ -55,6 +56,10 @@ int AnimationManager::getSize_x() const { return size_x; }
 int AnimationManager::getSize_y() const { return size_y; }
 
 float AnimationManager::getScale() const { return scale; }
+
+void AnimationManager::setRotation(float angle) {
+  sprite->setRotation(sf::radians(angle));
+}
 
 void AnimationManager::setScale(float s) { 
   scale = s;
@@ -79,4 +84,5 @@ void AnimationManager::draw(sf::RenderWindow* window, float pos_x, float pos_y) 
 void AnimationManager::reactivate() { 
   can_play = true;
   frames_played = 0;
+  frame_pos.x = -size_x;
 }

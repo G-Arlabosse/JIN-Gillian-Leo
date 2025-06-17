@@ -10,6 +10,7 @@ Hitbox::Hitbox(const b2WorldId& worldId, std::pair<float, float> pos,
   speed{b2Vec2{speed.first, speed.second}},
   lifespan{lifespan},
   activeHitbox{false},
+  activeAnimation {false},
   levelMediator{levelMediator}, 
   damage{damage},
   animation_manager{std::move(animation_manager)}
@@ -47,13 +48,13 @@ bool Hitbox::entityTouched() {
         }
     }
     if (touched) {
-      sleep();
+      stopCollision();
     }
     return touched;
 }
 
 void Hitbox::draw(sf::RenderWindow* window, sf::Color color) {
-    if (!activeHitbox) { return; }
+    if (!activeAnimation) { return; }
 
     if (entityTouched()) {
         color = sf::Color(0, 255, 0);
@@ -80,8 +81,10 @@ void Hitbox::draw(sf::RenderWindow* window, sf::Color color) {
 void Hitbox::wake(b2Vec2 &position, b2Rot &rotation) {
     clockTimeInit = std::clock();
     b2Body_SetTransform(*id, position, rotation);
+    animation_manager->setRotation(b2Rot_GetAngle(rotation));
     b2Body_SetAwake(*id, true);
     activeHitbox = true;
+    activeAnimation = true;
 }
 
 void Hitbox::move(float x, float y) {
@@ -102,11 +105,16 @@ b2Vec2 Hitbox::getSpeed() { return speed; }
 
 void Hitbox::setSpeed(float speed_x, float speed_y) { speed = b2Vec2{speed_x, speed_y}; }
 
-void Hitbox::sleep() {
-  auto rot = b2Body_GetRotation(*id);
-  b2Body_SetTransform(*id, {-1000, -1000}, rot); //To change !
+void Hitbox::stopCollision() {
   b2Body_SetAwake(*id, false);
   activeHitbox = false;
+}
+
+void Hitbox::deactivate() {
+  stopCollision();
+  auto rot = b2Body_GetRotation(*id);
+  b2Body_SetTransform(*id, {-1000, -1000}, rot); //To change !
+  activeAnimation = false;
 }
 
 /*
@@ -115,7 +123,7 @@ Returns true if the hitbox must be detroyed
 */
 bool Hitbox::updateHitbox(long clock) {
   if (clock > clockTimeInit + lifespan + 20) {
-    sleep();
+    deactivate();
     return true;
   }
   move();

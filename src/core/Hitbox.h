@@ -43,7 +43,9 @@ public:
 
 	//Wakes the hitbox
 	void wake(b2Vec2& position, b2Rot& rotation);
-	void sleep();
+
+	void stopCollision();
+	void deactivate();
 
 	bool entityTouched();
 
@@ -59,6 +61,7 @@ private:
 	long clockTimeInit;
   long lifespan;
 	bool activeHitbox;
+  bool activeAnimation;
 	LevelMediator* levelMediator;
 	float damage;
 
