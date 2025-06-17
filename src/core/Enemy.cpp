@@ -91,7 +91,7 @@ b2Vec2 Enemy::getMoveCoords(b2Vec2& playerPos, rayCastResult result) {
 	else if (result == MOVE_WALL) {
 			//Testing if half of the path has been traveled so far.
 			if (pathAdvancement >= pathLimit) {
-				path = levelGraph->getPath(origin, playerPos);
+				path = levelGraph->getPath_unscaledCoords(origin, playerPos);
 				pathDebug = levelGraph->getPathRender(path);
 				pathAdvancement = 0;
 				pathLimit = path.size() / 2;
