@@ -2,6 +2,7 @@
 
 #include "Graph.h"
 #include "LevelManager.h"
+#include "AnimationManager.h"
 #include "box2d/box2d.h"
 #include "SFML/Graphics.hpp"
 
@@ -112,4 +113,32 @@ TEST(Entities, TestShield) {
   }
 
   EXPECT_EQ(enemy->getHealthPoints(), 3);
+}
+
+TEST(Animation, FrameChange) {
+  auto textureManager = TextureManager();
+  AnimationManager anim_manager(textureName::STRAWBERRY, &textureManager, 1.f,
+                                1000, 1.f, true);
+  EXPECT_EQ(anim_manager.getPosition().x, 0);
+  anim_manager.nextFrame();
+  EXPECT_EQ(anim_manager.getPosition().x, 16);
+  for (int _ = 0; _ < 7; ++_) anim_manager.nextFrame();
+  EXPECT_EQ(anim_manager.getPosition().x, 0);
+}
+
+TEST(Animation, NonLooping) {
+  auto textureManager = TextureManager();
+  AnimationManager anim_manager(textureName::STRAWBERRY, &textureManager, 1.f,
+                                1000, 1.f, false);
+  EXPECT_EQ(anim_manager.getPosition().x, 0);
+  anim_manager.nextFrame();
+  EXPECT_EQ(anim_manager.getPosition().x, 0);
+  anim_manager.reactivate();
+  anim_manager.nextFrame();
+  EXPECT_EQ(anim_manager.getPosition().x, 0);
+  for (int _ = 0; _<7; ++_)
+    anim_manager.nextFrame();
+  EXPECT_EQ(anim_manager.getPosition().x, 112);
+  anim_manager.nextFrame();
+  EXPECT_EQ(anim_manager.getPosition().x, 0);
 }

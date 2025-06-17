@@ -42,6 +42,9 @@ class AnimationManager {
 
 	//GETTER: returns the texture's height
   int getSize_y() const;
+
+	// GETTER: returns the texture's sprite position
+	sf::Vector2i getPosition() const;
 	
 	//GETTER: returns the texture's scale
 	float getScale() const;
