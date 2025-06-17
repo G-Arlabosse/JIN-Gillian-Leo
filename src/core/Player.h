@@ -7,6 +7,7 @@ public:
 	Player(const b2WorldId& worldId, float pos_x, float pos_y,
 		TextureManager* textureManager, LevelMediator *levelMediator, bool renderDebugBoxes);
 	void move(b2Vec2& target);
+	void teleport(b2Vec2& pos);
 	void attack(b2Vec2 direction, float damage);
 	void update(long clock, const sf::RenderWindow* window, bool inPlayerTempoWindow);
 	bool updateInput(const sf::RenderWindow *window);

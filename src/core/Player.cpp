@@ -12,7 +12,7 @@ Player::Player(const b2WorldId& worldId, float pos_x, float pos_y, TextureManage
 	actionLocked{ false },
 	tempoStreak{ 0 }
 {
-	//hurtbox->setLinearDamping(50);
+	hurtbox->setLinearDamping(30);
 }
 
 void Player::attack(b2Vec2 direction, float damage) {
@@ -25,6 +25,11 @@ void Player::move(b2Vec2& target) {
 	}
 }
 
+void Player::teleport(b2Vec2& pos) {
+	auto rot = b2Body_GetRotation(hurtbox->getBodyId());
+	b2Body_SetTransform(hurtbox->getBodyId(), pos, rot);
+}
+
 void Player::update(long clock, const sf::RenderWindow* window, bool inPlayerTempoWindow) {
 	if (updateInput(window)) {
 		if (inPlayerTempoWindow) { 
@@ -32,7 +37,6 @@ void Player::update(long clock, const sf::RenderWindow* window, bool inPlayerTem
 			hasMovedTempo = true;
 		}
 		else { tempoStreak = 0; }
-		std::cout << tempoStreak << std::endl;
 	}
 	Entity::update(clock);
 	if (actionLocked && clock > actionLockClock + 300) {
@@ -93,7 +97,6 @@ void Player::notifyEndTempo()
 {
 	if (!hasMovedTempo && tempoStreak > 0) {
 		tempoStreak = 0;
-		std::cout << "Lost streak !\n";
 	}
 	hasMovedTempo = false;
 }

@@ -38,12 +38,13 @@ void LevelManager::notifyDamage(int32_t hurtboxIndex, int damage) {
 
 void LevelManager::notifyDeath(int32_t hurtboxIndex) {
     if (hurtboxIndex == player->getShapeIndex()) {
-        std::cout << "Game Finished !\n";
-        return;
+      callLoadLevel.isCalled = true;
+      callLoadLevel.goBackToLobby = true;
+      return;
     }
     else if (enemies.contains(hurtboxIndex)) {
-        enemies.erase(hurtboxIndex);
-        return;
+      enemies.erase(hurtboxIndex);
+      return;
     }
     else { 
         //terminate(); 
@@ -66,9 +67,14 @@ void LevelManager::createWall(b2WorldId& worldId, float pos_x, float pos_y, bool
     walls.push_back(std::move(wall));
 }
 
-void LevelManager::createTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir) {
+void LevelManager::createRoomTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir) {
   auto transition = std::make_unique<LevelTransition>(worldId, pos_x + hitboxSize.x, pos_y + hitboxSize.y, dir, textureManager);
   level_transitions.push_back(std::move(transition));
+}
+
+void LevelManager::createFloorTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir) {
+  auto transition = std::make_unique<WorldTransition>(worldId, pos_x + hitboxSize.x, pos_y + hitboxSize.y, dir, textureManager);
+  world_transitions.push_back(std::move(transition));
 }
 
 void LevelManager::updateLevel(b2WorldId& worldId) {
@@ -77,6 +83,17 @@ void LevelManager::updateLevel(b2WorldId& worldId) {
     b2World_Step(worldId, timeStep, subStepCount);
     updateAll(clock);
     updateTempo(clock);
+
+    if (callLoadLevel.isCalled) {
+      if (callLoadLevel.goBackToLobby) {
+        player = nullptr;
+        world_notifier->loadLobby();
+      }
+      else {
+        world_notifier->notifyTransition(callLoadLevel.dir);
+      }
+      callLoadLevel = {};
+    }
 }
 
 void LevelManager::updateAll(long clock) {
@@ -87,7 +104,15 @@ void LevelManager::updateAll(long clock) {
     if (enemies.size() == 0)
       transition->deactivate();
     if (transition->checkCollision()) {
-      world_notifier->notifyTransition(transition->getDirection());
+      callLoadLevel.isCalled = true;
+      callLoadLevel.dir = transition->getDirection();
+      break;
+    }
+  }
+  for (const auto& transition : world_transitions) {
+    if (transition->checkCollision()) {
+      callLoadLevel.isCalled = true;
+      callLoadLevel.dir = transition->getDirection();
       break;
     }
   }
@@ -96,7 +121,6 @@ void LevelManager::updateAll(long clock) {
 
 void LevelManager::initTempo() {
   tempoTimePlayer = std::clock();
-  std::cout << "Tempo init at " << tempoTimePlayer << std::endl;
   tempoTimeEntities = tempoTimePlayer;
 }
 
@@ -123,7 +147,6 @@ void LevelManager::updateTempo(long clock) {
 
 
     if (clock > tempoTimeEntities) {
-      printf("Tempo entities at %f\n", tempoTimeEntities);
       tempoTimeEntities += tempoMS;
       for (const auto& [index, enemy] : enemies) {
         enemy->updateTempo(getPlayerPosition(), tempoMS);
@@ -147,6 +170,9 @@ void LevelManager::renderEntities(sf::RenderWindow *window) {
     for (const auto& transition : level_transitions) {
       transition->draw(window);
     }
+    for (const auto& transition : world_transitions) {
+      transition->draw(window);
+    }
     window->draw(beatIndicator);
     window->draw(path_render);
 }
@@ -168,18 +194,18 @@ void LevelManager::fileToMap(b2WorldId& worldId, const std::string& name,
           createWall(worldId, x * sizeMultiplier, y * sizeMultiplier, showHitboxes);
           goto noNode;
         case 'U':
-          createTransition(worldId, (x + 1.f / 2.f) * sizeMultiplier,
+          createRoomTransition(worldId, (x + 1.f / 2.f) * sizeMultiplier,
                            (y - 1.f / 4.f) * sizeMultiplier, direction::UP);
           goto noNode;
         case 'D':
-          createTransition(worldId, (x + 1.f / 2.f) * sizeMultiplier,
+          createRoomTransition(worldId, (x + 1.f / 2.f) * sizeMultiplier,
                            (y + 1.f / 4.f) * sizeMultiplier, direction::DOWN);
           goto noNode;
         case 'L':
-          createTransition(worldId, (x-1.f/4.f) * sizeMultiplier, (y+1.f/2.f) * sizeMultiplier,  direction::LEFT);
+          createRoomTransition(worldId, (x-1.f/4.f) * sizeMultiplier, (y+1.f/2.f) * sizeMultiplier,  direction::LEFT);
           goto noNode;
         case 'R':
-          createTransition(worldId, (x + 1.f / 4.f) * sizeMultiplier,
+          createRoomTransition(worldId, (x + 1.f / 4.f) * sizeMultiplier,
                            (y + 1.f / 2.f) * sizeMultiplier, direction::RIGHT);
           goto noNode;
         case 'p':
@@ -188,6 +214,9 @@ void LevelManager::fileToMap(b2WorldId& worldId, const std::string& name,
         case 'e':
           if (!cleared)
             createEnemy(worldId, x * sizeMultiplier, y * sizeMultiplier, showHitboxes);
+          break;
+        case '+':
+          createFloorTransition(worldId, x * sizeMultiplier, y * sizeMultiplier, direction::STAGE_DOWN);
           break;
         case '-':
           break;
@@ -215,7 +244,7 @@ void LevelManager::unloadLevel() {
   walls.clear();
   enemies.clear();
   level_transitions.clear();
-  player = nullptr;
+  world_transitions.clear();
   levelGraph->clearGraph();
 }
 
@@ -226,11 +255,7 @@ void LevelManager::loadLevel(b2WorldId& worldId, const std::string& name, direct
   std::string filename = (std::string)"resources/rooms/" + name +".txt";
   fileToMap(worldId, filename, cleared);
   float pos_x, pos_y;
-  switch (dir) { 
-    case direction::NONE:
-      pos_x = (float)levelGraph->getWidth() / 2.f * sizeMultiplier;
-      pos_y = (float)levelGraph->getHeight() / 2.f * sizeMultiplier;
-      break;
+  switch (dir) {
     case direction::UP:
       pos_x = (float)levelGraph->getWidth() / 2.f * sizeMultiplier;
       pos_y = (float)(levelGraph->getHeight() - 2) * (float)sizeMultiplier;
@@ -247,8 +272,14 @@ void LevelManager::loadLevel(b2WorldId& worldId, const std::string& name, direct
       pos_x = 2 * sizeMultiplier;
       pos_y = (float)levelGraph->getHeight() / 2.f * sizeMultiplier;
       break;
+    default:
+      pos_x = (float)levelGraph->getWidth() / 2.f * sizeMultiplier;
+      pos_y = (float)levelGraph->getHeight() / 2.f * sizeMultiplier;
+      break;
   }
-  createPlayer(worldId, pos_x, pos_y, true);
+  auto position = b2Vec2{ pos_x, pos_y };
+  player->teleport(position);
+
 }
 
 void LevelManager::loadFirstLevel(b2WorldId& worldId) {

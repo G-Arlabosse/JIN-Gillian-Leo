@@ -14,11 +14,13 @@ const struct musicStruct {
 //All music definitions
 
 const struct musicStruct discoDescent { "disco_descent.mp3", 115 };
+const struct musicStruct rythmortis { "rythmortis.mp3", 130 };
 
 
 //Map between musicName and the structs
 const std::map<enum musicName, struct musicStruct> musicMap = {
   {musicName::DISCO_DESCENT, discoDescent},
+  {musicName::RYTHMORTIS, rythmortis}
 };
 
 const std::string musicCommonPath = "resources/music/";
