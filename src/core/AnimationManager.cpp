@@ -55,6 +55,8 @@ int AnimationManager::getSize_x() const { return size_x; }
 
 int AnimationManager::getSize_y() const { return size_y; }
 
+sf::Vector2i AnimationManager::getPosition() const { return frame_pos; }
+
 float AnimationManager::getScale() const { return scale; }
 
 void AnimationManager::setRotation(float angle) {
@@ -83,6 +85,6 @@ void AnimationManager::draw(sf::RenderWindow* window, float pos_x, float pos_y) 
 
 void AnimationManager::reactivate() { 
   can_play = true;
-  frames_played = 0;
+  frames_played = -1;
   frame_pos.x = -size_x;
 }
