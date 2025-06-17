@@ -32,6 +32,7 @@ class LevelManager: public LevelMediator {
 public:
 	//Constructor
 	explicit LevelManager(WorldNotifier* wn, sf::RenderWindow* window, TextureManager* textureManager);
+	explicit LevelManager(TextureManager* textureManager);
 
 	void notifyDamage(int32_t hurtboxId, int damage) override;
 	void notifyDeath(int32_t hurtboxId) override;
@@ -69,18 +70,18 @@ public:
 	void renderEntities(sf::RenderWindow* window);
 
 	//Adds a wall in the level, usually called by loadLevel
-  void createWall(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox);
+  Wall* createWall(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox);
 
   // Adds a level transition in the level, usually called by loadLevel
-  void createRoomTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir);
+  LevelTransition* createRoomTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir);
 
-	void createFloorTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir);
+	WorldTransition* createFloorTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir);
 
 	//Adds the player in the level, usually called by loadLevel
-	void createPlayer(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox);
+	Player* createPlayer(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox);
 
 	//Adds an enemy in the level, usually called by loadLevel
-	void createEnemy(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox);
+	Enemy* createEnemy(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox);
 
 	//GETTER: returns the player's position
 	b2Vec2 getPlayerPosition();

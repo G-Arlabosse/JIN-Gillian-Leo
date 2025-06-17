@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 
 #include "Graph.h"
+#include "LevelManager.h"
+#include "box2d/box2d.h"
+#include "SFML/Graphics.hpp"
 
 #include <iostream>
 
@@ -51,4 +54,62 @@ Node 11 (2, 3) is empty and has 1 empty adjacent tiles :
   auto path = graph.getPath(start, goal);
   EXPECT_EQ(dump, cons_dump);
   EXPECT_EQ(path.size(), 6);
+}
+
+TEST(Entities, TestAttack) {
+  auto worldDef = b2DefaultWorldDef();
+  auto worldId = b2CreateWorld(&worldDef);
+
+  auto window = sf::RenderWindow();
+  auto textureManager = TextureManager();
+  auto levelManager = LevelManager(nullptr, &window, &textureManager);
+  Player* player = levelManager.createPlayer(worldId, 0, 0, false);
+  Enemy* enemy = levelManager.createEnemy(worldId, 40, 40, false);
+
+  auto direction = b2Normalize({ 40,40 });
+  player->attack(direction, 1);
+  for (int i = 0; i < 10; i++) {
+    levelManager.updateLevel(worldId);
+  }
+
+  EXPECT_EQ(enemy->getHealthPoints(), 2);
+}
+
+TEST(Entities, TestAttackMiss) {
+  auto worldDef = b2DefaultWorldDef();
+  auto worldId = b2CreateWorld(&worldDef);
+
+  auto window = sf::RenderWindow();
+  auto textureManager = TextureManager();
+  auto levelManager = LevelManager(nullptr, &window, &textureManager);
+  Player* player = levelManager.createPlayer(worldId, 0, 0, false);
+  Enemy* enemy = levelManager.createEnemy(worldId, 40, 40, false);
+
+  auto direction = b2Normalize({ -40,40 });
+  player->attack(direction, 1);
+  for (int i = 0; i < 10; i++) {
+    levelManager.updateLevel(worldId);
+  }
+
+  EXPECT_EQ(enemy->getHealthPoints(), 3);
+}
+
+TEST(Entities, TestShield) {
+  auto worldDef = b2DefaultWorldDef();
+  auto worldId = b2CreateWorld(&worldDef);
+
+  auto window = sf::RenderWindow();
+  auto textureManager = TextureManager();
+  auto levelManager = LevelManager(nullptr, &window, &textureManager);
+  Player* player = levelManager.createPlayer(worldId, 0, 0, false);
+  Enemy* enemy = levelManager.createEnemy(worldId, 40, 40, false);
+
+  auto direction = b2Normalize({ 40,40 });
+  enemy->shield();
+  player->attack(direction, 1);
+  for (int i = 0; i < 10; i++) {
+    levelManager.updateLevel(worldId);
+  }
+
+  EXPECT_EQ(enemy->getHealthPoints(), 3);
 }

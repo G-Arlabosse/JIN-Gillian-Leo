@@ -40,6 +40,8 @@ public:
 	//GETTER: returns the index of the shapeId of the hurtbox
 	int32_t getShapeIndex();
 
+	int getHealthPoints();
+
 	//Updates the entity when the beat hits, called by LevelManager
 	virtual void updateTempo();
 

@@ -2,6 +2,20 @@
 #include <iostream>
 #include <fstream>
 
+LevelManager::LevelManager(TextureManager* textureManager):
+  levelGraph{ std::make_unique<Graph>() },
+  world_notifier{ nullptr },
+  tempoTimePlayer{ 0 },
+  tempoTimeEntities{ 0 },
+  window{ nullptr },
+  textureManager{ textureManager },
+  inTempo{ false },
+  tempoMS{ 0 }
+{
+  beatIndicator.setRadius(0);
+}
+
+
 LevelManager::LevelManager(WorldNotifier *wn, sf::RenderWindow *window, TextureManager* textureManager):
 
   levelGraph{std::make_unique<Graph>()},
@@ -50,30 +64,39 @@ void LevelManager::notifyDeath(int32_t hurtboxIndex) {
     }
 }
 
-void LevelManager::createPlayer(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
+Player* LevelManager::createPlayer(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
     player = std::make_unique<Player>(worldId, pos_x + hitboxSize.x, pos_y + hitboxSize.y, textureManager, tempoMS, this, showHitbox);
+    return player.get();
 }
 
-void LevelManager::createEnemy(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
+Enemy* LevelManager::createEnemy(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
   float x = pos_x + hitboxSize.x;
   float y = pos_y + hitboxSize.y;
   auto enemy = std::make_unique<Enemy>(worldId, x, y, textureName::CARROT, textureManager, tempoMS, levelGraph.get(), this, showHitbox);
-  enemies[enemy->getShapeIndex()] = std::move(enemy);
+  auto index = enemy->getShapeIndex();
+  enemies[index] = std::move(enemy);
+  return enemies[index].get();
 }
 
-void LevelManager::createWall(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
+Wall* LevelManager::createWall(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
     auto wall = std::make_unique<Wall>(worldId, pos_x + hitboxSize.x, pos_y + hitboxSize.y, hitboxSize, textureManager, showHitbox);
+    auto wall_ptr = wall.get();
     walls.push_back(std::move(wall));
+    return wall_ptr;
 }
 
-void LevelManager::createRoomTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir) {
+LevelTransition* LevelManager::createRoomTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir) {
   auto transition = std::make_unique<LevelTransition>(worldId, pos_x + hitboxSize.x, pos_y + hitboxSize.y, dir, textureManager);
+  auto transition_ptr = transition.get();
   level_transitions.push_back(std::move(transition));
+  return transition_ptr;
 }
 
-void LevelManager::createFloorTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir) {
+WorldTransition* LevelManager::createFloorTransition(b2WorldId& worldId, float pos_x, float pos_y, direction dir) {
   auto transition = std::make_unique<WorldTransition>(worldId, pos_x + hitboxSize.x, pos_y + hitboxSize.y, dir, textureManager);
+  auto transition_ptr = transition.get();
   world_transitions.push_back(std::move(transition));
+  return transition_ptr;
 }
 
 void LevelManager::updateLevel(b2WorldId& worldId) {

@@ -46,3 +46,7 @@ void Health::updateDamage(int damage) {
 void Health::setShieldUp(bool isShieldUp) {
 	shieldUp = isShieldUp;
 }
+
+int Health::getHealthPoints() {
+	return hp;
+}

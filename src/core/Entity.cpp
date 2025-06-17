@@ -84,3 +84,7 @@ b2Vec2 Entity::getPosition() {
 void Entity::updateDamage(int damage) {
 	health->updateDamage(damage);
 }
+
+int Entity::getHealthPoints() {
+	return health->getHealthPoints();
+}

@@ -17,7 +17,6 @@ gtest_discover_tests(unitTests)
 # Recursively glob all files in the resources directory and its subdirectories
 file(GLOB_RECURSE RESOURCE_FILES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/resources/*)
 
-# Custom command to copy the entire resources directory and create a stamp file
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/resources.stamp
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/resources
@@ -26,6 +25,9 @@ add_custom_command(
     DEPENDS ${RESOURCE_FILES}
 )
 
+# Custom target that depends on the stamp file
+add_custom_target(copy-resources-test ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/resources.stamp)
+
 # Ensure mainLauncher depends on copy-resources
-add_dependencies(unitTests copy-resources)
+add_dependencies(unitTests copy-resources-test)
 

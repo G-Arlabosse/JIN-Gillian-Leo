@@ -16,6 +16,7 @@ public:
   void setHealthBarPosition(b2Vec2 position);
   void updateDamage(int damage);
   void setShieldUp(bool isShieldUp);
+  int getHealthPoints();
 
 private:
   int hp;
