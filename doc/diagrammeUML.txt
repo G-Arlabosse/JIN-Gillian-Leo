@@ -16,12 +16,14 @@ abstract	Enemy{
 {method}
 }
 
-class		Corn{
+class		Corn {
+[TODO]
 {field} 
 {method}
 }
 
-class		Milk{
+class		Milk {
+[TODO]
 {field} 
 {method}
 }
@@ -36,18 +38,15 @@ class		Wall{
 {method}
 }
 
-class 		Door{
-{field}		
-{method}
-}
-
 class		WorldManager{
 {field} 	- level: std::unique_ptr<LevelManager>
 {method}	+ notifyTransition(enum direction)
 }
-LevelManager *-- Door
-Door --> WorldMediator
-WorldManager ..|> WorldMediator
+
+class 		MusicManager{
+{field}
+{method}	+ playeMusic(musicName)
+}
 
 class		GameManager{
 {field} 	
@@ -72,6 +71,7 @@ interface	WorldMediator{
 }
 
 class		UpdateNotifier{
+[NOT IMPLEMENTED]
 {field}		- UpdateListeners: vector<tempoListener*>
 {method}	+ addUpdateListener(tempoListener*)
 {method}	+ notifyTempoUpdate()
@@ -79,6 +79,7 @@ class		UpdateNotifier{
 }
 
 interface	UpdateListener{
+[NOT IMPLEMENTED]
 {method}	+ update()
 {method}	+ updateTempo()
 }
@@ -99,7 +100,8 @@ class		Hurtbox{
 }
 
 class		Projectile{
-{field} 
+[TODO]
+{field} 	
 {method}
 }
 
@@ -140,7 +142,8 @@ Milk ..|> Enemy
 Carrot ..|> Enemy
 
 GameManager *-- WorldManager
-WorldManager*-- LevelManager
+WorldManager *-- LevelManager
+WorldManager *-- MusicManager
 LevelManager *-- Graph
 Entity --> Graph
 
@@ -149,6 +152,10 @@ LevelManager *-- Player
 LevelManager *-- Wall
 LevelManager *-- LevelTransition
 LevelManager *-- WorldTransition
+
+LevelTransition --> WorldMediator
+WorldTransition --> WorldMediator
+WorldManager ..|> WorldMediator
 
 Hitbox --> LevelMediator
 Health --> LevelMediator
