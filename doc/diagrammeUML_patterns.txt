@@ -1,0 +1,105 @@
+@startuml
+
+abstract	Entity{
+{field} 	- hp : int
+{field}		- levelMediator
+{method}	+ recieveDamage(damage)
+}
+
+class		Player{
+{field} 
+{method}
+}
+
+abstract	Enemy{
+{field} 
+{method} 	+ move(position)
+{method} 	+ attack(target)
+}
+
+class		Corn {
+[TODO]
+{field} 
+{method}
+}
+
+class		Milk {
+[TODO]
+{field} 
+{method}
+}
+
+class		Carrot{
+{field} 
+{method}
+}
+
+class		WorldManager{
+{field} 	- level: std::unique_ptr<LevelManager>
+{method}	+ notifyTransition(enum direction)
+}
+
+class		LevelManager{
+{field} 	- enemies: map<int32_t, enemy>
+{field}		- walls: vector<Wall>
+{field}		- player: Player
+{method}	+ notifyDamage(int32_t, damage)
+{method}	+ notifyDeath(int32_t)
+}
+
+interface 	LevelMediator{
+{method}	+ notifyDamage(int32_t, damage)
+{method}	+ notifyDeath(int32_t)
+}
+
+interface	WorldNotifier{
+{method}	+ notifyTransition(enum direction)
+}
+
+class		Hitbox{
+{field} 	- levelMediador
+{method}	+ notifyHit(shapeId)
+}
+
+class		LevelTransition {
+{field}		wall : Wall
+}
+class 		WorldTransition {
+
+}
+
+abstract 	Health {
+{field}		- hp
+{field}		- maxHp
+{field}		- shapeIndex
+{field}		- shield
+{method}	+ renderHealthBar(window)
+{method}	+ setPosition(position)
+{method} 	+ update()
+{method}	+ updateDamage(damage)
+}
+
+
+Corn ..|> Enemy
+Milk ..|> Enemy
+Carrot ..|> Enemy
+
+LevelTransition --> WorldNotifier
+WorldTransition --> WorldNotifier
+WorldManager ..|> WorldNotifier
+WorldManager *-- LevelManager
+LevelManager *-- LevelTransition
+LevelManager *-- WorldTransition
+
+LevelManager *-- Enemy
+LevelManager *-- Player
+Player ..|> Entity
+Enemy ..|> Entity
+Entity *-- Hitbox
+Entity *-- Health
+Hitbox --> LevelMediator
+Health --> LevelMediator
+LevelManager ..|> LevelMediator
+
+
+@enduml
