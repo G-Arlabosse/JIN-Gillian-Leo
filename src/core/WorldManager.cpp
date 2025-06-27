@@ -7,7 +7,7 @@ using namespace std::literals;
 WorldManager::WorldManager() :
   worldDef{ b2DefaultWorldDef() },
   worldId{ b2CreateWorld(&worldDef) },
-  window{ std::make_unique<sf::RenderWindow>(sf::VideoMode({ 1000, 700 }), "JinProject") },
+  window{ std::make_unique<sf::RenderWindow>(sf::VideoMode({ 1000, 700 }), "Harvest Harmonics") },
   camera { std::make_unique<sf::View>() },
   textureManager{ std::make_unique<TextureManager>() },
   musicManager{ std::make_unique<MusicManager>() },

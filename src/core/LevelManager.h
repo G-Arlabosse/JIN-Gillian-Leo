@@ -8,6 +8,8 @@
 #include "SFMLOrthogonalLayer.hpp"
 
 #include "Enemy.h"	//MUST CHANGE ?
+#include "Carrot.h"
+#include "Corn.h"
 #include "Player.h" //MUST CHANGE ?
 #include "Wall.h"
 #include <queue>

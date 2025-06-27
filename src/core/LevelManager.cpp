@@ -13,6 +13,7 @@ LevelManager::LevelManager(TextureManager* textureManager):
   tempoMS{ 0 }
 {
   beatIndicator.setRadius(0);
+  srand(time(NULL));
 }
 
 
@@ -72,7 +73,21 @@ Player* LevelManager::createPlayer(b2WorldId& worldId, float pos_x, float pos_y,
 Enemy* LevelManager::createEnemy(b2WorldId& worldId, float pos_x, float pos_y, bool showHitbox = false) {
   float x = pos_x + hitboxSize.x;
   float y = pos_y + hitboxSize.y;
-  auto enemy = std::make_unique<Enemy>(worldId, x, y, textureName::CARROT, textureManager, tempoMS, levelGraph.get(), this, showHitbox);
+  enum enemy_types {CARROT, CORN, NB_ENEMIES};
+  auto r = enemy_types(rand() % enemy_types::NB_ENEMIES);
+  std::cout << r << std::endl;
+  std::unique_ptr<Enemy> enemy = nullptr;
+  switch (r) { 
+    case enemy_types::CARROT:
+      enemy = std::make_unique<Carrot>(worldId, x, y, textureManager, tempoMS,
+                                       levelGraph.get(), this, showHitbox);
+      break;
+    case enemy_types::CORN:
+      enemy = std::make_unique<Corn>(worldId, x, y, textureManager, tempoMS,
+                                       levelGraph.get(), this, showHitbox);
+      break;
+  
+  }
   auto index = enemy->getShapeIndex();
   enemies[index] = std::move(enemy);
   return enemies[index].get();
